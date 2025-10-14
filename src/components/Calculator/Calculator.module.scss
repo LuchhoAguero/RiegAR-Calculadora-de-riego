@@ -1,0 +1,152 @@
+@use "../../styles/_variables.scss" as *;
+@use "../../styles/_mixins.scss" as *;
+
+.section {
+  padding: 4rem 0;
+  background: #fff;
+}
+
+.title {
+  @include heading-lg;
+  text-align: center;
+  margin: 0 0 0.5rem;
+  color: $color-text;
+}
+.lead {
+  text-align: center;
+  color: $color-muted;
+  max-width: 70ch;
+  margin: 0 auto 2rem;
+}
+
+.grid {
+  @include grid(1, 1.25rem);
+  @media (min-width: 1024px) {
+    @include grid(2, 1.25rem);
+    align-items: start;
+  }
+}
+
+.card {
+  @include card;
+  padding: 1.25rem;
+}
+
+.cardTitle {
+  font-weight: 800;
+  margin-bottom: 0.75rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-bottom: 0.75rem;
+  span {
+    font-size: 0.9rem;
+    color: $color-text;
+  }
+  input,
+  select {
+    appearance: none;
+    padding: 0.7rem 0.8rem;
+    border: 1px solid $color-border;
+    border-radius: 10px;
+    background: #fff;
+    color: $color-text;
+    outline: none;
+    &:focus {
+      border-color: $color-primary-600;
+      box-shadow: 0 0 0 4px rgba(26, 78, 127, 0.12);
+    }
+  }
+}
+
+.csvBtn {
+  width: 100%;
+  margin-top: 1rem;
+  padding: 0.9rem 1rem;
+  border-radius: 12px;
+  border: 1px solid $color-primary-600;
+  background: transparent;
+  color: $color-primary-600;
+  font-weight: 700;
+  &:hover {
+    background: rgba(26, 78, 127, 0.06);
+  }
+}
+
+.kpis {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.75rem;
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+.kpi {
+  @include card;
+  padding: 0.9rem;
+  text-align: center;
+  background: #f9fbfd;
+  .kpiLabel {
+    font-size: 0.85rem;
+    color: $color-muted;
+  }
+  .kpiValue {
+    font-weight: 800;
+    font-size: 1.4rem;
+  }
+}
+.kpiHighlight {
+  background: rgba(55, 179, 107, 0.12);
+  border-color: rgba(55, 179, 107, 0.4);
+  .kpiValue {
+    color: $color-accent-700;
+  }
+}
+
+.panel {
+  background: #f6f9ff;
+  border: 1px dashed rgba(26, 78, 127, 0.25);
+  border-radius: 12px;
+  padding: 0.9rem 1rem;
+  margin-top: 1rem;
+}
+.panelTitle {
+  font-weight: 800;
+  margin-bottom: 0.35rem;
+}
+.code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  background: white;
+  border: 1px solid $color-border;
+  padding: 0.5rem 0.75rem;
+  border-radius: 10px;
+  display: inline-block;
+}
+.help {
+  color: $color-muted;
+  margin-top: 0.35rem;
+}
+
+.geometry {
+  padding-left: 1.25rem;
+  li {
+    margin: 0.25rem 0;
+  }
+}
+
+.reco {
+  margin-top: 1.25rem;
+  padding: 1.25rem;
+  h3 {
+    margin-top: 0;
+  }
+  ul {
+    margin: 0.5rem 0 0 1rem;
+  }
+  li {
+    margin: 0.35rem 0;
+  }
+}

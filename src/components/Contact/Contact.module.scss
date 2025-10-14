@@ -1,0 +1,67 @@
+@use "../../styles/_variables.scss" as *;
+@use "../../styles/_mixins.scss" as *;
+
+.contactContainer {
+  padding: 2rem 0 3rem;
+  max-width: 960px;
+  h1 {
+    color: $color-primary;
+  }
+  .lead {
+    font-size: 1.1rem;
+    color: $color-muted;
+    margin-bottom: 2rem;
+  }
+}
+
+.grid {
+  @include grid(1, 2rem);
+  @media (min-width: 768px) {
+    @include grid(2, 3rem);
+  }
+}
+
+.info {
+  ul {
+    list-style: none;
+    padding: 0;
+    li {
+      margin-bottom: 0.5rem;
+    }
+  }
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+  label {
+    margin-bottom: 0.25rem;
+    font-size: 0.9rem;
+  }
+  input,
+  textarea {
+    padding: 0.7rem 0.8rem;
+    border: 1px solid $color-border;
+    border-radius: 10px;
+    &:focus {
+      border-color: $color-primary-600;
+      box-shadow: 0 0 0 4px rgba(26, 78, 127, 0.12);
+      outline: none;
+    }
+  }
+}
+
+.submitBtn {
+  width: 100%;
+  padding: 0.9rem 1rem;
+  border: none;
+  border-radius: 12px;
+  background: $color-accent;
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+  &:hover {
+    filter: brightness(0.95);
+  }
+}

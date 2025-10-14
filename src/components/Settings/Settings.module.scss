@@ -1,0 +1,26 @@
+@use "../../styles/_variables.scss" as *;
+
+.settingsContainer {
+  padding: 2rem 0 3rem;
+  text-align: center;
+  h1 {
+    color: $color-primary;
+  }
+}
+
+.placeholder {
+  margin-top: 2rem;
+  background: #f9f9f9;
+  border: 2px dashed $color-border;
+  padding: 2rem;
+  border-radius: $radius-lg;
+
+  p {
+    color: $color-muted;
+  }
+  ul {
+    list-style: none;
+    padding: 0;
+    margin-top: 1rem;
+  }
+}
