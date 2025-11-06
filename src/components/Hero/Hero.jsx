@@ -1,7 +1,7 @@
 import React from "react";
 import s from "./Hero.module.scss";
 import { Link } from "react-router-dom";
-import logo from "../../assets/images/riegar-logo.png";
+
 export default function Hero() {
   return (
     <section className={s.hero}>
@@ -10,7 +10,7 @@ export default function Hero() {
         <div className={s.grid}>
           <div className={s.content}>
             <div className={s.logoRow}>
-              <img src={logo} alt="RiegAR" className={s.logo} />
+              <img src={"/riegar-logo.png"} alt="RiegAR" className={s.logo} />
               <h1 className={s.title}>
                 Optimizá tu sistema de riego con cálculos precisos
               </h1>

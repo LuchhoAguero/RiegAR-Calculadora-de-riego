@@ -3,7 +3,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom"; // 1. Importar Link en lugar de <a>
 import s from "./Navbar.module.scss";
-import logo from "../../assets/images/riegar-logo.png";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
@@ -22,7 +21,7 @@ export default function Navbar() {
         <div className={s.row}>
           {/* 3. El logo ahora es un Link a la página principal */}
           <Link className={s.brand} to="/">
-            <img src={logo} alt="RiegAR" />
+            <img src={"/riegar-logo.png"} alt="RiegAR" />
             <span>
               Rieg<span className={s.em}>AR</span>
             </span>
