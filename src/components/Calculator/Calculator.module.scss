@@ -150,3 +150,34 @@
     margin: 0.35rem 0;
   }
 }
+
+.errorText {
+  color: #d93025; // Rojo
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+}
+// ... (al final del archivo)
+
+.warningText {
+  color: #e87900; // Un tono naranja para advertencia
+  background-color: rgba(232, 121, 0, 0.1);
+  border: 1px solid rgba(232, 121, 0, 0.3);
+  padding: 0.75rem;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 0.9rem;
+  margin-top: 1rem;
+}
+
+// Estilos para cuando el botón está deshabilitado
+.csvBtn:disabled {
+  background: #e0e0e0; // Fondo gris
+  color: #a0a0a0; // Texto gris claro
+  border-color: #d0d0d0;
+  cursor: not-allowed; // Cambia el cursor para indicar que no se puede hacer clic
+
+  &:hover {
+    // Anulamos el efecto hover cuando está deshabilitado
+    background: #e0e0e0;
+  }
+}

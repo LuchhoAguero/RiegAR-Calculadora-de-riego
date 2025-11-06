@@ -25,13 +25,12 @@
     text-align: center;
     margin: 1rem 0;
   }
-  .placeholder {
-    background: #f9f9f9;
-    border: 2px dashed $color-border;
-    padding: 2rem;
-    text-align: center;
-    color: $color-muted;
+
+  .card {
+    border: 1px solid $color-border;
     border-radius: $radius-lg;
-    margin-top: 1rem;
+    padding: 1rem 1.5rem;
+    margin-top: 1.5rem;
+    background: #fff;
   }
 }

@@ -5,6 +5,8 @@ import CalculatorPage from "../pages/CalculatorPage.jsx";
 import GuidePage from "../pages/GuidePage.jsx";
 import SettingsPage from "../pages/SettingsPage.jsx";
 import ContactPage from "../pages/ContactPage.jsx"; // Asegúrate que esta línea esté correcta
+import LoginPage from "../pages/LoginPage.jsx";
+import RegisterPage from "../pages/RegisterPage.jsx";
 
 export default function AppRoutes() {
   return (
@@ -14,6 +16,8 @@ export default function AppRoutes() {
       <Route path="/guia" element={<GuidePage />} />
       <Route path="/configuracion" element={<SettingsPage />} />
       <Route path="/contacto" element={<ContactPage />} />
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/registro" element={<RegisterPage />} />
     </Routes>
   );
 }

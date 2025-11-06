@@ -1,0 +1,61 @@
+// src/components/RegisterForm/RegisterForm.module.scss
+
+@use "../../styles/_variables.scss" as *;
+
+.formContainer {
+  margin: 0 auto;
+  max-width: 500px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+  label {
+    margin-bottom: 0.25rem;
+    font-size: 0.9rem;
+  }
+  input {
+    padding: 0.7rem 0.8rem;
+    border: 1px solid $color-border;
+    border-radius: 10px;
+    &:focus {
+      border-color: $color-primary-600;
+      box-shadow: 0 0 0 4px rgba(26, 78, 127, 0.12);
+      outline: none;
+    }
+  }
+}
+
+.submitBtn {
+  width: 100%;
+  padding: 0.9rem 1rem;
+  border: none;
+  border-radius: 12px;
+  background: $color-accent;
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+  &:hover {
+    filter: brightness(0.95);
+  }
+}
+// ... (al final de los archivos .scss)
+
+.errorText {
+  color: #d93025; // Rojo
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.successText {
+  color: #2c9458; // Verde
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+// Estilo para el botón deshabilitado
+.submitBtn:disabled {
+  background-color: #a0a0a0;
+  cursor: not-allowed;
+}

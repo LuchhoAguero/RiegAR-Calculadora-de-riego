@@ -12,8 +12,7 @@ export default function Footer() {
             </div>
             <p>
               Herramientas profesionales para el cálculo de caudales de riego
-              utilizando la fórmula de Manning. Diseñado para ingenieros
-              agrónomos y técnicos en riego.
+              utilizando la fórmula de Manning.
             </p>
             <div className={s.socials}>
               <a href="#" aria-label="Facebook">
@@ -37,7 +36,7 @@ export default function Footer() {
                 <a href="/guia">Guía de Uso</a>
               </li>
               <li>
-                <a href="#about">Acerca de</a>
+                <a href="/contacto">contacto</a>
               </li>
               <li>
                 <a href="#faq">Preguntas Frecuentes</a>
@@ -46,7 +45,7 @@ export default function Footer() {
           </div>
           <div>
             <div className={s.groupTitle}>
-              <a href="/contacto">Contacto</a>
+              <a href="/contacto">Contactanos</a>
             </div>
             <ul>
               <li>info@riegar.com.ar</li>
@@ -56,7 +55,8 @@ export default function Footer() {
           </div>
         </div>
         <div className={s.copy}>
-          © 2024 RiegAR. Todos los derechos reservados.
+          © 2025 RiegAR. Todos los derechos reservados. | Diseñado y
+          desarrollado por <strong>Luciano Agüero</strong>.
         </div>
       </div>
     </footer>

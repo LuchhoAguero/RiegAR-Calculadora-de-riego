@@ -1,0 +1,50 @@
+@use "../../styles/_variables.scss" as *;
+
+// 1. Contenedor principal del ícono
+.tooltipContainer {
+  position: relative; // Esencial para posicionar el texto del tooltip
+  display: inline-flex; // Para que se alinee bien con el texto
+  align-items: center;
+  margin-left: $space-2;
+  color: $color-muted;
+
+  // 2. El texto del tooltip (oculto por defecto)
+  .tooltipText {
+    visibility: hidden;
+    opacity: 0;
+
+    width: 250px; // Ancho máximo del tooltip
+    background-color: $color-primary;
+    color: #fff;
+    text-align: center;
+    border-radius: $radius-sm;
+    padding: $space-3;
+
+    // 3. Posicionamiento mágico
+    position: absolute;
+    z-index: 10;
+    bottom: 140%; // Lo posiciona arriba del ícono
+    left: 50%;
+    transform: translateX(-50%);
+
+    transition: opacity 0.2s ease;
+
+    // 4. (Opcional) La flechita del tooltip con un pseudo-elemento
+    &::after {
+      content: "";
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      margin-left: -5px;
+      border-width: 5px;
+      border-style: solid;
+      border-color: $color-primary transparent transparent transparent;
+    }
+  }
+
+  // 5. Al hacer hover sobre el contenedor, mostramos el texto
+  &:hover .tooltipText {
+    visibility: visible;
+    opacity: 1;
+  }
+}
