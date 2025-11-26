@@ -1,0 +1,129 @@
+@use "../../styles/_variables.scss" as *;
+
+.overlay {
+  position: fixed;
+  inset: 0; // Ocupa toda la pantalla
+  background-color: rgba(11, 46, 78, 0.6); // Fondo oscuro semitransparente
+  backdrop-filter: blur(4px); // Efecto borroso moderno
+  display: grid;
+  place-items: center;
+  z-index: 1000; // Asegura que esté encima de todo
+  animation: fadeIn 0.2s ease-out;
+}
+
+.modalCard {
+  background: white;
+  padding: 2rem;
+  border-radius: 20px;
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  position: relative;
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.closeBtn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: transparent;
+  border: none;
+  color: $color-muted;
+  cursor: pointer;
+  font-size: 1.2rem;
+  &:hover {
+    color: $color-text;
+  }
+}
+
+// ...
+
+.iconContainer {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+
+  &.danger {
+    color: #d93025;
+  }
+  &.success {
+    color: $color-accent;
+  }
+  &.edit {
+    color: #f59e0b;
+  } // Un color ámbar/naranja para edición
+}
+
+.title {
+  margin: 0 0 0.5rem 0;
+  color: $color-primary;
+  font-size: 1.5rem;
+}
+
+.message {
+  color: $color-muted;
+  margin-bottom: 2rem;
+  line-height: 1.5;
+}
+
+.actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.cancelBtn {
+  padding: 0.75rem 1.5rem;
+  border: 1px solid $color-border;
+  background: transparent;
+  border-radius: 10px;
+  font-weight: 600;
+  color: $color-muted;
+  cursor: pointer;
+  &:hover {
+    background: #f3f4f6;
+  }
+}
+
+.confirmBtn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 10px;
+  font-weight: 700;
+  color: white;
+  cursor: pointer;
+  box-shadow: $shadow-sm;
+  transition: filter 0.2s;
+
+  &:hover {
+    filter: brightness(0.9);
+  }
+
+  &.btnDanger {
+    background-color: #d93025;
+  }
+  &.btnSuccess {
+    background-color: $color-accent;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}

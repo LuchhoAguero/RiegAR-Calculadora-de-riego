@@ -4,11 +4,13 @@
 * {
   box-sizing: border-box;
 }
+
 html,
 body,
 #root {
   height: 100%;
 }
+
 body {
   margin: 0;
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial,
@@ -16,17 +18,39 @@ body {
   background: $color-bg;
   color: $color-text;
 }
+
 a {
   color: inherit;
   text-decoration: none;
 }
+
+// --- LÓGICA DEL STICKY FOOTER ---
+
+// 1. Convertimos el contenedor principal en una columna flexible que ocupa toda la pantalla
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; // Mínimo el 100% de la altura de la ventana
+}
+
+// 2. Hacemos que el contenido principal crezca para ocupar el espacio vacío
+main {
+  flex: 1;
+  width: 100%; // Asegura que ocupe el ancho completo
+}
+
+// -------------------------------
 
 .app-shell header {
   position: sticky;
   top: 0;
   z-index: 50;
   backdrop-filter: saturate(120%) blur(8px);
-  background: linear-gradient(180deg, rgba(255, 255, 255), rgba(240, 240, 240));
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.9),
+    rgba(240, 240, 240, 0.8)
+  );
   border-bottom: 1px solid $color-border;
 }
 

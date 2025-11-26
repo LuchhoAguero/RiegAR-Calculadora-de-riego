@@ -1,36 +1,37 @@
-// src/components/LoginForm/LoginForm.jsx
-import React, { useState, UseContext } from "react";
+import React, { useState, useContext } from "react";
+import { useNavigate } from "react-router-dom"; // 1. Importa useNavigate
 import { AuthContext } from "../../context/AuthContext";
 import s from "./LoginForm.module.scss";
 import { loginUser } from "../../services/apiService";
+
 export default function LoginForm() {
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
+  const [formData, setFormData] = useState({ email: "", password: "" });
   const [isLoading, setIsLoading] = useState(false);
   const [apiError, setApiError] = useState(null);
+
   const { login } = useContext(AuthContext);
+  const navigate = useNavigate(); // 2. Inicializa el hook
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
   const handleSubmit = async (e) => {
-    // 3. Convierte la función en async
     e.preventDefault();
     setIsLoading(true);
     setApiError(null);
 
     try {
-      // 4. Llama a la API
       const data = await loginUser(formData);
 
-      // ¡ÉXITO! Por ahora, solo mostramos el token en la consola.
+      // Guarda el token en el contexto
       login(data.token);
 
-      // (Opcional) Mostramos una alerta de éxito
-      alert("¡Bienvenido! Has iniciado sesión correctamente.");
+      // 3. ¡Redirige al usuario al Dashboard!
+      navigate("/dashboard");
+
+      // (Quitamos la alerta, ya que la redirección es una mejor UX)
     } catch (error) {
       setApiError(error.message);
     } finally {

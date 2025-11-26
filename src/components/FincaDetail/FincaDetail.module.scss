@@ -1,0 +1,203 @@
+@use "../../styles/_variables.scss" as *;
+@use "../../styles/_mixins.scss" as *;
+
+// --- Layout General ---
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+
+  h1 {
+    color: $color-primary;
+    margin: 0;
+  }
+}
+
+.newCalculoBtn {
+  background-color: $color-accent;
+  color: white;
+  padding: 0.8rem 1.2rem;
+  border-radius: 10px;
+  font-weight: bold;
+  text-decoration: none;
+  transition: filter 0.2s;
+
+  &:hover {
+    filter: brightness(0.95);
+  }
+}
+
+// --- Lista de Cálculos ---
+.calculoList {
+  margin-top: 2rem;
+}
+
+.emptyText {
+  color: $color-muted;
+  font-style: italic;
+}
+
+.calculoItem {
+  @include card;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  background-color: white;
+
+  .itemHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+
+    h3 {
+      margin: 0;
+      color: $color-primary;
+      font-size: 1.2rem;
+    }
+  }
+
+  .actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  // Botones de acción (Editar / Eliminar)
+  .btnEdit,
+  .btnDelete {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 1.1rem;
+    padding: 0.4rem;
+    border-radius: 6px;
+    transition: background 0.2s;
+    display: grid;
+    place-items: center;
+  }
+
+  .btnEdit {
+    color: #1565c0; // Azul
+    &:hover {
+      background: #e3f2fd;
+    }
+  }
+
+  .btnDelete {
+    color: #d93025; // Rojo
+    &:hover {
+      background: #ffebee;
+    }
+  }
+
+  // Grid de datos del cálculo
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+
+    span {
+      background-color: #f6f9fc;
+      padding: 0.6rem;
+      border-radius: 8px;
+      border: 1px solid $color-border;
+      font-size: 0.9rem;
+      color: $color-text;
+
+      strong {
+        color: $color-muted;
+        margin-right: 0.3rem;
+      }
+    }
+  }
+
+  .date {
+    font-size: 0.8rem;
+    color: $color-muted;
+    display: block;
+    text-align: right;
+  }
+}
+
+// --- Modal de Edición ---
+.editForm {
+  text-align: left;
+  padding-top: 0.5rem;
+}
+
+.field {
+  margin-bottom: 1.5rem;
+
+  label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: $color-text;
+  }
+
+  input {
+    width: 100%;
+    padding: 0.7rem 0.8rem;
+    border: 1px solid $color-border;
+    border-radius: 8px;
+    font-size: 1rem;
+
+    &:focus {
+      border-color: $color-primary-600;
+      outline: none;
+      box-shadow: 0 0 0 2px rgba($color-primary-600, 0.1);
+    }
+  }
+}
+
+.modalActions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.btnCancel {
+  padding: 0.8rem 1.2rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background: white;
+  cursor: pointer;
+  color: $color-text;
+  font-weight: 600;
+  transition: background 0.2s;
+
+  &:hover {
+    background: #f5f5f5;
+  }
+}
+
+.btnSave {
+  padding: 0.8rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  background: $color-accent;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: filter 0.2s;
+
+  &:hover {
+    filter: brightness(0.95);
+  }
+}
+
+// --- Estados de Carga y Error ---
+.loadingText,
+.errorText {
+  text-align: center;
+  margin-top: 3rem;
+  color: $color-muted;
+  font-size: 1.1rem;
+}
+
+.errorText {
+  color: #d93025;
+}

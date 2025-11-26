@@ -92,3 +92,14 @@
     }
   }
 }
+
+.logoutBtn {
+  // background-color: #d93025; // Un tono rojo
+  border: none;
+  font-family: inherit; // Asegura que use la misma fuente
+  font-size: inherit;
+
+  &:hover {
+    background-color: #a52714; // Rojo más oscuro en hover
+  }
+}

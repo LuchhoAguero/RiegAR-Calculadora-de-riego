@@ -1,0 +1,174 @@
+@use "../../styles/_variables.scss" as *;
+@use "../../styles/_mixins.scss" as *;
+
+// --- Formulario de creación ---
+.formCard {
+  @include card;
+  padding: 1.5rem;
+  max-width: 600px;
+  margin-top: 2rem;
+  background-color: #fcfdfe;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+  label {
+    margin-bottom: 0.25rem;
+    font-size: 0.9rem;
+  }
+  input {
+    padding: 0.7rem 0.8rem;
+    border: 1px solid $color-border;
+    border-radius: 10px;
+    &:focus {
+      border-color: $color-primary-600;
+      outline: none;
+      box-shadow: 0 0 0 2px rgba($color-primary-600, 0.1);
+    }
+  }
+}
+
+.submitBtn {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border: none;
+  border-radius: 12px;
+  background: $color-accent;
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+  transition: filter 0.2s;
+
+  &:hover {
+    filter: brightness(0.95);
+  }
+}
+
+// --- Lista de Fincas ---
+.fincaList {
+  margin-top: 2.5rem;
+}
+
+.fincaLink {
+  text-decoration: none;
+  display: block; // Asegura que el link ocupe el ancho disponible
+}
+
+.fincaItem {
+  @include card;
+  padding: 1rem 1.5rem;
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+
+  &:hover {
+    background-color: #f6f9fc;
+    border-color: $color-primary-600;
+  }
+
+  h3 {
+    margin: 0;
+    color: $color-primary;
+  }
+
+  span {
+    color: $color-muted;
+    font-size: 0.9rem;
+  }
+}
+
+// Contenedor de botones de acción en la lista
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  span {
+    color: $color-primary-600;
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-right: 0.5rem;
+  }
+}
+
+// Botones de la lista (Editar / Borrar)
+.btnEdit {
+  background: #e3f2fd;
+  border: 1px solid #bbdefb;
+  border-radius: 5px;
+  color: #1565c0;
+  cursor: pointer;
+  padding: 5px 10px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  transition: background 0.2s;
+
+  &:hover {
+    background: darken(#e3f2fd, 5%);
+  }
+}
+
+.btnDelete {
+  background: #ffebee;
+  border: 1px solid #ffcdd2;
+  border-radius: 5px;
+  color: #c62828;
+  cursor: pointer;
+  padding: 5px 10px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  transition: background 0.2s;
+
+  &:hover {
+    background: darken(#ffebee, 5%);
+  }
+}
+
+// --- Modal de Edición ---
+.editForm {
+  text-align: left;
+}
+
+.modalActions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  justify-content: center;
+}
+
+.btnCancel {
+  padding: 0.8rem 1.2rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background: white;
+  cursor: pointer;
+  color: $color-text;
+  font-weight: 600;
+  transition: background 0.2s;
+
+  &:hover {
+    background: #f5f5f5;
+  }
+}
+
+.btnSave {
+  width: auto; // Sobrescribe el width: 100% de .submitBtn
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+// --- Estados generales ---
+.loadingText,
+.errorText {
+  text-align: center;
+  margin-top: 2rem;
+  color: $color-muted;
+}
+
+.errorText {
+  color: #d93025;
+}

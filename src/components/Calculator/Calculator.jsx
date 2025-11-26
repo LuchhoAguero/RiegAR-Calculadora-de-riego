@@ -2,6 +2,7 @@ import React, { useMemo, useState } from "react";
 import s from "./Calculator.module.scss";
 import { manningQ, geometries } from "../../utils/manning.js";
 import Tooltip from "../Tooltip/Tooltip.jsx";
+
 const roughnessPresets = [
   { label: "Hormigón alisado (0.012)", value: 0.012 },
   { label: "Hormigón rugoso (0.015)", value: 0.015 },
@@ -10,7 +11,7 @@ const roughnessPresets = [
   { label: "Personalizado", value: "custom" },
 ];
 
-export default function Calculator() {
+export default function Calculator({ onSave }) {
   const [channel, setChannel] = useState("rectangular");
   const [nPreset, setNPreset] = useState(roughnessPresets[0].value);
   const [n, setN] = useState(0.012);
@@ -20,6 +21,10 @@ export default function Calculator() {
   const [b, setB] = useState(1);
   const [h, setH] = useState(0.5);
   const [z, setZ] = useState(1);
+
+  // Nuevo estado para el nombre del cálculo (solo si onSave existe)
+  const [nombreCalculo, setNombreCalculo] = useState("");
+
   const [errors, setErrors] = useState({});
 
   const usingCustomN = nPreset === "custom";
@@ -81,7 +86,6 @@ export default function Calculator() {
       }
     }
 
-    // CORRECCIÓN: La regla para 'z' debe estar fuera del if anterior
     if (name === "z") {
       if (numValue < 0) {
         newErrors[name] = "El valor no puede ser negativo.";
@@ -93,19 +97,68 @@ export default function Calculator() {
     setErrors(newErrors);
   };
 
-  // --- EL RETURN DEBE ESTAR AQUÍ, AL FINAL DEL COMPONENTE ---
+  const handleSave = () => {
+    if (!nombreCalculo.trim()) {
+      alert("Por favor, ingresa un nombre para el cálculo.");
+      return;
+    }
+
+    const calculoData = {
+      nombre_calculo: nombreCalculo,
+      tipo_canal: channel,
+      b: Number(b),
+      h: Number(h),
+      z: Number(z),
+      n: Number(nValue),
+      S: Number(S),
+      A: Number(A),
+      P: Number(P),
+      Q_m3s: Number(Q),
+    };
+
+    onSave(calculoData);
+  };
+
   return (
     <section id="calculator" className={s.section}>
       <div className="container">
-        <h2 className={s.title}>Calculadora de Caudal</h2>
-        <p className={s.lead}>
-          Utilizá la fórmula de Manning para calcular el caudal en canales de
-          riego con diferentes geometrías y materiales.
-        </p>
+        {/* Solo mostramos título si NO estamos en modo guardar */}
+        {!onSave && (
+          <>
+            <h2 className={s.title}>Calculadora de Caudal</h2>
+            <p className={s.lead}>
+              Utilizá la fórmula de Manning para calcular el caudal en canales
+              de riego con diferentes geometrías y materiales.
+            </p>
+          </>
+        )}
 
         <div className={s.grid}>
           <div className={s.card}>
             <h3 className={s.cardTitle}>Configuración del Canal</h3>
+
+            {/* NUEVO CAMPO: Solo si existe onSave */}
+            {onSave && (
+              <label
+                className={s.field}
+                style={{
+                  borderBottom: "1px solid #eee",
+                  paddingBottom: "1rem",
+                  marginBottom: "1rem",
+                }}
+              >
+                <span style={{ color: "#2c9458", fontWeight: "bold" }}>
+                  Nombre del Cálculo (para guardar)
+                </span>
+                <input
+                  type="text"
+                  placeholder="Ej: Canal Norte - Tramo 1"
+                  value={nombreCalculo}
+                  onChange={(e) => setNombreCalculo(e.target.value)}
+                />
+              </label>
+            )}
+
             <label className={s.field}>
               <span>Tipo de canal</span>
               <select
@@ -123,7 +176,6 @@ export default function Calculator() {
                 Rugosidad de Manning (n){" "}
                 <Tooltip text="Este coeficiente representa la 'aspereza' del material del canal. Un valor más alto significa más fricción y menor velocidad del agua." />
               </span>
-
               <select
                 value={nPreset}
                 onChange={(e) => setNPreset(e.target.value)}
@@ -142,7 +194,7 @@ export default function Calculator() {
                 <input
                   type="number"
                   step="0.001"
-                  name="n" // <-- Añadí el name para la validación
+                  name="n"
                   value={n}
                   onChange={handleInputChange}
                 />
@@ -158,7 +210,7 @@ export default function Calculator() {
               <input
                 type="number"
                 step="0.0001"
-                name="S" // <-- Añadí el name para la validación
+                name="S"
                 value={S}
                 onChange={handleInputChange}
               />
@@ -171,7 +223,7 @@ export default function Calculator() {
                 <input
                   type="number"
                   step="0.01"
-                  name="b" // <-- Añadí el name para la validación
+                  name="b"
                   value={b}
                   onChange={handleInputChange}
                 />
@@ -184,7 +236,7 @@ export default function Calculator() {
               <input
                 type="number"
                 step="0.01"
-                name="h" // <-- Añadí el name para la validación
+                name="h"
                 value={h}
                 onChange={handleInputChange}
               />
@@ -200,7 +252,7 @@ export default function Calculator() {
                 <input
                   type="number"
                   step="0.1"
-                  name="z" // <-- Añadí el name para la validación
+                  name="z"
                   value={z}
                   onChange={handleInputChange}
                 />
@@ -214,14 +266,27 @@ export default function Calculator() {
               </div>
             )}
 
-            <button
-              className={s.csvBtn}
-              type="button"
-              onClick={exportCSV}
-              disabled={hasErrors}
-            >
-              Exportar Resultados CSV
-            </button>
+            <div style={{ display: "flex", gap: "10px", marginTop: "1rem" }}>
+              <button
+                className={s.csvBtn}
+                type="button"
+                onClick={exportCSV}
+                disabled={hasErrors}
+              >
+                Exportar CSV
+              </button>
+
+              {onSave && (
+                <button
+                  className={s.saveBtn}
+                  type="button"
+                  onClick={handleSave}
+                  disabled={hasErrors || !nombreCalculo}
+                >
+                  Guardar Cálculo
+                </button>
+              )}
+            </div>
           </div>
 
           {/* Results */}
@@ -272,17 +337,19 @@ export default function Calculator() {
           </div>
         </div>
 
-        <div className={s.reco + " u-card"}>
-          <h3>Recomendaciones de Campo</h3>
-          <ul>
-            <li>
-              Verificá la uniformidad del tramo y que el flujo sea permanente.
-            </li>
-            <li>Medí la pendiente S con nivelación o herramientas GNSS.</li>
-            <li>Ajustá el coeficiente n según el mantenimiento del canal.</li>
-            <li>Considerá bordes libres para evitar desbordamientos.</li>
-          </ul>
-        </div>
+        {!onSave && (
+          <div className={s.reco + " u-card"}>
+            <h3>Recomendaciones de Campo</h3>
+            <ul>
+              <li>
+                Verificá la uniformidad del tramo y que el flujo sea permanente.
+              </li>
+              <li>Medí la pendiente S con nivelación o herramientas GNSS.</li>
+              <li>Ajustá el coeficiente n según el mantenimiento del canal.</li>
+              <li>Considerá bordes libres para evitar desbordamientos.</li>
+            </ul>
+          </div>
+        )}
       </div>
     </section>
   );
