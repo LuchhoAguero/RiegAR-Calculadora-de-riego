@@ -1,25 +1,39 @@
-import s from "./Contact.module.scss";
 import React, { useState } from "react";
+import s from "./Contact.module.scss";
+import { sendContactMessage } from "../../services/apiService";
+
 export default function Contact() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     message: "",
   });
-  // 3. Crea una función para actualizar el estado cuando el usuario escribe
+
+  // Estados para feedback visual
+  const [status, setStatus] = useState("idle");
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+    setFormData({ ...formData, [name]: value });
   };
 
-  // 4. Crea la función que se ejecutará al enviar el formulario
-const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Datos listos para el backend:", formData);
-    alert("¡Formulario listo! La conexión con el servidor se hará en el futuro.");
+    setStatus("loading");
+
+    try {
+      // 2. Llamar al servicio
+      await sendContactMessage(formData);
+
+      setStatus("success");
+      setFormData({ name: "", email: "", message: "" }); // Limpiar form
+
+      // Volver a estado normal después de 3 segundos
+      setTimeout(() => setStatus("idle"), 3000);
+    } catch (error) {
+      console.error(error);
+      setStatus("error");
+    }
   };
 
   return (

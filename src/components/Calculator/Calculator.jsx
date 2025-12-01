@@ -1,7 +1,9 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useContext } from "react"; // 1. Importar useContext
+import { Link } from "react-router-dom";
 import s from "./Calculator.module.scss";
 import { manningQ, geometries } from "../../utils/manning.js";
 import Tooltip from "../Tooltip/Tooltip.jsx";
+import { AuthContext } from "../../context/AuthContext"; // 2. Importar AuthContext
 
 const roughnessPresets = [
   { label: "Hormigón alisado (0.012)", value: 0.012 },
@@ -12,6 +14,9 @@ const roughnessPresets = [
 ];
 
 export default function Calculator({ onSave }) {
+  // 3. Obtener el estado de login
+  const { isLoggedIn } = useContext(AuthContext);
+
   const [channel, setChannel] = useState("rectangular");
   const [nPreset, setNPreset] = useState(roughnessPresets[0].value);
   const [n, setN] = useState(0.012);
@@ -22,9 +27,7 @@ export default function Calculator({ onSave }) {
   const [h, setH] = useState(0.5);
   const [z, setZ] = useState(1);
 
-  // Nuevo estado para el nombre del cálculo (solo si onSave existe)
   const [nombreCalculo, setNombreCalculo] = useState("");
-
   const [errors, setErrors] = useState({});
 
   const usingCustomN = nPreset === "custom";
@@ -122,7 +125,6 @@ export default function Calculator({ onSave }) {
   return (
     <section id="calculator" className={s.section}>
       <div className="container">
-        {/* Solo mostramos título si NO estamos en modo guardar */}
         {!onSave && (
           <>
             <h2 className={s.title}>Calculadora de Caudal</h2>
@@ -137,7 +139,6 @@ export default function Calculator({ onSave }) {
           <div className={s.card}>
             <h3 className={s.cardTitle}>Configuración del Canal</h3>
 
-            {/* NUEVO CAMPO: Solo si existe onSave */}
             {onSave && (
               <label
                 className={s.field}
@@ -287,9 +288,52 @@ export default function Calculator({ onSave }) {
                 </button>
               )}
             </div>
+
+            {/* --- 4. SECCIÓN INTELIGENTE --- */}
+            {!onSave && (
+              <div
+                style={{
+                  marginTop: "1.5rem",
+                  padding: "1rem",
+                  backgroundColor: isLoggedIn ? "#f0f9ff" : "#e6fffa", // Color distinto si está logueado
+                  border: isLoggedIn
+                    ? "1px dashed #0b2e4e"
+                    : "1px dashed #37b36b",
+                  borderRadius: "12px",
+                  textAlign: "center",
+                }}
+              >
+                <p
+                  style={{
+                    margin: "0 0 0.5rem 0",
+                    color: isLoggedIn ? "#0b2e4e" : "#2c9458",
+                    fontWeight: "600",
+                  }}
+                >
+                  {isLoggedIn
+                    ? "¿Quieres guardar este cálculo en una de tus fincas?"
+                    : "¿Quieres guardar tus cálculos y organizarlos por finca?"}
+                </p>
+                <Link
+                  to={isLoggedIn ? "/dashboard" : "/registro"}
+                  style={{
+                    display: "inline-block",
+                    textDecoration: "none",
+                    color: "white",
+                    backgroundColor: isLoggedIn ? "#0b2e4e" : "#37b36b", // Azul si logueado, Verde si no
+                    padding: "0.5rem 1rem",
+                    borderRadius: "8px",
+                    fontWeight: "bold",
+                    fontSize: "0.9rem",
+                  }}
+                >
+                  {isLoggedIn ? "Ir a Mis Fincas" : "Crear Cuenta Gratis"}
+                </Link>
+              </div>
+            )}
+            {/* -------------------------------------- */}
           </div>
 
-          {/* Results */}
           <div className={s.card}>
             <h3 className={s.cardTitle}>Resultados del Cálculo</h3>
             <div className={s.kpis}>

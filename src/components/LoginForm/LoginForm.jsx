@@ -61,12 +61,28 @@ export default function LoginForm() {
           value={formData.password}
           onChange={handleInputChange}
           required
+          autoComplete="current-password"
         />
       </div>
       {apiError && <p className={s.errorText}>{apiError}</p>}
       <button type="submit" className={s.submitBtn} disabled={isLoading}>
         {isLoading ? "Ingresando..." : "Ingresar"}
       </button>
+      <div
+        style={{ marginTop: "1.5rem", textAlign: "center", fontSize: "0.9rem" }}
+      >
+        <span style={{ color: "#6b7a90" }}>¿No tienes una cuenta? </span>
+        <a
+          href="/registro"
+          style={{
+            color: "#0b2e4e",
+            fontWeight: "bold",
+            textDecoration: "none",
+          }}
+        >
+          Regístrate aquí
+        </a>
+      </div>
     </form>
   );
 }

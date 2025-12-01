@@ -146,3 +146,14 @@ export const updateCalculo = async (calculoId, data) => {
   });
   return handleResponse(response);
 };
+
+export const sendContactMessage = async (contactData) => {
+  const response = await fetch(`${BASE_URL}/api/contact`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(contactData),
+  });
+  return handleResponse(response);
+};

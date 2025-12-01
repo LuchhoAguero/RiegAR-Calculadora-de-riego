@@ -38,9 +38,6 @@ export default function Footer() {
               <li>
                 <a href="/contacto">contacto</a>
               </li>
-              <li>
-                <a href="#faq">Preguntas Frecuentes</a>
-              </li>
             </ul>
           </div>
           <div>

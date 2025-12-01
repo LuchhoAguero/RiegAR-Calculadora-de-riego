@@ -70,6 +70,7 @@ export default function RegisterForm() {
           value={formData.password}
           onChange={handleInputChange}
           required
+          autoComplete="current-password"
         />
       </div>
       {apiError && <p className={s.errorText}>{apiError}</p>}
@@ -77,6 +78,22 @@ export default function RegisterForm() {
       <button type="submit" className={s.submitBtn} disabled={isLoading}>
         {isLoading ? "Registrando..." : "Registrarse"}
       </button>
+
+      <div
+        style={{ marginTop: "1.5rem", textAlign: "center", fontSize: "0.9rem" }}
+      >
+        <span style={{ color: "#6b7a90" }}>¿Ya tienes cuenta? </span>
+        <a
+          href="/login"
+          style={{
+            color: "#0b2e4e",
+            fontWeight: "bold",
+            textDecoration: "none",
+          }}
+        >
+          Inicia sesión
+        </a>
+      </div>
     </form>
   );
 }

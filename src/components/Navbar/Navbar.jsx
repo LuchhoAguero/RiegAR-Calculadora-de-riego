@@ -82,13 +82,26 @@ export default function Navbar() {
                 Cerrar Sesión
               </button>
             ) : (
-              <Link
-                to="/login"
-                className={s.loginBtn}
-                onClick={() => setOpen(false)}
-              >
-                Iniciar Sesión
-              </Link>
+              <div style={{ display: "flex", gap: "10px" }}>
+                {/* Botón Iniciar Sesión */}
+                <Link
+                  to="/login"
+                  className={s.loginBtn}
+                  onClick={() => setOpen(false)}
+                >
+                  Iniciar Sesión
+                </Link>
+
+                {/* NUEVO: Botón Registrarse */}
+                <Link
+                  to="/registro"
+                  className={s.loginBtn}
+                  style={{ backgroundColor: "#37b36b" }} // Color verde para destacar
+                  onClick={() => setOpen(false)}
+                >
+                  Registrarse
+                </Link>
+              </div>
             )}
           </nav>
         </div>
