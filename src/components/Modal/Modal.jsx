@@ -27,8 +27,8 @@ export default function Modal({
   const defaultConfirmText = isDanger ? "Eliminar" : "Aceptar";
   return (
     <div className={s.overlay}>
-      <div className={s.modalCard}>
-        <button className={s.closeBtn} onClick={onClose}>
+      <div className={s.modalCard} role="dialog" aria-modal="true" aria-label={title}>
+        <button className={s.closeBtn} onClick={onClose} aria-label="Cerrar diálogo">
           <FaTimes />
         </button>
 

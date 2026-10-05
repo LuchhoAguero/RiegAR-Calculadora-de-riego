@@ -1,5 +1,5 @@
 import React, { useState, useContext } from "react";
-import { useNavigate } from "react-router-dom"; // 1. Importa useNavigate
+import { Link, useNavigate } from "react-router-dom"; // 1. Importa useNavigate
 import { AuthContext } from "../../context/AuthContext";
 import s from "./LoginForm.module.scss";
 import { loginUser } from "../../services/apiService";
@@ -72,8 +72,8 @@ export default function LoginForm() {
         style={{ marginTop: "1.5rem", textAlign: "center", fontSize: "0.9rem" }}
       >
         <span style={{ color: "#6b7a90" }}>¿No tienes una cuenta? </span>
-        <a
-          href="/registro"
+        <Link
+          to="/registro"
           style={{
             color: "#0b2e4e",
             fontWeight: "bold",
@@ -81,7 +81,7 @@ export default function LoginForm() {
           }}
         >
           Regístrate aquí
-        </a>
+        </Link>
       </div>
     </form>
   );

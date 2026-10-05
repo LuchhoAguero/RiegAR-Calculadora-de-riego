@@ -34,6 +34,42 @@ export default function Calculator({ onSave }) {
   const nValue = usingCustomN ? Number(n) : Number(nPreset);
   const hasErrors = Object.keys(errors).length > 0;
 
+  const handleChannelChange = (e) => {
+    const nextChannel = e.target.value;
+    setChannel(nextChannel);
+    setErrors((current) => {
+      const next = { ...current };
+      if (nextChannel === "triangular") {
+        delete next.b;
+      } else if (!Number.isFinite(Number(b)) || Number(b) <= 0) {
+        next.b = "El valor debe ser mayor a cero.";
+      }
+      if (nextChannel === "rectangular") {
+        delete next.z;
+      } else if (!Number.isFinite(Number(z)) || Number(z) < 0) {
+        next.z = "El valor no puede ser negativo.";
+      }
+      return next;
+    });
+  };
+
+  const handleNPresetChange = (e) => {
+    const nextPreset = e.target.value;
+    setNPreset(nextPreset);
+    if (nextPreset !== "custom") {
+      setErrors((current) => {
+        const next = { ...current };
+        delete next.n;
+        return next;
+      });
+    } else if (!Number.isFinite(Number(n)) || Number(n) <= 0) {
+      setErrors((current) => ({
+        ...current,
+        n: "El valor debe ser mayor a cero.",
+      }));
+    }
+  };
+
   const { A, P } = useMemo(() => {
     const params = { b: Number(b), h: Number(h), z: Number(z) };
     return geometries[channel](params);
@@ -79,25 +115,24 @@ export default function Calculator({ onSave }) {
       stateUpdaters[name](value);
     }
 
-    let newErrors = { ...errors };
-
-    if (["b", "h", "S", "n"].includes(name)) {
-      if (numValue <= 0) {
-        newErrors[name] = "El valor debe ser mayor a cero.";
-      } else {
-        delete newErrors[name];
+    setErrors((current) => {
+      const next = { ...current };
+      if (["b", "h", "S", "n"].includes(name)) {
+        if (!Number.isFinite(numValue) || numValue <= 0) {
+          next[name] = "El valor debe ser mayor a cero.";
+        } else {
+          delete next[name];
+        }
       }
-    }
-
-    if (name === "z") {
-      if (numValue < 0) {
-        newErrors[name] = "El valor no puede ser negativo.";
-      } else {
-        delete newErrors[name];
+      if (name === "z") {
+        if (!Number.isFinite(numValue) || numValue < 0) {
+          next[name] = "El valor no puede ser negativo.";
+        } else {
+          delete next[name];
+        }
       }
-    }
-
-    setErrors(newErrors);
+      return next;
+    });
   };
 
   const handleSave = () => {
@@ -164,7 +199,7 @@ export default function Calculator({ onSave }) {
               <span>Tipo de canal</span>
               <select
                 value={channel}
-                onChange={(e) => setChannel(e.target.value)}
+                onChange={handleChannelChange}
               >
                 <option value="rectangular">Rectangular</option>
                 <option value="triangular">Triangular</option>
@@ -179,7 +214,7 @@ export default function Calculator({ onSave }) {
               </span>
               <select
                 value={nPreset}
-                onChange={(e) => setNPreset(e.target.value)}
+                onChange={handleNPresetChange}
               >
                 {roughnessPresets.map((r) => (
                   <option key={r.label} value={r.value}>

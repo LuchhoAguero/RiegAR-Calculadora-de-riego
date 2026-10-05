@@ -1,7 +1,7 @@
 // src/services/apiService.js
 
-// 1. Definimos la URL base de nuestro backend.
-const BASE_URL = "http://localhost:4000"; // La URL donde corre tu servidor Node.js
+// URL configurable por entorno; desarrollo local conserva el valor anterior.
+const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:4000";
 
 /**
  * Función de ayuda para crear las cabeceras.

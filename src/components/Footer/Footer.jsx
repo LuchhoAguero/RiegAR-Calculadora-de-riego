@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import s from "./Footer.module.scss";
 import { FaFacebook, FaInstagram, FaXTwitter } from "react-icons/fa6";
 export default function Footer() {
@@ -30,19 +31,19 @@ export default function Footer() {
             <div className={s.groupTitle}>Enlaces Rápidos</div>
             <ul>
               <li>
-                <a href="/calculadora">Calculadora de caudal </a>
+                <Link to="/calculadora">Calculadora de caudal </Link>
               </li>
               <li>
-                <a href="/guia">Guía de Uso</a>
+                <Link to="/guia">Guía de Uso</Link>
               </li>
               <li>
-                <a href="/contacto">contacto</a>
+                <Link to="/contacto">contacto</Link>
               </li>
             </ul>
           </div>
           <div>
             <div className={s.groupTitle}>
-              <a href="/contacto">Contactanos</a>
+              <Link to="/contacto">Contactanos</Link>
             </div>
             <ul>
               <li>info@riegar.com.ar</li>
@@ -52,7 +53,7 @@ export default function Footer() {
           </div>
         </div>
         <div className={s.copy}>
-          © 2025 RiegAR. Todos los derechos reservados. | Diseñado y
+          © {new Date().getFullYear()} RiegAR. Todos los derechos reservados. | Diseñado y
           desarrollado por <strong>Luciano Agüero</strong>.
         </div>
       </div>

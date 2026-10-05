@@ -1,6 +1,7 @@
 // src/components/RegisterForm/RegisterForm.jsx
 
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import s from "./RegisterForm.module.scss"; // Importa sus propios estilos
 import { registerUser } from "../../services/apiService";
 export default function RegisterForm() {
@@ -83,8 +84,8 @@ export default function RegisterForm() {
         style={{ marginTop: "1.5rem", textAlign: "center", fontSize: "0.9rem" }}
       >
         <span style={{ color: "#6b7a90" }}>¿Ya tienes cuenta? </span>
-        <a
-          href="/login"
+        <Link
+          to="/login"
           style={{
             color: "#0b2e4e",
             fontWeight: "bold",
@@ -92,7 +93,7 @@ export default function RegisterForm() {
           }}
         >
           Inicia sesión
-        </a>
+        </Link>
       </div>
     </form>
   );
