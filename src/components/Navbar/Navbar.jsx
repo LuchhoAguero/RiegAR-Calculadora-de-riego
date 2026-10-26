@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useRef, startTransition } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import s from "./Navbar.module.scss";
 import logo from "../../assets/images/riegar-logo.png";
@@ -7,6 +7,7 @@ import Modal from "../Modal/Modal.jsx"; // 1. Importamos el Modal
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
+  const menuButton = useRef(null);
 
   // 2. Estado para controlar el modal de logout
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
@@ -28,9 +29,13 @@ export default function Navbar() {
 
   // 4. Función que ejecuta el logout real cuando se confirma en el modal
   const confirmLogout = () => {
-    logout(); // Borra el token
-    setIsLogoutModalOpen(false); // Cierra el modal
-    navigate("/"); // Redirige al inicio
+    // Router navega en una transición: cerrar la sesión en la misma evita
+    // que ProtectedRoute redirija a login antes de llegar al inicio.
+    startTransition(() => {
+      logout();
+      setIsLogoutModalOpen(false);
+      navigate("/", { replace: true });
+    });
   };
 
   return (
@@ -46,7 +51,11 @@ export default function Navbar() {
 
           <button
             className={s.burger}
-            aria-label="Abrir menú"
+            ref={menuButton}
+            type="button"
+            aria-label={open ? "Cerrar menú" : "Abrir menú"}
+            aria-expanded={open}
+            aria-controls="primary-navigation"
             onClick={() => setOpen(!open)}
           >
             <span />
@@ -54,7 +63,13 @@ export default function Navbar() {
             <span />
           </button>
 
-          <nav className={`${s.menu} ${open ? s.isOpen : ""}`}>
+          <nav id="primary-navigation" aria-label="Navegación principal"
+            onKeyDown={event => {
+              if (event.key === "Escape" && open) {
+                setOpen(false);
+                menuButton.current.focus();
+              }
+            }} className={`${s.menu} ${open ? s.isOpen : ""}`}>
             {/* Enlaces Públicos */}
             {nav.map((it) => (
               <Link key={it.to} to={it.to} onClick={() => setOpen(false)}>

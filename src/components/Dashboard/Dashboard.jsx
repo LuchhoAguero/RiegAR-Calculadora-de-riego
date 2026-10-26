@@ -72,7 +72,7 @@ export default function Dashboard() {
   };
 
   const openDeleteModal = (e, fincaId) => {
-    e.preventDefault(); // Importante para no navegar al link
+    e.preventDefault();
     setFincaToDelete(fincaId);
     setIsDeleteModalOpen(true);
   };
@@ -93,7 +93,7 @@ export default function Dashboard() {
   };
 
   const openEditModal = (e, finca) => {
-    e.preventDefault(); // Evita navegar al link
+    e.preventDefault();
     setFincaToEdit(finca); // Cargamos los datos de la finca en el estado
     setIsEditModalOpen(true);
   };
@@ -174,37 +174,33 @@ export default function Dashboard() {
           <p>Aún no has creado ninguna finca. ¡Añade una!</p>
         ) : (
           fincas.map((finca) => (
-            <Link
-              to={`/finca/${finca.id}`}
-              key={finca.id}
-              className={s.fincaLink}
-            >
-              <div className={s.fincaItem}>
+            <div key={finca.id} className={s.fincaItem}>
+              <Link to={`/finca/${finca.id}`} className={s.fincaLink}>
                 <div>
                   <h3>{finca.nombre_finca}</h3>
                   <span>{finca.ubicacion || "Sin ubicación"}</span>
                 </div>
-                <div className={s.actions}>
-                  <span>Ver cálculos &rarr;</span>
-
-                  {/* BOTÓN EDITAR */}
-                  <button
-                    onClick={(e) => openEditModal(e, finca)}
-                    className={s.btnEdit}
-                  >
-                    Editar
-                  </button>
-
-                  {/* BOTÓN BORRAR */}
-                  <button
-                    onClick={(e) => openDeleteModal(e, finca.id)}
-                    className={s.btnDelete}
-                  >
-                    Borrar
-                  </button>
-                </div>
+                <span>Ver cálculos &rarr;</span>
+              </Link>
+              <div className={s.actions}>
+                <button
+                  type="button"
+                  aria-label={`Editar finca ${finca.nombre_finca}`}
+                  onClick={(e) => openEditModal(e, finca)}
+                  className={s.btnEdit}
+                >
+                  Editar
+                </button>
+                <button
+                  type="button"
+                  aria-label={`Borrar finca ${finca.nombre_finca}`}
+                  onClick={(e) => openDeleteModal(e, finca.id)}
+                  className={s.btnDelete}
+                >
+                  Borrar
+                </button>
               </div>
-            </Link>
+            </div>
           ))
         )}
       </div>
@@ -228,9 +224,10 @@ export default function Dashboard() {
       >
         <form onSubmit={handleUpdateFinca} className={s.editForm}>
           <div className={s.field}>
-            <label>Nombre de la Finca</label>
+            <label htmlFor="edit-nombre-finca">Nombre de la Finca</label>
             <input
               type="text"
+              id="edit-nombre-finca"
               value={fincaToEdit.nombre_finca}
               onChange={(e) =>
                 setFincaToEdit({ ...fincaToEdit, nombre_finca: e.target.value })
@@ -239,10 +236,11 @@ export default function Dashboard() {
             />
           </div>
           <div className={s.field}>
-            <label>Ubicación</label>
+            <label htmlFor="edit-ubicacion">Ubicación</label>
             <input
               type="text"
-              value={fincaToEdit.ubicacion}
+              id="edit-ubicacion"
+              value={fincaToEdit.ubicacion || ""}
               onChange={(e) =>
                 setFincaToEdit({ ...fincaToEdit, ubicacion: e.target.value })
               }

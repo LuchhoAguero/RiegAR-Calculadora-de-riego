@@ -71,11 +71,11 @@ export default function RegisterForm() {
           value={formData.password}
           onChange={handleInputChange}
           required
-          autoComplete="current-password"
+          autoComplete="new-password"
         />
       </div>
-      {apiError && <p className={s.errorText}>{apiError}</p>}
-      {successMessage && <p className={s.successText}>{successMessage}</p>}
+      {apiError && <p role="alert" className={s.errorText}>{apiError}</p>}
+      {successMessage && <p role="status" className={s.successText}>{successMessage}</p>}
       <button type="submit" className={s.submitBtn} disabled={isLoading}>
         {isLoading ? "Registrando..." : "Registrarse"}
       </button>

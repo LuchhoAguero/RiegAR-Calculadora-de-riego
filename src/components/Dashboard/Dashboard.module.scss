@@ -53,7 +53,13 @@
 
 .fincaLink {
   text-decoration: none;
-  display: block; // Asegura que el link ocupe el ancho disponible
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  overflow-wrap: anywhere;
 }
 
 .fincaItem {
@@ -63,6 +69,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 1rem;
   transition: background-color 0.2s ease, border-color 0.2s ease;
 
   &:hover {
@@ -171,4 +178,10 @@
 
 .errorText {
   color: #d93025;
+}
+
+@media (max-width: 600px) {
+  .fincaItem { flex-direction: column; align-items: stretch; }
+  .fincaLink { flex-wrap: wrap; }
+  .actions { flex-wrap: wrap; }
 }

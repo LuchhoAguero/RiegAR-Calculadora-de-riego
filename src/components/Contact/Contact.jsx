@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import s from "./Contact.module.scss";
 import { sendContactMessage } from "../../services/apiService";
 
@@ -11,6 +11,7 @@ export default function Contact() {
 
   // Estados para feedback visual
   const [status, setStatus] = useState("idle");
+  const pending = useRef(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -19,6 +20,8 @@ export default function Contact() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (pending.current) return;
+    pending.current = true;
     setStatus("loading");
 
     try {
@@ -27,12 +30,10 @@ export default function Contact() {
 
       setStatus("success");
       setFormData({ name: "", email: "", message: "" }); // Limpiar form
-
-      // Volver a estado normal después de 3 segundos
-      setTimeout(() => setStatus("idle"), 3000);
-    } catch (error) {
-      console.error(error);
+    } catch {
       setStatus("error");
+    } finally {
+      pending.current = false;
     }
   };
 
@@ -60,7 +61,7 @@ export default function Contact() {
         </div>
         <div className={s.form}>
           <h3>Envíanos un mensaje</h3>
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} aria-busy={status === "loading"}>
             <div className={s.field}>
               <label htmlFor="name">Nombre</label>
               {/* 6. Conecta el input al estado */}
@@ -94,9 +95,14 @@ export default function Contact() {
                 onChange={handleInputChange}
               ></textarea>
             </div>
-            <button type="submit" className={s.submitBtn}>
-              Enviar
+            <button type="submit" className={s.submitBtn} disabled={status === "loading"}>
+              {status === "loading" ? "Enviando..." : "Enviar"}
             </button>
+            <p role="status" aria-live="polite">
+              {status === "loading" && "Enviando mensaje..."}
+              {status === "success" && "Tu mensaje se envió correctamente."}
+            </p>
+            {status === "error" && <p role="alert">No se pudo confirmar el envío. Verificá el resultado antes de volver a enviar.</p>}
           </form>
         </div>
       </div>

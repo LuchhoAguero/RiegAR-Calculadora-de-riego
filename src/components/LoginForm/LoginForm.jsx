@@ -64,7 +64,7 @@ export default function LoginForm() {
           autoComplete="current-password"
         />
       </div>
-      {apiError && <p className={s.errorText}>{apiError}</p>}
+      {apiError && <p role="alert" className={s.errorText}>{apiError}</p>}
       <button type="submit" className={s.submitBtn} disabled={isLoading}>
         {isLoading ? "Ingresando..." : "Ingresar"}
       </button>
