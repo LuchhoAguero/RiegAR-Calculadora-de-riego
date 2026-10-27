@@ -1,0 +1,30 @@
+@use "../../styles/_variables.scss" as *;
+@use "../../styles/_mixins.scss" as *;
+
+.wizard { padding-block: 1.5rem 3rem; line-height: 1.6; overflow-wrap: anywhere; h1 { @include page-heading; } }
+.breadcrumb { display: flex; flex-wrap: wrap; gap: .75rem; margin-bottom: 1rem; a { display: inline-flex; align-items: center; min-height: 44px; text-decoration: underline; text-underline-offset: 3px; } }
+.header { margin-bottom: 1.5rem; p { margin-bottom: 0; } }
+.eyebrow { text-transform: uppercase; letter-spacing: .05em; font-size: .8rem; font-weight: 650; color: $color-muted; }
+.notice { @include feedback($color-primary, $color-water-soft); p { margin-bottom: 0; } }
+.progress { list-style: none; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: .5rem; margin: 1.5rem 0; padding: 0; button { @include button-secondary; width: 100%; flex-wrap: wrap; padding-inline: .5rem; &[aria-current="step"] { background: $color-primary; color: $color-surface; } } }
+.panel { @include visual-card; padding: 1.5rem; border-top: 4px solid $color-crop; h2 { display: flex; align-items: center; gap: .6rem; color: $color-primary; margin-top: 0; font-size: 1.5rem; } }
+.category0 { border-top-color: $color-crop; }
+.category1 { border-top-color: $color-soil; }
+.category2 { border-top-color: $color-primary; }
+.category3 { border-top-color: $color-water; }
+.category4 { border-top-color: $color-crop; }
+.fields { @include grid(2, 1.5rem); }
+.field { @include field; margin-bottom: .5rem; small, .hint { color: $color-muted; } label span { font-weight: 400; } input[aria-invalid="true"] { border-color: $color-error; } }
+.hint { color: $color-muted; font-size: .875rem; margin: .4rem 0 1rem; }
+.fieldError { color: $color-error; font-size: .9rem; margin-top: 0; }
+.ambiguity { background: $color-soil-soft; border: 1px solid $color-soil; border-radius: $radius-sm; padding: 1rem; p { margin-top: 0; } button { @include button-secondary; margin: 0 .5rem .5rem 0; } }
+.primary { @include button-primary; }
+.secondary { @include button-secondary; }
+.actions { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 1.5rem; }
+.error { @include feedback($color-error, $color-error-soft); button { color: inherit; background: transparent; border: 0; text-decoration: underline; text-align: left; font: inherit; padding: .5rem 0; min-height: 44px; cursor: pointer; } }
+.success { @include feedback($color-crop, $color-crop-soft); }
+.review { @include grid(2, 1.5rem); margin-top: 1.5rem; > section { border-top-style: solid; border-top-width: 4px; padding: 1rem; background: $color-bg; border-radius: $radius-sm; } dl > div { border-bottom: 1px solid $color-line; padding-block: .65rem; } dt { color: $color-muted; } dd { font-weight: 650; margin: .25rem 0 0; } }
+.reviewHead { display: flex; gap: .5rem; align-items: center; justify-content: space-between; flex-wrap: wrap; h3 { margin: 0; color: $color-primary; } }
+.availability { background: $color-water-soft; padding: 1.25rem; margin-top: 1.5rem; border-radius: $radius-sm; p { margin-bottom: 0; } }
+.dialogActions { display: flex; flex-direction: column; gap: .75rem; }
+@media (max-width: 720px) { .fields, .review { grid-template-columns: 1fr; } .panel { padding: 1.25rem; } .stepLabel { display: none; } }

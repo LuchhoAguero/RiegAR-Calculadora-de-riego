@@ -401,6 +401,7 @@ try {
     await page.evaluate(() => { history.pushState({}, "", "/dashboard"); dispatchEvent(new PopStateEvent("popstate")); });
     await pathIs(page, "/fincas"); await visible(page.getByRole("link", { name: /Finca ensayo/ }));
     await page.goBack(); await pathIs(page, "/contacto");
+    await page.goForward(); await pathIs(page, "/fincas");
     await page.goto(origin + "/fincas"); await page.reload();
     await page.getByRole("link", { name: /Finca ensayo/ }).click(); await pathIs(page, "/fincas/7");
     await visible(page.getByRole("heading", { name: "Finca ensayo", exact: true }));

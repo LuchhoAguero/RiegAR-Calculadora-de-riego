@@ -12,6 +12,7 @@ import DashboardPage from "../pages/DashboardPage.jsx";
 import FincaDetailPage from "../pages/FincaDetailPage.jsx";
 import NuevoCalculoPage from "../pages/NuevoCalculoPage.jsx";
 import FarmDetailPage from "../pages/FarmDetailPage.jsx";
+import NewSimulationPage from "../pages/NewSimulationPage.jsx";
 
 export default function AppRoutes() {
   return (
@@ -33,6 +34,7 @@ export default function AppRoutes() {
       />
       <Route path="/fincas" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
       <Route path="/fincas/:fincaId" element={<ProtectedRoute><FarmDetailPage /></ProtectedRoute>} />
+      <Route path="/fincas/:fincaId/simulaciones/nueva" element={<ProtectedRoute><NewSimulationPage /></ProtectedRoute>} />
       <Route
         path="/finca/:id"
         element={
