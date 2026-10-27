@@ -74,6 +74,7 @@ async function fixture({ storedToken = null, width = 1280, touch = false, servic
       return reply({ items: [{ simulation: { id: 21, fincaId: 7 }, model: { contractVersion: "irrigation-contract-v1" }, summary: { appliedVolumeL: 6480 } }, { simulation: { id: 22, fincaId: 7 }, model: { contractVersion: "irrigation-contract-v2" }, summary: { appliedVolumeL: 6480, furrowCount: 18, totalAppliedVolumeL: 116640 } }], pagination: { limit: 2, hasMore: true, nextCursor: "opaque-next-cursor" } });
     }
     if (serviceHarness && path === "/api/fincas/7/irrigation-simulations/22") return reply({ simulation: { id: 22, fincaId: 7 }, model: { contractVersion: "irrigation-contract-v2" }, input: { furrow: { furrowSpacingM: 1.3, furrowCount: 18 } }, output: { totals: { totalAppliedVolumeL: 116640 } }, metadata: {} });
+    if (method === "GET" && /^\/api\/fincas\/\d+\/irrigation-simulations$/.test(path)) return reply({ items: [], pagination: { limit: 20, hasMore: false, nextCursor: null } });
     throw new Error(`API simulada sin handler: ${method} ${path}`);
   });
   return { context, page, state };
@@ -412,7 +413,7 @@ try {
     await visible(page.getByRole("link", { name: "+ Nuevo Cálculo", exact: true }));
     await page.goBack(); await pathIs(page, "/fincas/7");
     await page.getByRole("link", { name: "Administrar mis fincas", exact: true }).click(); await pathIs(page, "/fincas");
-    assert.equal(state.calls.some(c => c.path.includes("irrigation-simulations")), false);
+    assert.equal(state.calls.some(c => c.path.includes("irrigation-simulations") && (c.method !== "GET" || /simulations\/\d+$/.test(c.path))), false);
     assert.equal(state.calls.some(c => c.method === "GET" && /^\/api\/fincas\/7$/.test(c.path)), false);
   });
   await scenario("R5C: IDs inválidos sin consulta y finca ajena/no disponible", { storedToken: token() }, async ({ page, state }) => {
@@ -433,7 +434,7 @@ try {
     state.fincasNetwork = false;
     await page.getByRole("button", { name: "Volver a consultar", exact: true }).click();
     await visible(page.getByRole("heading", { name: "Finca ensayo", exact: true }));
-    assert.equal(state.calls.length, 2);
+    assert.equal(state.calls.filter(c => c.path === "/api/fincas").length, 2);
   });
   for (const status of [401, 403]) {
     await scenario(`R5C: detalle rechaza sesión ${status}`, { storedToken: token() }, async ({ page, state }) => {

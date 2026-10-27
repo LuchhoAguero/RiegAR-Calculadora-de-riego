@@ -27,6 +27,7 @@ async function fixture({ width = 1280, auth = true, origin = dev, seconds = 3600
     state.calls.push({ method: request.method(), path: url.pathname });
     if (request.method() === "POST" && url.pathname.includes("irrigation-simulations")) { state.forbiddenPosts.push(url.pathname); return route.abort(); }
     assert.equal(request.method(), "GET", "El asistente solo consulta fincas");
+    if (/^\/api\/fincas\/\d+\/irrigation-simulations$/.test(url.pathname)) return route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ items: [], pagination: { limit: 20, hasMore: false, nextCursor: null } }) });
     assert.equal(url.pathname, "/api/fincas", "Sin endpoint individual inventado");
     const rows = structuredClone(state.rows), gate = state.gate, status = state.status;
     if (gate) await gate;
@@ -137,6 +138,8 @@ try {
     await open(page); await input(page, "crop.etoMmPerDay").fill("5");
     const back = page.getByRole("link", { name: "Detalle de finca", exact: true }); await back.click();
     await visible(page.getByRole("dialog")); await page.keyboard.press("Escape"); await pathIs(page, dev, routePath(7));
+    await page.getByRole("dialog").waitFor({ state: "detached" });
+    await page.waitForFunction(() => document.activeElement?.getAttribute("href") === "/fincas/7");
     assert.equal(await back.evaluate(el => el === document.activeElement), true);
     await back.click(); await page.getByRole("button", { name: "Salir y conservar", exact: true }).click(); await pathIs(page, dev, "/fincas/7");
     await page.getByRole("link", { name: "Preparar simulación (solo local)", exact: true }).click(); await stepIs(page, "Cultivo"); assert.equal(await input(page, "crop.etoMmPerDay").inputValue(), "5");

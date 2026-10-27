@@ -29,8 +29,8 @@ export const METRICS = [
   { path: "diagnostics.maxNonErosiveFlowLps", label: "Caudal máximo no erosivo estimado", unit: "L/s", min: 0, positive: true },
 ];
 export const valueAt = (object, path) => path.split(".").reduce((value, key) => value?.[key], object);
-const record = value => value !== null && typeof value === "object" && [Object.prototype, null].includes(Object.getPrototypeOf(value));
-function jsonData(value, ancestors = new Set()) {
+export const record = value => value !== null && typeof value === "object" && [Object.prototype, null].includes(Object.getPrototypeOf(value));
+export function jsonData(value, ancestors = new Set()) {
   if (value === null || ["string", "boolean"].includes(typeof value)) return true;
   if (typeof value === "number") return Number.isFinite(value);
   if ((!record(value) && !Array.isArray(value)) || ancestors.has(value)) return false;
@@ -41,12 +41,18 @@ function jsonData(value, ancestors = new Set()) {
   ancestors.delete(value); return valid;
 }
 const finite = value => typeof value === "number" && Number.isFinite(value);
-function matchesShape(value, shape) {
+export function matchesShape(value, shape) {
   if (typeof shape === "string") return shape === "null" ? value === null : typeof value === shape;
   if (Array.isArray(shape)) return Array.isArray(value) && value.length === shape.length && shape.every((item, index) => matchesShape(value[index], item));
   return record(value) && Object.entries(shape).every(([key, child]) => Object.hasOwn(value, key) && matchesShape(value[key], child));
 }
 const invalid = (code = "INVALID_SNAPSHOT", fatalItems) => ({ status: "invalid", code, ...(fatalItems ? { fatalItems } : {}) });
+export function isSimulationIdentity(simulation) {
+  return record(simulation) && [simulation.id, simulation.fincaId].every(id => Number.isInteger(id) && id > 0 && id <= 4294967295) &&
+    (simulation.name === null || (typeof simulation.name === "string" && simulation.name.trim() && [...simulation.name].length <= 255)) &&
+    typeof simulation.createdAt === "string" && /^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d\.\d{3}Z$/.test(simulation.createdAt) &&
+    Number.isFinite(Date.parse(simulation.createdAt)) && Number(simulation.createdAt.slice(0, 4)) >= 1000 && new Date(simulation.createdAt).toISOString() === simulation.createdAt;
+}
 
 export function inspectV2Snapshot(snapshot) {
   try {
@@ -54,10 +60,7 @@ export function inspectV2Snapshot(snapshot) {
     if (snapshot.model.contractVersion !== V2_CONTRACT) return { status: "unsupported", code: "UNSUPPORTED_CONTRACT" };
     const { model, simulation, input, output, metadata } = snapshot;
     if (model.modelVersion !== V2_MODEL || model.sourceHash !== V2_SOURCE || !record(simulation) || !record(input) || !record(output) || !record(metadata)) return invalid();
-    if (![simulation.id, simulation.fincaId].every(id => Number.isInteger(id) && id > 0 && id <= 4294967295) ||
-      !(simulation.name === null || (typeof simulation.name === "string" && simulation.name.trim() && [...simulation.name].length <= 255)) ||
-      typeof simulation.createdAt !== "string" || !/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d\.\d{3}Z$/.test(simulation.createdAt) || !Number.isFinite(Date.parse(simulation.createdAt)) ||
-      Number(simulation.createdAt.slice(0, 4)) < 1000 || new Date(simulation.createdAt).toISOString() !== simulation.createdAt) return invalid();
+    if (!isSimulationIdentity(simulation)) return invalid();
     const fields = FIELDS.filter(field => field.path !== "name");
     for (const field of fields) {
       const value = valueAt(input, field.path);

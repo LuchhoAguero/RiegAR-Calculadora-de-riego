@@ -23,7 +23,7 @@ export function DiagnosticList({ items }) {
   })}</ul>;
 }
 
-function Amount({ value, unit, label, large = false }) {
+export function Amount({ value, unit, label, large = false }) {
   const formatted = formatResult(value);
   return <div className={large ? s.largeAmount : s.amount}>
     <p className={s.number}>{formatted.approximate && <span aria-label="aproximadamente">≈ </span>}{formatted.text}{value !== null && <span className={s.unit}> {unit}</span>}</p>
@@ -31,14 +31,25 @@ function Amount({ value, unit, label, large = false }) {
     {formatted.approximate && <details className={s.precision}><summary aria-label={`Ver valor completo de ${label}`}>Ver valor completo</summary><p>{formatted.full} {unit}</p></details>}
   </div>;
 }
-function Metric({ snapshot, path }) {
+export function Metric({ snapshot, path }) {
   const metric = METRICS.find(item => item.path === path);
   return <div className={s.metric} data-metric={path}><dt>{metric.label} <span className={s.hint}>({metric.unit})</span></dt><dd><Amount value={valueAt(snapshot.output, path)} unit={metric.unit} label={metric.label} /></dd></div>;
 }
-function Group({ snapshot, title, description, category, paths, Icon }) {
+export function Group({ snapshot, title, description, category, paths, Icon }) {
   return <section className={`${s.group} ${s[category]}`} aria-label={title}>
     <h2><Icon aria-hidden="true" /> {title}</h2><p>{description}</p>
     <dl className={s.metrics}>{paths.map(path => <Metric key={path} snapshot={snapshot} path={path} />)}</dl>
+  </section>;
+}
+
+export function ResultReference({ snapshot, fields = FIELDS.filter(field => field.path !== "name"), explanation = "Resultados estimados, no mediciones. El modelo no determina la humedad actual del suelo." }) {
+  const { input, model, metadata } = snapshot;
+  return <section className={s.reference} aria-label="Entradas y referencia del modelo"><h2>Datos del escenario y referencia</h2><p>{explanation}</p>
+    <details><summary>Ver datos de entrada almacenados</summary><dl className={s.inputList}>{fields.map(field => {
+      const value = valueAt(input, field.path);
+      return <div key={field.path}><dt>{field.label}{field.unit && ` (${field.unit})`}</dt><dd>{field.type === "text" ? value || "Sin indicar" : `${formatResult(value).full} ${field.unit}`}</dd></div>;
+    })}</dl></details>
+    <details><summary>Ver versión y datos técnicos del modelo</summary><dl className={s.inputList}><div><dt>Contrato almacenado</dt><dd>{model.contractVersion}</dd></div><div><dt>Modelo almacenado</dt><dd>{model.modelVersion}</dd></div><div><dt>Metadata</dt><dd>{metadata.metadataSchemaVersion}</dd></div><div><dt>Reglas de diagnóstico</dt><dd>{metadata.diagnosticRules.ruleVersion}</dd></div><div><dt>Referencia de código</dt><dd>{model.sourceHash}</dd></div></dl><pre>{JSON.stringify({ assumptions: metadata.assumptions, evidenceState: metadata.evidenceState, parameterProvenance: metadata.parameterProvenance }, null, 2)}</pre></details>
   </section>;
 }
 
@@ -66,12 +77,6 @@ export default function V2Results({ snapshot }) {
       <Group snapshot={snapshot} category="soil" Icon={FaLayerGroup} title="Agua disponible en el suelo" description="Los plazos son referencias teóricas desde capacidad de campo. No indican días reales restantes desde hoy." paths={METRICS.filter(metric => metric.path.startsWith("soilWater.")).map(metric => metric.path)} />
       <Group snapshot={snapshot} category="water" Icon={FaTint} title="Aplicación del riego por surco" description="Las láminas en inicio, mitad y final son estimaciones en tres puntos. Las pérdidas estimadas no identifican su causa ni son una medición independiente de percolación profunda." paths={METRICS.filter(metric => metric.path.startsWith("application.")).map(metric => metric.path)} />
     </div>
-    <section className={s.reference} aria-label="Entradas y referencia del modelo"><h2>Datos del escenario y referencia</h2><p>Resultados estimados, no mediciones. El modelo no determina la humedad actual del suelo.</p>
-      <details><summary>Ver datos de entrada almacenados</summary><dl className={s.inputList}>{FIELDS.filter(field => field.path !== "name").map(field => {
-        const value = valueAt(input, field.path);
-        return <div key={field.path}><dt>{field.label}{field.unit && ` (${field.unit})`}</dt><dd>{field.type === "text" ? value || "Sin indicar" : `${formatResult(value).full} ${field.unit}`}</dd></div>;
-      })}</dl></details>
-      <details><summary>Ver versión y datos técnicos del modelo</summary><dl className={s.inputList}><div><dt>Contrato almacenado</dt><dd>{model.contractVersion}</dd></div><div><dt>Modelo almacenado</dt><dd>{model.modelVersion}</dd></div><div><dt>Metadata</dt><dd>{metadata.metadataSchemaVersion}</dd></div><div><dt>Reglas de diagnóstico</dt><dd>{metadata.diagnosticRules.ruleVersion}</dd></div><div><dt>Referencia de código</dt><dd>{model.sourceHash}</dd></div></dl><pre>{JSON.stringify({ assumptions: metadata.assumptions, evidenceState: metadata.evidenceState, parameterProvenance: metadata.parameterProvenance }, null, 2)}</pre></details>
-    </section>
+    <ResultReference snapshot={snapshot} />
   </article>;
 }

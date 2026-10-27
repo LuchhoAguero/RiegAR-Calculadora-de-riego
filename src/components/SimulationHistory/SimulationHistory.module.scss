@@ -1,0 +1,19 @@
+@use "../../styles/_variables.scss" as *;
+@use "../../styles/_mixins.scss" as *;
+.history { margin-top: 2rem; overflow-wrap: anywhere; }
+.head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem; align-items: center; margin-bottom: 1rem; h2 { scroll-margin-top: 6rem; } p { margin-bottom: 0; color: $color-muted; } }
+.list { list-style: none; margin: 1.25rem 0; padding: 0; @include grid(2, 1.25rem); }
+.card { @include visual-card; padding: 1.25rem; border-top: 4px solid $color-water; h3 { margin: 0; font-size: 1.15rem; color: $color-primary; } details { font-size: .875rem; margin-bottom: .5rem; summary { min-height: 44px; padding-block: .6rem; cursor: pointer; text-decoration: underline; } } }
+.cardHead { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .5rem; }
+.version { background: $color-crop-soft; color: $color-crop; border: 1px solid $color-crop; font-size: .8rem; font-weight: 650; padding: .2rem .55rem; border-radius: $radius-sm; }
+.date, .note { color: $color-muted; font-size: .875rem; }
+.values { @include grid(2, 1rem); margin-block: 1rem; dt { color: $color-muted; font-size: .875rem; } dd { margin: .3rem 0 0; color: $color-primary; font-weight: 650; } p { font-size: 1.15rem; } details { font-size: .8rem; p { font-size: .875rem; } } }
+.diagnosticSummary { padding: .7rem; border-radius: $radius-sm; background: $color-application-soft; color: $color-primary; }
+.primary { @include button-primary; }
+.secondary { @include button-secondary; }
+.error { @include feedback($color-error, $color-error-soft); }
+.loading { @include feedback($color-primary, $color-water-soft); }
+.neutral { @include feedback($color-primary, $color-application-soft); }
+.end { color: $color-muted; }
+@media (max-width: 720px) { .list { grid-template-columns: 1fr; } }
+@media (max-width: 360px) { .values { grid-template-columns: 1fr; } }

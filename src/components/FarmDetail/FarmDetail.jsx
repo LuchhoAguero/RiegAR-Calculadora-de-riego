@@ -2,6 +2,7 @@ import React, { useContext } from "react";
 import { Link, useParams } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import useOwnedFarm from "../../hooks/useOwnedFarm.js";
+import SimulationHistory from "../SimulationHistory/SimulationHistory.jsx";
 import s from "./FarmDetail.module.scss";
 
 function OwnedFarm({ fincaId, sessionToken }) {
@@ -21,8 +22,9 @@ function OwnedFarm({ fincaId, sessionToken }) {
           <dl><div><dt>Nombre</dt><dd>{view.farm.nombre_finca}</dd></div><div><dt>Ubicación</dt><dd>{view.farm.ubicacion || "Sin ubicación"}</dd></div></dl>
           <Link className={s.secondary} to="/fincas">Administrar mis fincas</Link>
         </section>
+        <SimulationHistory fincaId={fincaId} sessionToken={sessionToken} />
         <div className={s.grid}>
-          <section className={s.simulations} aria-labelledby="farm-simulations-title"><p className={s.eyebrow}>Riego por surcos</p><h2 id="farm-simulations-title">Simulaciones de la finca</h2><p>La nueva simulación de riego por surcos está en preparación.</p><p>La creación, los resultados y el historial de simulaciones todavía no están disponibles en esta pantalla.</p>{import.meta.env.DEV && <Link className={s.secondary} to={`/fincas/${fincaId}/simulaciones/nueva`}>Preparar simulación (solo local)</Link>}</section>
+          <section className={s.simulations} aria-labelledby="farm-simulations-title"><p className={s.eyebrow}>Riego por surcos</p><h2 id="farm-simulations-title">Simulaciones de la finca</h2><p>La nueva simulación de riego por surcos está en preparación.</p><p>La creación sigue deshabilitada. Podés consultar los resultados guardados en el historial de esta finca.</p>{import.meta.env.DEV && <Link className={s.secondary} to={`/fincas/${fincaId}/simulaciones/nueva`}>Preparar simulación (solo local)</Link>}</section>
           <section className={s.previous} aria-labelledby="farm-previous-title"><p className={s.eyebrow}>Herramientas anteriores</p><h2 id="farm-previous-title">Cálculos Manning</h2><p>Consultá los cálculos históricos vinculados a esta finca.</p><Link className={s.secondary} to={`/finca/${fincaId}`}>Ver cálculos Manning</Link></section>
         </div>
       </>}
