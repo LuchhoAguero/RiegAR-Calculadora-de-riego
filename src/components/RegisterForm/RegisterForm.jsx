@@ -83,14 +83,10 @@ export default function RegisterForm() {
       <div
         style={{ marginTop: "1.5rem", textAlign: "center", fontSize: "0.9rem" }}
       >
-        <span style={{ color: "#6b7a90" }}>¿Ya tienes cuenta? </span>
+        <span className={s.secondaryText}>¿Ya tienes cuenta? </span>
         <Link
           to="/login"
-          style={{
-            color: "#0b2e4e",
-            fontWeight: "bold",
-            textDecoration: "none",
-          }}
+          className={s.secondaryLink}
         >
           Inicia sesión
         </Link>

@@ -2,107 +2,80 @@
 @use "../../styles/_mixins.scss" as *;
 
 .navbar {
-  .container {
-    display: flex;
-    align-items: center;
-  }
-  .row {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    width: 100%;
-    min-height: 72px;
-  }
+  border-top: 4px solid $color-accent;
+  .row { display: flex; align-items: center; gap: 1rem; width: 100%; min-height: 72px; }
   .brand {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    font-weight: 800;
-    font-size: 1.25rem;
-    color: $color-primary;
-    img {
-      width: 40px;
-      height: 40px;
-      object-fit: contain;
-    }
-    .em {
-      color: $color-accent;
-    }
+    display: flex; align-items: center; gap: .75rem;
+    min-height: 44px;
+    font-weight: 800; font-size: 1.4rem; color: $color-primary;
+    img { width: 40px; height: 40px; object-fit: contain; }
+    .em { color: $color-crop; }
   }
   .burger {
-    margin-left: auto;
-    display: inline-flex;
-    flex-direction: column;
-    gap: 5px;
-    padding: 0.5rem;
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    span {
-      width: 22px;
-      height: 2px;
-      background: $color-primary;
-      display: block;
-      border-radius: 2px;
-    }
-    @media (min-width: 960px) {
-      display: none;
-    }
+    @include button-base;
+    margin-left: auto; flex-direction: column; gap: 5px;
+    min-width: 44px; padding: .6rem; background: transparent;
+    span { width: 22px; height: 2px; background: $color-primary; display: block; border-radius: 2px; }
+    @media (min-width: 960px) { display: none; }
   }
   .menu {
-    position: fixed;
-    inset: 72px 0 auto 0;
-    background: white;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    padding: 1rem;
-    border-bottom: 1px solid $color-border;
-    transform: translateY(-8px);
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-    transition: 0.2s ease;
-    a {
-      padding: 0.5rem 0.75rem;
-      border-radius: 8px;
-      color: $color-primary;
-    }
-    &.isOpen {
-      visibility: visible;
-      transform: none;
-      opacity: 1;
-      pointer-events: auto;
-    }
+    position: absolute; inset: 100% 0 auto; background: $color-header;
+    display: flex; flex-direction: column; gap: .5rem;
+    padding: 1rem; border-bottom: 1px solid $color-line;
+    max-height: calc(100dvh - 76px); overflow-y: auto;
+    transform: translateY(-8px); opacity: 0; visibility: hidden; pointer-events: none;
+    transition: opacity .2s ease, transform .2s ease;
+    a { @include button-base; color: $color-primary; justify-content: flex-start; }
+    a:hover { background: $color-crop-soft; }
+    &.isOpen { visibility: visible; transform: none; opacity: 1; pointer-events: auto; }
     @media (min-width: 960px) {
-      position: static;
-      inset: auto;
-      background: transparent;
-      flex-direction: row;
-      margin-left: auto;
-      opacity: 1;
-      pointer-events: auto;
-      transform: none;
-      visibility: visible;
-      border: 0;
-      padding: 0;
-      a {
-        opacity: 0.85;
-        &:hover {
-          background: rgba(55, 179, 107, 0.12);
-        }
-      }
+      position: static; inset: auto; background: transparent; flex-direction: row;
+      align-items: center; gap: .25rem; margin-left: auto; opacity: 1;
+      max-height: none; overflow: visible; pointer-events: auto; transform: none;
+      visibility: visible; border: 0; padding: 0;
+      a { padding-inline: .75rem; font-size: .9rem; }
     }
+    .workspaceLink { background: $color-crop-soft; color: $color-crop; }
+    .registerBtn { @include button-primary; }
+    .loginBtn { @include button-secondary; }
   }
 }
-
-.logoutBtn {
-  // background-color: #d93025; // Un tono rojo
-  border: none;
-  font-family: inherit; // Asegura que use la misma fuente
-  font-size: inherit;
-
-  &:hover {
-    background-color: #a52714; // Rojo más oscuro en hover
+.sessionActions { display: flex; flex-wrap: wrap; gap: .5rem; }
+.logoutBtn { @include button-secondary; font-size: .9rem; }
+.tools { position: relative; min-width: 0; }
+.toolsButton {
+  @include button-base;
+  width: 100%;
+  justify-content: space-between;
+  background: transparent;
+  color: $color-primary;
+  svg { flex-shrink: 0; transition: transform .2s; }
+  &[aria-expanded="true"] { background: $color-application-soft; svg { transform: rotate(180deg); } }
+}
+.toolsList {
+  list-style: none;
+  margin: .5rem 0 0;
+  padding: .5rem;
+  background: $color-application-soft;
+  border-radius: $radius-sm;
+  display: grid;
+  gap: .25rem;
+  &[hidden] { display: none; }
+  a { width: 100%; }
+}
+@media (min-width: 960px) {
+  .toolsButton { font-size: .9rem; padding-inline: .75rem; }
+  .toolsList {
+    @include visual-card;
+    position: absolute;
+    right: 0;
+    top: 100%;
+    width: 240px;
+    box-shadow: $shadow-md;
+    margin: .5rem 0 0;
+    z-index: 1;
+    &[hidden] { display: none; }
   }
 }
+@media (prefers-reduced-motion: reduce) { .navbar .menu { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .toolsButton svg { transition: none; } }

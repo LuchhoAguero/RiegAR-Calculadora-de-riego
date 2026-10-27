@@ -1,8 +1,11 @@
-import React from "react";
+import React, { useContext } from "react";
 import s from "./Hero.module.scss";
 import { Link } from "react-router-dom";
+import { AuthContext } from "../../context/AuthContext";
+import { FiUser, FiMapPin, FiFolder } from "react-icons/fi";
 
 export default function Hero() {
+  const { isLoggedIn } = useContext(AuthContext);
   return (
     <section className={s.hero}>
       <div className={s.bg} aria-hidden="true" />
@@ -11,60 +14,35 @@ export default function Hero() {
           <div className={s.content}>
             <div className={s.logoRow}>
               <img src={"/riegar-logo.png"} alt="RiegAR" className={s.logo} />
-              <h1 className={s.title}>
-                Optimizá tu sistema de riego con cálculos precisos
-              </h1>
+              <p className={s.eyebrow}>Gestión de riego por surcos</p>
+              <h1 className={s.title}>Tu trabajo de riego, organizado por finca.</h1>
               <p className={s.subtitle}>
-                Calculadora profesional basada en la fórmula de Manning para
-                determinar caudales en canales de riego. Diseñada para
-                ingenieros agrónomos, técnicos en riego y profesionales del
-                sector agrícola.
+                Organizá tus fincas y consultá sus cálculos guardados en un mismo lugar.
               </p>
               <div className={s.cta}>
-                <Link className={s.btnPrimary} to="/calculadora">
-                  Comenzar Cálculo
-                </Link>
-                <Link className={s.btnGhost} to="/guia">
-                  Ver Guía de Uso
-                </Link>
+                {isLoggedIn ? <Link className={s.btnPrimary} to="/dashboard">Ir a Mis fincas</Link> : <>
+                  <Link className={s.btnPrimary} to="/registro">Crear cuenta</Link>
+                  <Link className={s.btnGhost} to="/login">Iniciar sesión</Link>
+                </>}
               </div>
-              <div className={s.stats}>
-                <div>
-                  <div className={s.statValue}>3</div>
-                  <div className={s.statLabel}>Tipos de Canal</div>
-                </div>
-                <div>
-                  <div className={s.statValue}>Manning</div>
-                  <div className={s.statLabel}>Fórmula Estándar</div>
-                </div>
-                <div>
-                  <div className={s.statValue}>Precisión</div>
-                  <div className={s.statLabel}>Profesional</div>
-                </div>
-              </div>
+              <p className={s.availability}>La nueva simulación de riego por surcos está en preparación.</p>
             </div>
           </div>
           <div className={s.visual}>
-            <div className={s.formula}>
-              <div className={s.formulaTitle}>Fórmula de Manning</div>
-              <div className={s.expr}>Q = (1/n) × A × R^(2/3) × S^(1/2)</div>
-              <div className={s.vars}>
-                <div>
-                  <b>Q:</b> Caudal (m³/s)
-                </div>
-                <div>
-                  <b>n:</b> Coef. Manning
-                </div>
-                <div>
-                  <b>A:</b> Área (m²)
-                </div>
-                <div>
-                  <b>R:</b> Radio hidráulico
-                </div>
-              </div>
+            <div className={s.journey}>
+              <h2>Un lugar para cada finca</h2>
+              <ol>
+                <li><FiUser aria-hidden="true" /><div><strong>Creá tu cuenta</strong><p>Accedé a tu espacio de trabajo.</p></div></li>
+                <li><FiMapPin aria-hidden="true" /><div><strong>Organizá tus fincas</strong><p>Conservá su nombre y ubicación.</p></div></li>
+                <li><FiFolder aria-hidden="true" /><div><strong>Consultá tus cálculos</strong><p>Encontrá los registros de cada finca.</p></div></li>
+              </ol>
             </div>
           </div>
         </div>
+        <section className={s.previousTools} aria-labelledby="home-previous-tools-title">
+          <div><h2 id="home-previous-tools-title">Herramientas anteriores</h2><p>Calculadora Manning y guía de uso, disponibles durante la transición.</p></div>
+          <div className={s.previousLinks}><Link to="/calculadora">Calculadora Manning</Link><Link to="/guia">Guía Manning</Link></div>
+        </section>
       </div>
     </section>
   );

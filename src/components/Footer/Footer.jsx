@@ -12,8 +12,7 @@ export default function Footer() {
               Rieg<span>AR</span>
             </div>
             <p>
-              Herramientas profesionales para el cálculo de caudales de riego
-              utilizando la fórmula de Manning.
+              Gestión de fincas y herramientas de riego, en un mismo lugar.
             </p>
             <div className={s.socials}>
               <a href="#" aria-label="Facebook">
@@ -28,17 +27,21 @@ export default function Footer() {
             </div>
           </div>
           <div>
-            <div className={s.groupTitle}>Enlaces Rápidos</div>
+            <div className={s.groupTitle}>Tu espacio de trabajo</div>
             <ul>
               <li>
-                <Link to="/calculadora">Calculadora de caudal </Link>
+                <Link to="/dashboard">Mis fincas</Link>
               </li>
               <li>
-                <Link to="/guia">Guía de Uso</Link>
+                <Link to="/contacto">Contacto</Link>
               </li>
-              <li>
-                <Link to="/contacto">contacto</Link>
-              </li>
+            </ul>
+          </div>
+          <div>
+            <div className={s.groupTitle}>Herramientas anteriores</div>
+            <ul>
+              <li><Link to="/calculadora">Calculadora Manning</Link></li>
+              <li><Link to="/guia">Guía Manning</Link></li>
             </ul>
           </div>
           <div>

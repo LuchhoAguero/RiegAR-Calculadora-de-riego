@@ -2,66 +2,42 @@
 @use "../../styles/_mixins.scss" as *;
 
 .contactContainer {
-  padding: 2rem 0 3rem;
+  padding-block: 2rem 3rem;
   max-width: 960px;
-  h1 {
-    color: $color-primary;
-  }
-  .lead {
-    font-size: 1.1rem;
-    color: $color-muted;
-    margin-bottom: 2rem;
-  }
+  line-height: 1.6;
+  h1 { @include page-heading; }
+  .lead { font-size: 1.1rem; color: $color-muted; margin-bottom: 2rem; }
 }
-
+.authContainer {
+  @include visual-card;
+  max-width: 520px;
+  width: calc(100% - 2rem);
+  margin-block: 2rem 3rem;
+  padding: clamp(1.25rem, 4vw, 2rem);
+  border-top: 4px solid $color-crop;
+  line-height: 1.5;
+  h1 { @include page-heading; margin-bottom: 1.75rem; }
+}
 .grid {
-  @include grid(1, 2rem);
-  @media (min-width: 768px) {
-    @include grid(2, 3rem);
-  }
+  @include grid(1, 1.5rem);
+  @media (min-width: 768px) { @include grid(2, 2rem); align-items: start; }
 }
-
 .info {
-  ul {
-    list-style: none;
-    padding: 0;
-    li {
-      margin-bottom: 0.5rem;
-    }
-  }
+  @include visual-card;
+  background: $color-soil-soft;
+  padding: 1.5rem;
+  overflow-wrap: anywhere;
+  h3 { color: $color-soil; margin-top: 0; }
+  ul { list-style: none; padding: 0; li { margin-bottom: .75rem; } }
 }
-
-.field {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 1rem;
-  label {
-    margin-bottom: 0.25rem;
-    font-size: 0.9rem;
-  }
-  input,
-  textarea {
-    padding: 0.7rem 0.8rem;
-    border: 1px solid $color-border;
-    border-radius: 10px;
-    &:focus {
-      border-color: $color-primary-600;
-      box-shadow: 0 0 0 4px rgba(26, 78, 127, 0.12);
-      outline: none;
-    }
-  }
+.form {
+  @include visual-card;
+  padding: 1.5rem;
+  border-top: 4px solid $color-water;
+  h3 { color: $color-primary; margin-top: 0; }
+  [role="status"]:not(:empty) { @include feedback($color-primary, $color-water-soft); }
+  [role="alert"] { @include feedback($color-error, $color-error-soft); }
 }
-
-.submitBtn {
-  width: 100%;
-  padding: 0.9rem 1rem;
-  border: none;
-  border-radius: 12px;
-  background: $color-accent;
-  color: white;
-  font-weight: 700;
-  cursor: pointer;
-  &:hover {
-    filter: brightness(0.95);
-  }
-}
+.field { @include field; }
+.submitBtn { @include button-primary; width: 100%; }
+@media (max-width: 420px) { .form, .info { padding: 1.25rem; } }

@@ -12,24 +12,29 @@
 }
 
 .modalCard {
-  background: white;
-  padding: 2rem;
-  border-radius: 20px;
-  width: 90%;
-  max-width: 400px;
+  background: $color-surface;
+  padding: clamp(1.25rem, 5vw, 2rem);
+  border: 1px solid $color-line;
+  border-radius: $radius-lg;
+  width: calc(100% - 2rem);
+  max-width: 440px;
   max-height: 90dvh;
   overflow-y: auto;
   text-align: center;
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
     0 10px 10px -5px rgba(0, 0, 0, 0.04);
   position: relative;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
   animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .closeBtn {
   position: absolute;
-  top: 1rem;
-  right: 1rem;
+  top: .5rem;
+  right: .5rem;
+  min-width: 44px;
+  min-height: 44px;
   background: transparent;
   border: none;
   color: $color-muted;
@@ -47,20 +52,21 @@
   margin-bottom: 1rem;
 
   &.danger {
-    color: #d93025;
+    color: $color-error;
   }
   &.success {
-    color: $color-accent;
+    color: $color-success;
   }
   &.edit {
-    color: #f59e0b;
-  } // Un color ámbar/naranja para edición
+    color: $color-water;
+  }
 }
 
 .title {
   margin: 0 0 0.5rem 0;
   color: $color-primary;
   font-size: 1.5rem;
+  padding-inline: 1.5rem;
 }
 
 .message {
@@ -71,24 +77,29 @@
 
 .actions {
   display: flex;
+  flex-wrap: wrap;
   gap: 1rem;
   justify-content: center;
 }
 
 .cancelBtn {
+  min-height: 44px;
+  max-width: 100%;
   padding: 0.75rem 1.5rem;
-  border: 1px solid $color-border;
+  border: 1px solid $color-primary;
   background: transparent;
   border-radius: 10px;
   font-weight: 600;
-  color: $color-muted;
+  color: $color-primary;
   cursor: pointer;
   &:hover {
-    background: #f3f4f6;
+    background: $color-application-soft;
   }
 }
 
 .confirmBtn {
+  min-height: 44px;
+  max-width: 100%;
   padding: 0.75rem 1.5rem;
   border: none;
   border-radius: 10px;
@@ -103,11 +114,16 @@
   }
 
   &.btnDanger {
-    background-color: #d93025;
+    background-color: $color-error;
   }
   &.btnSuccess {
     background-color: $color-accent;
+    color: $color-primary;
   }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .overlay, .modalCard { animation: none; }
 }
 
 @keyframes fadeIn {

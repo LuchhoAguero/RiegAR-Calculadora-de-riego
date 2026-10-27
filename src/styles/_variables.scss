@@ -6,12 +6,30 @@ $color-secondary: #69b3e7; // Light blue
 $color-accent: #37b36b;    // Green
 $color-accent-700: #2c9458;
 
-$color-bg: #f6f9fc;
+$color-bg: #f4f5ef;
 $color-surface: #ffffff;
 $color-border: rgba(12, 36, 64, 0.12);
-$color-muted: #6b7a90;
+$color-muted: #526478;
 $color-text: #17324a;
 $color-text-inv: #f2f7fb;
+
+// R3 AgroTech: categorías visuales; no representan severidades agronómicas.
+$color-water: #0b5d78;
+$color-water-soft: #e8f4fa;
+$color-crop: #206d49;
+$color-crop-soft: #e9f5ed;
+$color-soil: #74512c;
+$color-soil-soft: #f7efe4;
+$color-application-soft: #edf1f5;
+$color-header: #fffefa;
+$color-line: #d8e2dc;
+$color-input-border: #7c8f9d;
+$color-error: #a32626;
+$color-error-soft: #fff1f1;
+$color-success: $color-crop;
+$color-success-soft: $color-crop-soft;
+$color-disabled: #e2e7e3;
+$color-accent-hover: #48bf7a;
 
 $radius-sm: 8px;
 $radius-md: 12px;

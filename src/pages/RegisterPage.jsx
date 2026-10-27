@@ -6,7 +6,7 @@ import s from "../components/Contact/Contact.module.scss"; // Podemos seguir usa
 
 export default function RegisterPage() {
   return (
-    <div className={s.contactContainer + " container"}>
+    <div className={s.authContainer + " container"}>
       <h1>Crear Cuenta</h1>
       <RegisterForm />
     </div>

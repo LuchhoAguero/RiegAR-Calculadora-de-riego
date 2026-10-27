@@ -71,14 +71,10 @@ export default function LoginForm() {
       <div
         style={{ marginTop: "1.5rem", textAlign: "center", fontSize: "0.9rem" }}
       >
-        <span style={{ color: "#6b7a90" }}>¿No tienes una cuenta? </span>
+        <span className={s.secondaryText}>¿No tienes una cuenta? </span>
         <Link
           to="/registro"
-          style={{
-            color: "#0b2e4e",
-            fontWeight: "bold",
-            textDecoration: "none",
-          }}
+          className={s.secondaryLink}
         >
           Regístrate aquí
         </Link>

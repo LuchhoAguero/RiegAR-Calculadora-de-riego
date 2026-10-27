@@ -41,17 +41,12 @@ main {
 
 // -------------------------------
 
-.app-shell header {
+.app-shell > header {
   position: sticky;
   top: 0;
   z-index: 50;
-  backdrop-filter: saturate(120%) blur(8px);
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.9),
-    rgba(240, 240, 240, 0.8)
-  );
-  border-bottom: 1px solid $color-border;
+  background: $color-header;
+  border-bottom: 1px solid $color-line;
 }
 
 .container {
@@ -60,6 +55,10 @@ main {
 
 .u-card {
   @include card;
+}
+
+:focus-visible {
+  @include focus-ring;
 }
 
 .visually-hidden {

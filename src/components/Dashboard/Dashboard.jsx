@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import {
   getFincas,
@@ -19,6 +19,18 @@ export default function Dashboard() {
   const [nombreFinca, setNombreFinca] = useState("");
   const [ubicacion, setUbicacion] = useState("");
   const [formError, setFormError] = useState(null);
+  const [createOpen, setCreateOpen] = useState(false);
+  const createButton = useRef(null);
+  const nameInput = useRef(null);
+
+  useEffect(() => {
+    if (createOpen && !isLoading && !error) nameInput.current?.focus();
+  }, [createOpen, isLoading, error]);
+
+  const closeCreateForm = () => {
+    setCreateOpen(false);
+    createButton.current?.focus();
+  };
 
   // Estados para el modal de borrado
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -124,27 +136,63 @@ export default function Dashboard() {
   // --- RENDERIZADO ---
 
   if (isLoading) {
-    return <div className={s.loadingText}>Cargando panel...</div>;
+    return <div className={s.loadingText} role="status">Cargando tus fincas...</div>;
   }
 
   if (error) {
-    return <div className={s.errorText}>Error al cargar fincas: {error}</div>;
+    return <div className={s.errorText} role="alert">Error al cargar fincas: {error}</div>;
   }
 
   return (
-    <div className="container" style={{ padding: "2rem 0" }}>
-      <h1>Mi Panel de Control</h1>
-      <p>Bienvenido. Aquí puedes administrar tus fincas y cálculos.</p>
+    <div className={`${s.dashboard} container`}>
+      <div className={s.pageHead}>
+        <div><h1>Mis fincas</h1><p>Elegí una finca para consultar sus cálculos guardados.</p></div>
+        <button type="button" ref={createButton} className={s.newFarmBtn}
+          aria-expanded={createOpen} aria-controls="new-farm-panel"
+          onClick={() => createOpen ? closeCreateForm() : setCreateOpen(true)}>Nueva finca</button>
+      </div>
+
+      {/* El listado mantiene los enlaces y operaciones históricas. */}
+      <section className={s.fincaList} aria-label="Listado de fincas">
+        <h2>Tus fincas</h2>
+        {fincas.length === 0 ? (
+          <p className={s.emptyText}>Todavía no creaste ninguna finca. Usá Nueva finca para empezar.</p>
+        ) : (
+          fincas.map((finca) => (
+            <div key={finca.id} className={s.fincaItem}>
+              <Link to={`/finca/${finca.id}`} className={s.fincaLink}>
+                <div><h3>{finca.nombre_finca}</h3><span>{finca.ubicacion || "Sin ubicación"}</span></div>
+                <span>Ver cálculos Manning &rarr;</span>
+              </Link>
+              <div className={s.actions}>
+                <button type="button" aria-label={`Editar finca ${finca.nombre_finca}`}
+                  onClick={(e) => openEditModal(e, finca)} className={s.btnEdit}>Editar</button>
+                <button type="button" aria-label={`Borrar finca ${finca.nombre_finca}`}
+                  onClick={(e) => openDeleteModal(e, finca.id)} className={s.btnDelete}>Borrar</button>
+              </div>
+            </div>
+          ))
+        )}
+      </section>
 
       {/* Formulario para crear nueva finca */}
-      <div className={s.formCard}>
-        <h2>Crear Nueva Finca</h2>
+      <section className={s.formCard} id="new-farm-panel" hidden={!createOpen}
+        aria-labelledby="new-farm-title"
+        onKeyDown={event => {
+          if (event.key === "Escape") { event.preventDefault(); closeCreateForm(); }
+        }}>
+        <div className={s.formHead}>
+          <h2 id="new-farm-title">Nueva finca</h2>
+          <button type="button" className={s.closeFormBtn} onClick={closeCreateForm}>Cerrar formulario</button>
+        </div>
+        <p className={s.draftNote}>Podés cerrar el formulario sin perder lo escrito. Si recargás o salís de esta pantalla, se pierde.</p>
         <form onSubmit={handleCreateFinca}>
           <div className={s.field}>
             <label htmlFor="nombreFinca">Nombre de la Finca (*)</label>
             <input
               type="text"
               id="nombreFinca"
+              ref={nameInput}
               value={nombreFinca}
               onChange={(e) => setNombreFinca(e.target.value)}
             />
@@ -159,51 +207,13 @@ export default function Dashboard() {
             />
           </div>
 
-          {formError && <p className={s.errorText}>{formError}</p>}
+          {formError && <p role="alert" className={s.errorText}>{formError}</p>}
 
           <button type="submit" className={s.submitBtn}>
             Guardar Finca
           </button>
         </form>
-      </div>
-
-      {/* Lista de Fincas */}
-      <div className={s.fincaList}>
-        <h2>Mis Fincas</h2>
-        {fincas.length === 0 ? (
-          <p>Aún no has creado ninguna finca. ¡Añade una!</p>
-        ) : (
-          fincas.map((finca) => (
-            <div key={finca.id} className={s.fincaItem}>
-              <Link to={`/finca/${finca.id}`} className={s.fincaLink}>
-                <div>
-                  <h3>{finca.nombre_finca}</h3>
-                  <span>{finca.ubicacion || "Sin ubicación"}</span>
-                </div>
-                <span>Ver cálculos &rarr;</span>
-              </Link>
-              <div className={s.actions}>
-                <button
-                  type="button"
-                  aria-label={`Editar finca ${finca.nombre_finca}`}
-                  onClick={(e) => openEditModal(e, finca)}
-                  className={s.btnEdit}
-                >
-                  Editar
-                </button>
-                <button
-                  type="button"
-                  aria-label={`Borrar finca ${finca.nombre_finca}`}
-                  onClick={(e) => openDeleteModal(e, finca.id)}
-                  className={s.btnDelete}
-                >
-                  Borrar
-                </button>
-              </div>
-            </div>
-          ))
-        )}
-      </div>
+      </section>
 
       {/* Modal de Confirmación Borrar */}
       <Modal

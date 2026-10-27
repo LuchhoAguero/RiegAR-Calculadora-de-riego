@@ -14,13 +14,13 @@ async function screenshot(page, name) {
   if (process.env.R5A1_SCREENSHOTS) await page.screenshot({ path: `${process.env.R5A1_SCREENSHOTS}/${name}.png`, fullPage: true, animations: "disabled" });
 }
 
-async function fixture({ storedToken = null, width = 1280 } = {}) {
-  const context = await browser.newContext({ viewport: { width, height: 900 } });
+async function fixture({ storedToken = null, width = 1280, touch = false } = {}) {
+  const context = await browser.newContext({ viewport: { width, height: 900 }, hasTouch: touch });
   if (storedToken) await context.addInitScript(value => localStorage.setItem("token", value), storedToken);
   const page = await context.newPage();
   page.setDefaultTimeout(10000);
   if (process.env.R5A1_DEBUG) page.on("framenavigated", frame => console.log("navigation", frame.url()));
-  const state = { fincas: [{ id: 7, nombre_finca: "Finca ensayo", ubicacion: "Mendoza" }], calculos: [], calls: [], errors: [], authStatus: null, contactStatus: 200, contactGate: null, deleteConflict: false };
+  const state = { fincas: [{ id: 7, nombre_finca: "Finca ensayo", ubicacion: "Mendoza" }], calculos: [], calls: [], errors: [], authStatus: null, contactStatus: 200, contactGate: null, deleteConflict: false, createStatus: 201 };
   page.on("pageerror", error => state.errors.push(error.message));
   page.on("dialog", dialog => dialog.accept());
   await context.route("**/*", async route => {
@@ -41,6 +41,7 @@ async function fixture({ storedToken = null, width = 1280 } = {}) {
     }
     if (path === "/api/fincas") {
       if (method === "GET") return reply(state.fincas);
+      if (state.createStatus !== 201) return reply({ error: "No se pudo crear la finca." }, state.createStatus);
       state.fincas.push({ id: 8, ...data });
       return reply({ message: "Finca creada con éxito.", fincaId: 8 }, 201);
     }
@@ -142,6 +143,7 @@ try {
     await page.goto(origin + "/dashboard"); await visible(page.getByRole("link", { name: /Finca ensayo/ }));
     assert.equal(await page.locator("a button, button a").count(), 0);
     await screenshot(page, "dashboard-desktop");
+    await page.getByRole("button", { name: "Nueva finca", exact: true }).click();
     await page.getByLabel("Nombre de la Finca (*)", { exact: true }).fill("Segunda finca");
     await page.getByRole("button", { name: "Guardar Finca", exact: true }).click();
     await visible(page.getByRole("link", { name: /Segunda finca/ }));
@@ -227,7 +229,7 @@ try {
     assert.equal(await page.getByRole("navigation", { name: "Navegación principal" }).count(), 0);
     await menu.click();
     assert.equal(await page.getByRole("button", { name: "Cerrar menú" }).getAttribute("aria-expanded"), "true");
-    await page.getByRole("link", { name: "Calculadora", exact: true }).focus();
+    await page.getByRole("button", { name: "Herramientas anteriores", exact: true }).focus();
     await page.keyboard.press("Escape"); assert.equal(await menu.evaluate(node => node === document.activeElement), true);
     await noOverflow(page);
     await page.getByRole("button", { name: "Editar finca Finca ensayo", exact: true }).click();
@@ -236,6 +238,145 @@ try {
     await screenshot(page, "modal-mobile");
     await page.keyboard.press("Escape");
     for (const path of ["/login", "/registro", "/contacto"]) { await page.goto(origin + path); await noOverflow(page); }
+  });
+  await scenario("B3: portada honesta y accesos públicos", {}, async ({ page, state }) => {
+    await page.goto(origin);
+    const main = page.locator("main");
+    await visible(main.getByRole("heading", { level: 1, name: "Tu trabajo de riego, organizado por finca." }));
+    assert.match(await main.innerText(), /simulación de riego por surcos está en preparación/);
+    assert.doesNotMatch(await main.innerText(), /Fórmula de Manning|Precisión Profesional/);
+    assert.equal(await main.getByRole("link", { name: /simulación/i }).count(), 0);
+    assert.equal(state.calls.length, 0);
+    await main.getByRole("link", { name: "Crear cuenta", exact: true }).click(); await pathIs(page, "/registro");
+    await page.goto(origin);
+    await main.getByRole("link", { name: "Iniciar sesión", exact: true }).click(); await pathIs(page, "/login");
+    await page.locator("footer").getByRole("link", { name: "Mis fincas", exact: true }).click(); await pathIs(page, "/login");
+    assert.equal(state.calls.length, 0);
+  });
+  await scenario("B3: Mis fincas prioritaria con sesión", { storedToken: token() }, async ({ page }) => {
+    await page.goto(origin);
+    const nav = page.getByRole("navigation", { name: "Navegación principal" });
+    assert.equal(await nav.getByRole("link").first().innerText(), "Mis fincas");
+    await page.locator("main").getByRole("link", { name: "Ir a Mis fincas", exact: true }).click();
+    await pathIs(page, "/dashboard");
+    await visible(page.getByRole("heading", { level: 1, name: "Mis fincas", exact: true }));
+    assert.equal(await nav.getByRole("link", { name: "Mis fincas", exact: true }).getAttribute("aria-current"), "page");
+  });
+  await scenario("B3: Herramientas anteriores por teclado y retorno de foco", {}, async ({ page }) => {
+    await page.goto(origin);
+    const nav = page.getByRole("navigation", { name: "Navegación principal" });
+    const trigger = nav.getByRole("button", { name: "Herramientas anteriores", exact: true });
+    assert.equal(await trigger.getAttribute("aria-expanded"), "false");
+    assert.equal(await nav.getByRole("link", { name: "Calculadora Manning", exact: true }).count(), 0);
+    await trigger.focus(); await page.keyboard.press("Enter");
+    assert.equal(await trigger.getAttribute("aria-expanded"), "true");
+    await page.keyboard.press("Tab");
+    assert.equal(await nav.getByRole("link", { name: "Calculadora Manning", exact: true }).evaluate(el => el === document.activeElement), true);
+    await page.keyboard.press("Tab");
+    assert.equal(await nav.getByRole("link", { name: "Guía Manning", exact: true }).evaluate(el => el === document.activeElement), true);
+    await page.keyboard.press("Escape");
+    assert.equal(await trigger.getAttribute("aria-expanded"), "false");
+    assert.equal(await trigger.evaluate(el => el === document.activeElement), true);
+    await page.keyboard.press("Space");
+    await page.locator("main h1").click(); assert.equal(await trigger.getAttribute("aria-expanded"), "false");
+    await trigger.click(); await page.keyboard.press("Shift+Tab");
+    assert.equal(await trigger.getAttribute("aria-expanded"), "false");
+    await trigger.click(); await nav.getByRole("link", { name: "Guía Manning", exact: true }).click(); await pathIs(page, "/guia");
+    assert.equal(await trigger.getAttribute("aria-expanded"), "false");
+    await page.goBack(); await pathIs(page, "/"); assert.equal(await trigger.getAttribute("aria-expanded"), "false");
+  });
+  for (const width of [390, 320]) {
+    await scenario(`B3: Herramientas anteriores con toque a ${width}`, { width, touch: true }, async ({ page }) => {
+      await page.goto(origin);
+      await page.getByRole("button", { name: "Abrir menú" }).tap();
+      const nav = page.getByRole("navigation", { name: "Navegación principal" });
+      const trigger = nav.getByRole("button", { name: "Herramientas anteriores", exact: true });
+      await trigger.tap(); await noOverflow(page);
+      await trigger.tap(); assert.equal(await trigger.getAttribute("aria-expanded"), "false");
+      await trigger.tap();
+      await nav.getByRole("link", { name: "Guía Manning", exact: true }).focus();
+      await page.keyboard.press("Escape");
+      assert.equal(await trigger.getAttribute("aria-expanded"), "false");
+      assert.equal(await trigger.evaluate(el => el === document.activeElement), true);
+      await page.keyboard.press("Escape");
+      assert.equal(await page.getByRole("button", { name: "Abrir menú" }).evaluate(el => el === document.activeElement), true);
+      await page.getByRole("button", { name: "Abrir menú" }).tap(); await trigger.tap();
+      await nav.getByRole("link", { name: "Calculadora Manning", exact: true }).tap(); await pathIs(page, "/calculadora");
+      await visible(page.getByText("0.522896", { exact: true }));
+      assert.equal(await page.getByRole("navigation", { name: "Navegación principal" }).count(), 0);
+      await page.goto(origin); await page.locator("footer").getByRole("link", { name: "Guía Manning", exact: true }).tap(); await pathIs(page, "/guia");
+    });
+  }
+  await scenario("B3: formulario plegable conserva datos y foco", { storedToken: token() }, async ({ page, state }) => {
+    await page.goto(origin + "/dashboard"); await visible(page.getByRole("link", { name: /Finca ensayo/ }));
+    const trigger = page.getByRole("button", { name: "Nueva finca", exact: true });
+    const name = page.getByLabel("Nombre de la Finca (*)", { exact: true });
+    assert.equal(await trigger.getAttribute("aria-expanded"), "false");
+    assert.equal(await name.isVisible(), false);
+    assert.equal(await page.locator('[aria-label="Listado de fincas"]').evaluate(el => Boolean(el.compareDocumentPosition(document.getElementById("new-farm-panel")) & Node.DOCUMENT_POSITION_FOLLOWING)), true);
+    await trigger.focus(); await page.keyboard.press("Tab");
+    assert.equal(await page.getByRole("link", { name: /Finca ensayo/ }).evaluate(el => el === document.activeElement), true);
+    await trigger.focus(); await page.keyboard.press("Enter");
+    assert.equal(await name.evaluate(el => el === document.activeElement), true);
+    await name.fill("Finca conservada"); await page.getByLabel("Ubicación (Opcional)").fill("Mendoza");
+    await page.keyboard.press("Escape");
+    assert.equal(await trigger.evaluate(el => el === document.activeElement), true);
+    assert.equal(await trigger.getAttribute("aria-expanded"), "false");
+    await trigger.click(); assert.equal(await name.inputValue(), "Finca conservada");
+    assert.equal(await page.getByLabel("Ubicación (Opcional)").inputValue(), "Mendoza");
+    await page.getByRole("button", { name: "Cerrar formulario", exact: true }).click();
+    assert.equal(await trigger.evaluate(el => el === document.activeElement), true);
+    await trigger.click(); await trigger.click(); await trigger.click();
+    assert.equal(await name.inputValue(), "Finca conservada");
+    assert.equal(state.calls.filter(c => c.method === "POST").length, 0);
+    await page.getByRole("button", { name: "Guardar Finca", exact: true }).click();
+    await visible(page.getByRole("link", { name: /Finca conservada/ }));
+    assert.deepEqual(state.calls.find(c => c.method === "POST").data, { nombre_finca: "Finca conservada", ubicacion: "Mendoza" });
+    assert.equal(await name.inputValue(), "");
+    assert.equal(await name.evaluate(el => el === document.activeElement), true);
+  });
+  await scenario("B3: nueva finca vacía valida sin POST a 320", { storedToken: token(), width: 320, touch: true }, async ({ page, state }) => {
+    state.fincas = [];
+    await page.goto(origin + "/dashboard");
+    await visible(page.getByText("Todavía no creaste ninguna finca. Usá Nueva finca para empezar.", { exact: true }));
+    await page.getByRole("button", { name: "Nueva finca", exact: true }).tap();
+    await page.getByRole("button", { name: "Guardar Finca", exact: true }).tap();
+    await visible(page.getByRole("alert")); assert.equal(state.calls.filter(c => c.method === "POST").length, 0);
+    await page.getByLabel("Nombre de la Finca (*)").fill("Texto temporal");
+    await page.getByRole("button", { name: "Cerrar formulario", exact: true }).tap();
+    await page.getByRole("button", { name: "Nueva finca", exact: true }).tap();
+    assert.equal(await page.getByLabel("Nombre de la Finca (*)").inputValue(), "Texto temporal"); await noOverflow(page);
+  });
+  await scenario("B3: error de creación conserva datos y no reintenta", { storedToken: token() }, async ({ page, state }) => {
+    state.createStatus = 500;
+    await page.goto(origin + "/dashboard"); await page.getByRole("button", { name: "Nueva finca", exact: true }).click();
+    await page.getByLabel("Nombre de la Finca (*)").fill("Conservar finca");
+    await page.getByLabel("Ubicación (Opcional)").fill("Ubicación conservada");
+    await page.getByRole("button", { name: "Guardar Finca", exact: true }).click(); await visible(page.getByRole("alert"));
+    await page.keyboard.press("Escape"); await page.getByRole("button", { name: "Nueva finca", exact: true }).click();
+    assert.equal(await page.getByLabel("Nombre de la Finca (*)").inputValue(), "Conservar finca");
+    assert.equal(await page.getByLabel("Ubicación (Opcional)").inputValue(), "Ubicación conservada");
+    assert.equal(state.calls.filter(c => c.method === "POST").length, 1);
+  });
+  await scenario("B3: recarga y salida no prometen recuperar el formulario", { storedToken: token() }, async ({ page }) => {
+    await page.goto(origin + "/dashboard"); await page.getByRole("button", { name: "Nueva finca", exact: true }).click();
+    await page.getByLabel("Nombre de la Finca (*)").fill("Temporal");
+    await visible(page.getByText(/Si recargás o salís de esta pantalla, se pierde/));
+    await page.reload(); await page.getByRole("button", { name: "Nueva finca", exact: true }).click();
+    assert.equal(await page.getByLabel("Nombre de la Finca (*)").inputValue(), "");
+    await page.getByLabel("Nombre de la Finca (*)").fill("Otro temporal");
+    await page.getByRole("navigation", { name: "Navegación principal" }).getByRole("link", { name: "Contacto", exact: true }).click();
+    await page.goBack(); await pathIs(page, "/dashboard"); await page.getByRole("button", { name: "Nueva finca", exact: true }).click();
+    assert.equal(await page.getByLabel("Nombre de la Finca (*)").inputValue(), "");
+  });
+  await scenario("B3: cancelar borrado y edición conserva la finca", { storedToken: token() }, async ({ page, state }) => {
+    await page.goto(origin + "/dashboard");
+    await page.getByRole("button", { name: "Borrar finca Finca ensayo", exact: true }).click();
+    await page.getByRole("dialog").getByRole("button", { name: "Cancelar", exact: true }).click();
+    await page.getByRole("button", { name: "Editar finca Finca ensayo", exact: true }).click();
+    await page.getByRole("dialog").getByLabel("Nombre de la Finca", { exact: true }).fill("No guardar");
+    await page.keyboard.press("Escape"); await visible(page.getByRole("link", { name: /Finca ensayo/ }));
+    assert.equal(state.calls.filter(c => ["DELETE", "PUT"].includes(c.method)).length, 0);
   });
 } finally { await browser.close(); }
 console.log(`Browser: ${passed} PASS / ${failed} FAIL`);
