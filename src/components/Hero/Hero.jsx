@@ -20,7 +20,7 @@ export default function Hero() {
                 Organizá tus fincas y consultá sus cálculos guardados en un mismo lugar.
               </p>
               <div className={s.cta}>
-                {isLoggedIn ? <Link className={s.btnPrimary} to="/dashboard">Ir a Mis fincas</Link> : <>
+                {isLoggedIn ? <Link className={s.btnPrimary} to="/fincas">Ir a Mis fincas</Link> : <>
                   <Link className={s.btnPrimary} to="/registro">Crear cuenta</Link>
                   <Link className={s.btnGhost} to="/login">Iniciar sesión</Link>
                 </>}

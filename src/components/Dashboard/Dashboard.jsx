@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import { Link } from "react-router-dom";
 import {
   getFincas,
@@ -8,9 +8,10 @@ import {
 } from "../../services/apiService";
 import Modal from "../Modal/Modal.jsx";
 import s from "./Dashboard.module.scss";
+import { AuthContext } from "../../context/AuthContext";
 // import { FaEdit, FaTrash } from "react-icons/fa"; // Puedes descomentar si usas los íconos
 
-export default function Dashboard() {
+function SessionDashboard({ sessionToken }) {
   const [fincas, setFincas] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -22,6 +23,9 @@ export default function Dashboard() {
   const [createOpen, setCreateOpen] = useState(false);
   const createButton = useRef(null);
   const nameInput = useRef(null);
+  const mounted = useRef(false);
+  const loadSequence = useRef(0);
+  const isCurrentSession = () => mounted.current && localStorage.getItem("token") === sessionToken;
 
   useEffect(() => {
     if (createOpen && !isLoading && !error) nameInput.current?.focus();
@@ -46,20 +50,27 @@ export default function Dashboard() {
 
   // Función para cargar las fincas del usuario
   const fetchFincas = async () => {
+    const sequence = ++loadSequence.current;
+    const isCurrentLoad = () => isCurrentSession() && sequence === loadSequence.current;
     try {
       setIsLoading(true);
+      setError(null);
       const data = await getFincas();
+      if (!isCurrentLoad()) return;
+      if (!Array.isArray(data)) throw new Error("No se pudo interpretar el listado de fincas.");
       setFincas(data);
     } catch (err) {
-      setError(err.message);
+      if (isCurrentLoad()) setError(err.message);
     } finally {
-      setIsLoading(false);
+      if (isCurrentLoad()) setIsLoading(false);
     }
   };
 
   // useEffect para cargar las fincas cuando el componente se monta
   useEffect(() => {
+    mounted.current = true;
     fetchFincas();
+    return () => { mounted.current = false; loadSequence.current++; };
   }, []);
 
   // Manejador para crear una nueva finca
@@ -74,12 +85,13 @@ export default function Dashboard() {
 
     try {
       await createFinca({ nombre_finca: nombreFinca, ubicacion });
+      if (!isCurrentSession()) return;
       // Limpia el formulario y recarga la lista de fincas
       setNombreFinca("");
       setUbicacion("");
       fetchFincas();
     } catch (err) {
-      setFormError(err.message);
+      if (isCurrentSession()) setFormError(err.message);
     }
   };
 
@@ -95,12 +107,13 @@ export default function Dashboard() {
 
     try {
       await deleteFinca(fincaToDelete);
+      if (!isCurrentSession()) return;
       // Actualizamos el estado local eliminando la finca borrada
       setFincas(fincas.filter((f) => f.id !== fincaToDelete));
       setIsDeleteModalOpen(false);
       setFincaToDelete(null);
     } catch (err) {
-      alert("Error al eliminar: " + err.message);
+      if (isCurrentSession()) alert("Error al eliminar: " + err.message);
     }
   };
 
@@ -119,6 +132,7 @@ export default function Dashboard() {
         nombre_finca: fincaToEdit.nombre_finca,
         ubicacion: fincaToEdit.ubicacion,
       });
+      if (!isCurrentSession()) return;
 
       // Actualizamos la lista localmente (optimistic UI)
       setFincas(
@@ -129,7 +143,7 @@ export default function Dashboard() {
 
       setIsEditModalOpen(false); // Cerramos modal
     } catch (err) {
-      alert("Error al actualizar: " + err.message);
+      if (isCurrentSession()) alert("Error al actualizar: " + err.message);
     }
   };
 
@@ -140,13 +154,13 @@ export default function Dashboard() {
   }
 
   if (error) {
-    return <div className={s.errorText} role="alert">Error al cargar fincas: {error}</div>;
+    return <div className={s.errorText}><p role="alert">Error al cargar fincas: {error}</p><button type="button" className={s.btnCancel} onClick={fetchFincas}>Volver a consultar</button></div>;
   }
 
   return (
     <div className={`${s.dashboard} container`}>
       <div className={s.pageHead}>
-        <div><h1>Mis fincas</h1><p>Elegí una finca para consultar sus cálculos guardados.</p></div>
+        <div><h1>Mis fincas</h1><p>Elegí una finca para consultar sus datos y herramientas disponibles.</p></div>
         <button type="button" ref={createButton} className={s.newFarmBtn}
           aria-expanded={createOpen} aria-controls="new-farm-panel"
           onClick={() => createOpen ? closeCreateForm() : setCreateOpen(true)}>Nueva finca</button>
@@ -160,9 +174,9 @@ export default function Dashboard() {
         ) : (
           fincas.map((finca) => (
             <div key={finca.id} className={s.fincaItem}>
-              <Link to={`/finca/${finca.id}`} className={s.fincaLink}>
+              <Link to={`/fincas/${finca.id}`} className={s.fincaLink}>
                 <div><h3>{finca.nombre_finca}</h3><span>{finca.ubicacion || "Sin ubicación"}</span></div>
-                <span>Ver cálculos Manning &rarr;</span>
+                <span>Abrir finca &rarr;</span>
               </Link>
               <div className={s.actions}>
                 <button type="button" aria-label={`Editar finca ${finca.nombre_finca}`}
@@ -273,4 +287,10 @@ export default function Dashboard() {
       </Modal>
     </div>
   );
+}
+
+export default function Dashboard() {
+  const { token } = useContext(AuthContext);
+  // Remontar el estado local al cambiar la sesión; sin tocar el protocolo de auth.
+  return <SessionDashboard key={token} sessionToken={token} />;
 }

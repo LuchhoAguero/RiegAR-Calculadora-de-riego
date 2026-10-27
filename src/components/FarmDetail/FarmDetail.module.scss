@@ -1,0 +1,29 @@
+@use "../../styles/_variables.scss" as *;
+@use "../../styles/_mixins.scss" as *;
+
+.detail {
+  padding-block: 2rem 3rem;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+  h1 { @include page-heading; }
+  h2 { color: $color-primary; font-size: 1.3rem; line-height: 1.3; margin: 0 0 1rem; }
+}
+.backLink { display: inline-flex; align-items: center; min-height: 44px; color: $color-primary; text-decoration: underline; text-underline-offset: 3px; margin-bottom: 1rem; }
+.pageHead { border-bottom: 1px solid $color-line; margin-bottom: 1.5rem; padding-bottom: 1rem; p { color: $color-muted; margin: 0; } }
+.data, .simulations, .previous { @include visual-card; padding: 1.5rem; }
+.data {
+  border-top: 4px solid $color-crop;
+  dl { margin: 0 0 1.5rem; }
+  dl > div { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .5rem 1.5rem; padding: .75rem 0; border-bottom: 1px solid $color-line; }
+  dt { color: $color-muted; }
+  dd { margin: 0; font-weight: 650; min-width: 0; }
+}
+.grid { @include grid(2, 1.5rem); margin-top: 1.5rem; }
+.simulations { background: $color-water-soft; }
+.previous { background: $color-application-soft; }
+.eyebrow { font-size: .8rem; text-transform: uppercase; letter-spacing: .07em; color: $color-muted; font-weight: 650; margin-top: 0; }
+.secondary { @include button-secondary; }
+.loading { @include feedback($color-primary, $color-water-soft); }
+.error { @include feedback($color-error, $color-error-soft); }
+@media (max-width: 720px) { .grid { grid-template-columns: 1fr; } }
+@media (max-width: 420px) { .data, .simulations, .previous { padding: 1.25rem; } .data dl > div { flex-direction: column; } }

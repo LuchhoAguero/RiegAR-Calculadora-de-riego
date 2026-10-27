@@ -30,7 +30,7 @@ export default function Footer() {
             <div className={s.groupTitle}>Tu espacio de trabajo</div>
             <ul>
               <li>
-                <Link to="/dashboard">Mis fincas</Link>
+                <Link to="/fincas">Mis fincas</Link>
               </li>
               <li>
                 <Link to="/contacto">Contacto</Link>

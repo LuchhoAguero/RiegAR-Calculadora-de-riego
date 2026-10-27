@@ -96,10 +96,10 @@ export default function Navbar() {
             }} className={`${s.menu} ${open ? s.isOpen : ""}`}>
             {isLoggedIn && (
               <Link
-                to="/dashboard"
+                to="/fincas"
                 onClick={closeNavigation}
                 className={s.workspaceLink}
-                aria-current={pathname === "/dashboard" ? "page" : undefined}
+                aria-current={pathname === "/fincas" || pathname.startsWith("/fincas/") ? "page" : undefined}
               >
                 Mis fincas
               </Link>

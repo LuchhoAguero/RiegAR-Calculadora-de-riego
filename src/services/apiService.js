@@ -187,3 +187,47 @@ export const sendContactMessage = async (contactData) => {
   });
   return response;
 };
+
+// IDs de las rutas nuevas: INT UNSIGNED canónico, sin coerción parcial.
+export function isValidResourceId(value) {
+  if (typeof value !== "string" && typeof value !== "number") return false;
+  const text = String(value);
+  return /^[1-9]\d{0,9}$/.test(text) && Number(text) <= 4294967295 && String(Number(text)) === text;
+}
+
+function simulationCollection(fincaId) {
+  if (!isValidResourceId(fincaId)) throw new ApiError("Identificador de finca inválido.", {
+    code: "INVALID_ROUTE_PARAMETER", field: "fincaId",
+  });
+  return `${BASE_URL}/api/fincas/${fincaId}/irrigation-simulations`;
+}
+
+// Transporte solamente: el backend elige versión y calcula. Sin retry ni UI POST en R5-C.
+export const createIrrigationSimulation = async (fincaId, payload) => request(simulationCollection(fincaId), {
+  method: "POST", headers: getAuthHeaders(true), body: JSON.stringify(payload),
+});
+
+export const getIrrigationSimulationHistory = async (fincaId, { limit, cursor } = {}) => {
+  const url = simulationCollection(fincaId);
+  const query = new URLSearchParams();
+  if (limit !== undefined) {
+    if (!Number.isInteger(limit) || limit < 1 || limit > 100) throw new ApiError("El límite debe ser un entero entre 1 y 100.", {
+      code: "INVALID_PAGINATION", field: "limit",
+    });
+    query.set("limit", String(limit));
+  }
+  if (cursor !== undefined && cursor !== null) {
+    if (typeof cursor !== "string") throw new ApiError("El cursor debe ser texto.", { code: "INVALID_PAGINATION", field: "cursor" });
+    query.set("cursor", cursor); // Opaco: no decodificar, recortar ni reconstruir.
+  }
+  const suffix = query.toString();
+  return request(suffix ? `${url}?${suffix}` : url, { method: "GET", headers: getAuthHeaders(true) });
+};
+
+export const getIrrigationSimulationDetail = async (fincaId, simulationId) => {
+  const url = simulationCollection(fincaId);
+  if (!isValidResourceId(simulationId)) throw new ApiError("Identificador de simulación inválido.", {
+    code: "INVALID_ROUTE_PARAMETER", field: "simulationId",
+  });
+  return request(`${url}/${simulationId}`, { method: "GET", headers: getAuthHeaders(true) });
+};

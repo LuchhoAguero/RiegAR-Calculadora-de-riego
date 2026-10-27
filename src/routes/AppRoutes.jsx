@@ -1,5 +1,5 @@
 import React from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import HomePage from "../pages/HomePage.jsx";
 import CalculatorPage from "../pages/CalculatorPage.jsx";
 import GuidePage from "../pages/GuidePage.jsx";
@@ -11,6 +11,7 @@ import ProtectedRoute from "./ProtectedRoute.jsx";
 import DashboardPage from "../pages/DashboardPage.jsx";
 import FincaDetailPage from "../pages/FincaDetailPage.jsx";
 import NuevoCalculoPage from "../pages/NuevoCalculoPage.jsx";
+import FarmDetailPage from "../pages/FarmDetailPage.jsx";
 
 export default function AppRoutes() {
   return (
@@ -26,10 +27,12 @@ export default function AppRoutes() {
         path="/dashboard"
         element={
           <ProtectedRoute>
-            <DashboardPage />
+            <Navigate to="/fincas" replace />
           </ProtectedRoute>
         }
       />
+      <Route path="/fincas" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+      <Route path="/fincas/:fincaId" element={<ProtectedRoute><FarmDetailPage /></ProtectedRoute>} />
       <Route
         path="/finca/:id"
         element={
