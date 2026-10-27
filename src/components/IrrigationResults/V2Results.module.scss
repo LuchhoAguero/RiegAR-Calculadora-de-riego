@@ -1,0 +1,41 @@
+@use "../../styles/_variables.scss" as *;
+@use "../../styles/_mixins.scss" as *;
+
+.results { line-height: 1.6; overflow-wrap: anywhere; h1 { @include page-heading; } h2 { color: $color-primary; font-size: 1.35rem; line-height: 1.35; display: flex; gap: .6rem; align-items: center; } h3 { font-size: 1.1rem; } }
+.header { padding-block: 1rem 1.5rem; }
+.eyebrow { text-transform: uppercase; letter-spacing: .05em; font-weight: 650; font-size: .8rem; }
+.name { font-size: 1.15rem; margin-bottom: .5rem; font-weight: 650; }
+.hint { color: $color-muted; font-size: .875rem; }
+.total { @include visual-card; background: linear-gradient(120deg, $color-primary, $color-water); color: white; border: 0; padding: 2rem; display: grid; grid-template-columns: 1.4fr 1fr; gap: 1.5rem; h2 { color: white; margin-block: .75rem; } .eyebrow { margin-top: 0; } .number { color: white; } details { color: white; } }
+.totalContext { border-left: 1px solid rgba(white,.4); padding-left: 1.5rem; p:last-child { font-size: .9rem; } }
+.amount { min-width: 0; }
+.number { color: $color-primary; font-variant-numeric: tabular-nums; font-size: clamp(1.35rem, 1.1rem + 1vw, 1.9rem); font-weight: 750; line-height: 1.35; margin: .4rem 0; }
+.largeAmount .number { font-size: clamp(2.5rem, 2rem + 3vw, 4.5rem); }
+.unit { font-size: .65em; font-weight: 650; white-space: nowrap; }
+.summary { @include grid(3, 1rem); margin: 1.5rem 0 .5rem; > div { @include visual-card; padding: 1.25rem; background: $color-crop-soft; border-top: 3px solid $color-crop; } }
+.metric { min-width: 0; dt { color: $color-text; font-weight: 650; } dd { margin: 0; } }
+.precisionNote { color: $color-muted; font-size: .875rem; margin-bottom: 1.5rem; }
+.precision { font-size: .875rem; p { font-variant-numeric: tabular-nums; } }
+.diagnosticSection { margin-block: 2rem; }
+.diagnostics { padding: 0; margin: 1rem 0; list-style: none; display: grid; gap: 1rem; > li { padding: 1.25rem; border: 1px solid currentColor; border-radius: $radius-md; min-width: 0; } h3 { display: flex; gap: .5rem; align-items: center; margin: 0; } }
+.point { font-weight: 650; margin-bottom: 0; }
+.info { background: $color-water-soft; color: $color-primary; }
+.warning { background: #fff4d6; color: #725000; }
+.error { background: $color-error-soft; color: $color-error; }
+.neutral { @include feedback($color-primary, $color-application-soft); }
+.groups { @include grid(2, 1.5rem); }
+.group { padding: 1.5rem; border-radius: $radius-md; border-top: 4px solid; min-width: 0; h2 { margin-top: 0; } }
+.crop { background: $color-crop-soft; border-color: $color-crop; }
+.soil { background: $color-soil-soft; border-color: $color-soil; grid-column: 1 / -1; .metrics { grid-template-columns: repeat(3,minmax(0,1fr)); } }
+.water { background: $color-water-soft; border-color: $color-water; grid-column: 1 / -1; .metrics { grid-template-columns: repeat(3,minmax(0,1fr)); } }
+.metrics { display: grid; gap: 1.5rem; margin-bottom: 0; .metric { border-top: 1px solid $color-input-border; padding-top: 1rem; } }
+.reference { margin-top: 2rem; padding: 1.5rem; background: $color-header; border: 1px solid $color-line; border-radius: $radius-md; }
+.inputList { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 1rem; dd { margin: .3rem 0 0; font-weight: 650; } dt { color: $color-muted; } }
+.results details, .diagnostics details { min-width: 0; summary { min-height: 44px; padding-block: .65rem; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; } }
+.results pre, .diagnostics pre { white-space: pre-wrap; overflow-wrap: anywhere; font-size: .8rem; font-family: ui-monospace, monospace; }
+.invalid { @include feedback($color-error, $color-error-soft); margin-block: 1.5rem; h1 { @include page-heading; } overflow-wrap: anywhere; }
+.demo { padding-block: 1.5rem 3rem; overflow-wrap: anywhere; }
+.demoNotice { @include feedback($color-primary, $color-water-soft); border-left: 4px solid $color-water; h2 { font-size: 1.1rem; margin-top: 0; } p:last-child { margin-bottom: 0; } }
+.selector { @include field; margin-block: 1.5rem; select { width: 100%; max-width: 40rem; min-height: 48px; font: inherit; color: $color-primary; background: $color-surface; padding: .6rem; border: 1px solid $color-input-border; border-radius: $radius-sm; } }
+.backLink { display: inline-flex; align-items: center; min-height: 44px; text-decoration: underline; }
+@media (max-width: 720px) { .total, .summary, .groups, .inputList { grid-template-columns: 1fr; } .total { padding: 1.5rem; } .totalContext { border-left: 0; border-top: 1px solid rgba(white,.4); padding-left: 0; padding-top: 1rem; } .soil .metrics, .water .metrics { grid-template-columns: 1fr; } .group { padding: 1.25rem; } }

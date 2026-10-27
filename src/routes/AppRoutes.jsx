@@ -1,4 +1,4 @@
-import React from "react";
+import React, { lazy, Suspense } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import HomePage from "../pages/HomePage.jsx";
 import CalculatorPage from "../pages/CalculatorPage.jsx";
@@ -13,6 +13,7 @@ import FincaDetailPage from "../pages/FincaDetailPage.jsx";
 import NuevoCalculoPage from "../pages/NuevoCalculoPage.jsx";
 import FarmDetailPage from "../pages/FarmDetailPage.jsx";
 import NewSimulationPage from "../pages/NewSimulationPage.jsx";
+const ResultsDemoPage = import.meta.env.DEV ? lazy(() => import("../pages/ResultsDemoPage.jsx")) : null;
 
 export default function AppRoutes() {
   return (
@@ -35,6 +36,7 @@ export default function AppRoutes() {
       <Route path="/fincas" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
       <Route path="/fincas/:fincaId" element={<ProtectedRoute><FarmDetailPage /></ProtectedRoute>} />
       <Route path="/fincas/:fincaId/simulaciones/nueva" element={<ProtectedRoute><NewSimulationPage /></ProtectedRoute>} />
+      {import.meta.env.DEV && <Route path="/desarrollo/resultados-v2" element={<ProtectedRoute><Suspense fallback={<p className="container" role="status">Cargando la demostración...</p>}><ResultsDemoPage /></Suspense></ProtectedRoute>} />}
       <Route
         path="/finca/:id"
         element={

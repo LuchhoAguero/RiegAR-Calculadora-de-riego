@@ -1,0 +1,138 @@
+{
+  "metadataSchemaVersion": "string",
+  "effectiveParameters": {
+    "infiltrationCoefficient": "number",
+    "infiltrationExponent": "number",
+    "middleArrivalFactor": "number",
+    "qmaxCoefficient": "number",
+    "qmaxZeroSlopeValue": "number",
+    "advanceRules": "null"
+  },
+  "units": {
+    "input": {
+      "crop": {
+        "etoMmPerDay": "string",
+        "cropCoefficient": "string",
+        "daysWithoutIrrigation": "string"
+      },
+      "soil": {
+        "fieldCapacityPct": "string",
+        "wiltingPointPct": "string",
+        "bulkDensityGcm3": "string",
+        "rootDepthM": "string",
+        "depletionThresholdPct": "string"
+      },
+      "furrow": {
+        "furrowSpacingM": "string",
+        "lengthM": "string",
+        "slopePct": "string",
+        "furrowCount": "string"
+      },
+      "irrigation": {
+        "flowLps": "string",
+        "durationMin": "string",
+        "advanceTimeMin": "string"
+      }
+    },
+    "output": {
+      "waterNeed": {
+        "targetDepthMm": "string",
+        "dailyCropWaterUseMmPerDay": "string"
+      },
+      "soilWater": {
+        "availableWaterMm": "string",
+        "availableCapacityL": "string",
+        "maxRecommendedDepthMm": "string",
+        "maxRecommendedVolumeL": "string",
+        "daysUntilAvailableWaterExhaustion": "string",
+        "daysUntilDepletionThreshold": "string"
+      },
+      "application": {
+        "appliedVolumeL": "string",
+        "infiltratedDepthStartMm": "string",
+        "infiltratedDepthMiddleMm": "string",
+        "infiltratedDepthEndMm": "string",
+        "estimatedUsefulVolumeL": "string",
+        "residualLossVolumeL": "string"
+      },
+      "totals": {
+        "totalAppliedVolumeL": "string",
+        "totalAppliedVolumeM3": "string"
+      },
+      "efficiency": {
+        "applicationEfficiencyPct": "string"
+      },
+      "diagnostics": {
+        "advanceRatioPct": "string",
+        "maxNonErosiveFlowLps": "string"
+      }
+    },
+    "effectiveParameters": {
+      "infiltrationCoefficient": "string",
+      "infiltrationExponent": "string",
+      "middleArrivalFactor": "string",
+      "qmaxCoefficient": "string",
+      "qmaxZeroSlopeValue": "string"
+    }
+  },
+  "assumptions": {
+    "soilWaterContentBasis": "string",
+    "furrowSpacingMeaning": "string",
+    "furrowSpacingUsage": "string",
+    "furrowCountMeaning": "string",
+    "furrowRepresentativeness": "string",
+    "totalAppliedVolumeScope": "string",
+    "infiltrationCoefficientOrigin": "string",
+    "infiltrationCalibration": "string",
+    "advanceBands": "string",
+    "etoAndKc": "string",
+    "effectiveRain": "string",
+    "initialMoisture": "string",
+    "flow": "string",
+    "infiltration": "string",
+    "textureEffectOnInfiltration": "string",
+    "residualMeaning": "string",
+    "efficiencyMeaning": "string",
+    "daysReferenceState": "string",
+    "daysMeaning": "string",
+    "zeroDailyUsePolicy": "string"
+  },
+  "evidenceState": {
+    "calculationImplemented": "boolean",
+    "scientificValidation": "string",
+    "parametersSelected": "boolean",
+    "diagnosticsEvaluated": "boolean",
+    "modelKind": "string",
+    "source": "string",
+    "fieldCalibration": "string"
+  },
+  "referenceVersions": {
+    "catalogVersion": "null",
+    "calibrationVersion": "null"
+  },
+  "implementationReference": {
+    "modelVersion": "string",
+    "stage": "string",
+    "arithmetic": "string"
+  },
+  "diagnosticRules": {
+    "ruleVersion": "string",
+    "evaluated": [
+      "string",
+      "string",
+      "string",
+      "string",
+      "string"
+    ]
+  },
+  "parameterProvenance": {
+    "infiltration": "string",
+    "qmax": "string",
+    "soilWater": "string",
+    "spacing": "string",
+    "dailyUse": "string",
+    "exhaustionDays": "string",
+    "thresholdDays": "string",
+    "totalApplied": "string"
+  }
+}

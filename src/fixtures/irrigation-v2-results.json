@@ -1,0 +1,1374 @@
+[
+  {
+    "id": "golden",
+    "label": "GV2-01 · referencia contractual",
+    "description": "Referencia literal oficial GV2-01. Identidad y fecha de demostración sintéticas.",
+    "snapshot": {
+      "simulation": {
+        "id": 1,
+        "fincaId": 7,
+        "name": "Referencia GV2-01",
+        "createdAt": "2026-10-27T12:00:00.000Z"
+      },
+      "model": {
+        "modelVersion": "irrigation-estimation-v2",
+        "contractVersion": "irrigation-contract-v2",
+        "sourceHash": "30b031d7bd3aa4365c65b6750a91a4004db4ef3452c99bf3924698b89f9dec3b"
+      },
+      "input": {
+        "crop": {
+          "etoMmPerDay": 5,
+          "cropCoefficient": 0.7,
+          "daysWithoutIrrigation": 20
+        },
+        "soil": {
+          "texture": "Franco",
+          "fieldCapacityPct": 20,
+          "wiltingPointPct": 10,
+          "bulkDensityGcm3": 1.3,
+          "rootDepthM": 0.7,
+          "depletionThresholdPct": 60
+        },
+        "furrow": {
+          "furrowSpacingM": 1.3,
+          "lengthM": 60,
+          "slopePct": 0,
+          "furrowCount": 18
+        },
+        "irrigation": {
+          "flowLps": 0.9,
+          "durationMin": 120,
+          "advanceTimeMin": 20
+        }
+      },
+      "output": {
+        "waterNeed": {
+          "targetDepthMm": 70,
+          "dailyCropWaterUseMmPerDay": 3.5
+        },
+        "soilWater": {
+          "availableWaterMm": 91,
+          "availableCapacityL": 7098,
+          "maxRecommendedDepthMm": 54.6,
+          "maxRecommendedVolumeL": 4258.8,
+          "daysUntilAvailableWaterExhaustion": 26,
+          "daysUntilDepletionThreshold": 15.6
+        },
+        "application": {
+          "appliedVolumeL": 6480,
+          "infiltratedDepthStartMm": 49.29503017546495,
+          "infiltratedDepthMiddleMm": 47.19639816765682,
+          "infiltratedDepthEndMm": 45,
+          "estimatedUsefulVolumeL": 3681.3190570772317,
+          "residualLossVolumeL": 2798.6809429227683
+        },
+        "totals": {
+          "totalAppliedVolumeL": 116640,
+          "totalAppliedVolumeM3": 116.64
+        },
+        "efficiency": {
+          "applicationEfficiencyPct": 56.8104792758832
+        },
+        "diagnostics": {
+          "advanceRatioPct": 16.666666666666668,
+          "maxNonErosiveFlowLps": 6.3,
+          "items": [
+            {
+              "id": "P02",
+              "ruleVersion": "irrigation-diagnostics-v1",
+              "severity": "warning",
+              "fields": [
+                "application.infiltratedDepthEndMm",
+                "waterNeed.targetDepthMm"
+              ],
+              "evidence": {
+                "infiltratedDepthEndMm": 45,
+                "targetDepthMm": 70,
+                "operator": "<",
+                "unit": "mm",
+                "source": "R1_comparison",
+                "scientificValidation": "not_validated"
+              },
+              "message": "La lámina estimada al final es menor que la necesidad acumulada simplificada; no es un déficit medido."
+            },
+            {
+              "id": "P04",
+              "ruleVersion": "irrigation-diagnostics-v1",
+              "severity": "warning",
+              "fields": [
+                "waterNeed.targetDepthMm",
+                "soilWater.maxRecommendedDepthMm"
+              ],
+              "evidence": {
+                "targetDepthMm": 70,
+                "maxRecommendedDepthMm": 54.6,
+                "operator": ">",
+                "unit": "mm",
+                "source": "R1_comparison",
+                "scientificValidation": "not_validated"
+              },
+              "message": "La necesidad acumulada simplificada supera la lámina máxima estimada según el umbral seleccionado."
+            }
+          ]
+        }
+      },
+      "metadata": {
+        "metadataSchemaVersion": "irrigation-metadata-v2",
+        "effectiveParameters": {
+          "infiltrationCoefficient": 4.5,
+          "infiltrationExponent": 0.5,
+          "middleArrivalFactor": 0.5,
+          "qmaxCoefficient": 0.0063,
+          "qmaxZeroSlopeValue": 6.3,
+          "advanceRules": null
+        },
+        "units": {
+          "input": {
+            "crop": {
+              "etoMmPerDay": "mm/día",
+              "cropCoefficient": "adimensional",
+              "daysWithoutIrrigation": "días"
+            },
+            "soil": {
+              "fieldCapacityPct": "%",
+              "wiltingPointPct": "%",
+              "bulkDensityGcm3": "g/cm3",
+              "rootDepthM": "m",
+              "depletionThresholdPct": "%"
+            },
+            "furrow": {
+              "furrowSpacingM": "m",
+              "lengthM": "m",
+              "slopePct": "%",
+              "furrowCount": "surcos"
+            },
+            "irrigation": {
+              "flowLps": "L/s",
+              "durationMin": "min",
+              "advanceTimeMin": "min"
+            }
+          },
+          "output": {
+            "waterNeed": {
+              "targetDepthMm": "mm",
+              "dailyCropWaterUseMmPerDay": "mm/día"
+            },
+            "soilWater": {
+              "availableWaterMm": "mm",
+              "availableCapacityL": "L",
+              "maxRecommendedDepthMm": "mm",
+              "maxRecommendedVolumeL": "L",
+              "daysUntilAvailableWaterExhaustion": "días",
+              "daysUntilDepletionThreshold": "días"
+            },
+            "application": {
+              "appliedVolumeL": "L",
+              "infiltratedDepthStartMm": "mm",
+              "infiltratedDepthMiddleMm": "mm",
+              "infiltratedDepthEndMm": "mm",
+              "estimatedUsefulVolumeL": "L",
+              "residualLossVolumeL": "L"
+            },
+            "totals": {
+              "totalAppliedVolumeL": "L",
+              "totalAppliedVolumeM3": "m3"
+            },
+            "efficiency": {
+              "applicationEfficiencyPct": "%"
+            },
+            "diagnostics": {
+              "advanceRatioPct": "%",
+              "maxNonErosiveFlowLps": "L/s"
+            }
+          },
+          "effectiveParameters": {
+            "infiltrationCoefficient": "mm/min^0.5",
+            "infiltrationExponent": "adimensional",
+            "middleArrivalFactor": "adimensional",
+            "qmaxCoefficient": "L/s (slope fraction operand)",
+            "qmaxZeroSlopeValue": "L/s"
+          }
+        },
+        "assumptions": {
+          "soilWaterContentBasis": "gravimetric_dry_weight",
+          "furrowSpacingMeaning": "distance_between_furrows",
+          "furrowSpacingUsage": "simplified_tributary_width",
+          "furrowCountMeaning": "number_of_furrows_irrigated",
+          "furrowRepresentativeness": "uniform_per_furrow_scenario",
+          "totalAppliedVolumeScope": "per_furrow_applied_volume_times_furrow_count",
+          "infiltrationCoefficientOrigin": "undocumented_legacy_spreadsheet",
+          "infiltrationCalibration": "none",
+          "advanceBands": "not_selected",
+          "etoAndKc": "constant_during_period",
+          "effectiveRain": "not_modeled",
+          "initialMoisture": "not_modeled",
+          "flow": "constant",
+          "infiltration": "spreadsheet_empirical_estimate",
+          "textureEffectOnInfiltration": "none",
+          "residualMeaning": "does_not_identify_loss_cause",
+          "efficiencyMeaning": "estimated_not_measured",
+          "daysReferenceState": "field_capacity_reference",
+          "daysMeaning": "reference_reserve_duration_not_remaining_days_from_now",
+          "zeroDailyUsePolicy": "null_days_not_applicable_zero_daily_use"
+        },
+        "evidenceState": {
+          "calculationImplemented": true,
+          "scientificValidation": "not_validated",
+          "parametersSelected": true,
+          "diagnosticsEvaluated": true,
+          "modelKind": "estimation",
+          "source": "spreadsheet-derived",
+          "fieldCalibration": "none"
+        },
+        "referenceVersions": {
+          "catalogVersion": null,
+          "calibrationVersion": null
+        },
+        "implementationReference": {
+          "modelVersion": "irrigation-estimation-v2",
+          "stage": "R4F_v2_estimation",
+          "arithmetic": "IEEE-754_Number"
+        },
+        "diagnosticRules": {
+          "ruleVersion": "irrigation-diagnostics-v1",
+          "evaluated": [
+            "P01",
+            "P02",
+            "P03",
+            "P04",
+            "P05"
+          ]
+        },
+        "parameterProvenance": {
+          "infiltration": "Hoja 1!C14:C16; F04:F06; undocumented legacy coefficient; not calibrated",
+          "qmax": "Hoja 1!B9; F01; canonical zero 6.3; not scientifically validated",
+          "soilWater": "Hoja 1!B24; F12; latest client confirmation: gravimetric dry weight",
+          "spacing": "latest client confirmation; simplified tributary width assumption",
+          "dailyUse": "Hoja 1!E18; F18",
+          "exhaustionDays": "Hoja 1!E19; F19; reference reserve assumption",
+          "thresholdDays": "latest client confirmation L; F20; absent from XLSX formulas",
+          "totalApplied": "Hoja 1!B30:B32; F21:F22; representative per-furrow scenario"
+        }
+      }
+    }
+  },
+  {
+    "id": "zero",
+    "label": "Consumo diario cero",
+    "description": "Variante del caso oficial de consumo cero; días no aplicables.",
+    "snapshot": {
+      "simulation": {
+        "id": 2,
+        "fincaId": 7,
+        "name": "Consumo diario cero",
+        "createdAt": "2026-10-27T12:00:00.000Z"
+      },
+      "model": {
+        "modelVersion": "irrigation-estimation-v2",
+        "contractVersion": "irrigation-contract-v2",
+        "sourceHash": "30b031d7bd3aa4365c65b6750a91a4004db4ef3452c99bf3924698b89f9dec3b"
+      },
+      "input": {
+        "crop": {
+          "etoMmPerDay": 0,
+          "cropCoefficient": 0.7,
+          "daysWithoutIrrigation": 20
+        },
+        "soil": {
+          "texture": "Franco",
+          "fieldCapacityPct": 20,
+          "wiltingPointPct": 10,
+          "bulkDensityGcm3": 1.3,
+          "rootDepthM": 0.7,
+          "depletionThresholdPct": 60
+        },
+        "furrow": {
+          "furrowSpacingM": 1.3,
+          "lengthM": 60,
+          "slopePct": 0,
+          "furrowCount": 18
+        },
+        "irrigation": {
+          "flowLps": 0.9,
+          "durationMin": 120,
+          "advanceTimeMin": 20
+        }
+      },
+      "output": {
+        "waterNeed": {
+          "targetDepthMm": 0,
+          "dailyCropWaterUseMmPerDay": 0
+        },
+        "soilWater": {
+          "availableWaterMm": 91,
+          "availableCapacityL": 7098,
+          "maxRecommendedDepthMm": 54.6,
+          "maxRecommendedVolumeL": 4258.8,
+          "daysUntilAvailableWaterExhaustion": null,
+          "daysUntilDepletionThreshold": null
+        },
+        "application": {
+          "appliedVolumeL": 6480,
+          "infiltratedDepthStartMm": 49.29503017546495,
+          "infiltratedDepthMiddleMm": 47.19639816765682,
+          "infiltratedDepthEndMm": 45,
+          "estimatedUsefulVolumeL": 3681.3190570772317,
+          "residualLossVolumeL": 2798.6809429227683
+        },
+        "totals": {
+          "totalAppliedVolumeL": 116640,
+          "totalAppliedVolumeM3": 116.64
+        },
+        "efficiency": {
+          "applicationEfficiencyPct": 56.8104792758832
+        },
+        "diagnostics": {
+          "advanceRatioPct": 16.666666666666668,
+          "maxNonErosiveFlowLps": 6.3,
+          "items": [
+            {
+              "id": "P03",
+              "ruleVersion": "irrigation-diagnostics-v1",
+              "severity": "info",
+              "fields": [
+                "application.infiltratedDepthStartMm",
+                "waterNeed.targetDepthMm"
+              ],
+              "evidence": {
+                "point": "start",
+                "infiltratedDepthMm": 49.29503017546495,
+                "targetDepthMm": 0,
+                "operator": ">",
+                "unit": "mm",
+                "source": "R1_comparison",
+                "scientificValidation": "not_validated"
+              },
+              "message": "La infiltración estimada supera la necesidad simplificada en este punto; no demuestra pérdida profunda."
+            },
+            {
+              "id": "P03",
+              "ruleVersion": "irrigation-diagnostics-v1",
+              "severity": "info",
+              "fields": [
+                "application.infiltratedDepthMiddleMm",
+                "waterNeed.targetDepthMm"
+              ],
+              "evidence": {
+                "point": "middle",
+                "infiltratedDepthMm": 47.19639816765682,
+                "targetDepthMm": 0,
+                "operator": ">",
+                "unit": "mm",
+                "source": "R1_comparison",
+                "scientificValidation": "not_validated"
+              },
+              "message": "La infiltración estimada supera la necesidad simplificada en este punto; no demuestra pérdida profunda."
+            },
+            {
+              "id": "P03",
+              "ruleVersion": "irrigation-diagnostics-v1",
+              "severity": "info",
+              "fields": [
+                "application.infiltratedDepthEndMm",
+                "waterNeed.targetDepthMm"
+              ],
+              "evidence": {
+                "point": "end",
+                "infiltratedDepthMm": 45,
+                "targetDepthMm": 0,
+                "operator": ">",
+                "unit": "mm",
+                "source": "R1_comparison",
+                "scientificValidation": "not_validated"
+              },
+              "message": "La infiltración estimada supera la necesidad simplificada en este punto; no demuestra pérdida profunda."
+            }
+          ]
+        }
+      },
+      "metadata": {
+        "metadataSchemaVersion": "irrigation-metadata-v2",
+        "effectiveParameters": {
+          "infiltrationCoefficient": 4.5,
+          "infiltrationExponent": 0.5,
+          "middleArrivalFactor": 0.5,
+          "qmaxCoefficient": 0.0063,
+          "qmaxZeroSlopeValue": 6.3,
+          "advanceRules": null
+        },
+        "units": {
+          "input": {
+            "crop": {
+              "etoMmPerDay": "mm/día",
+              "cropCoefficient": "adimensional",
+              "daysWithoutIrrigation": "días"
+            },
+            "soil": {
+              "fieldCapacityPct": "%",
+              "wiltingPointPct": "%",
+              "bulkDensityGcm3": "g/cm3",
+              "rootDepthM": "m",
+              "depletionThresholdPct": "%"
+            },
+            "furrow": {
+              "furrowSpacingM": "m",
+              "lengthM": "m",
+              "slopePct": "%",
+              "furrowCount": "surcos"
+            },
+            "irrigation": {
+              "flowLps": "L/s",
+              "durationMin": "min",
+              "advanceTimeMin": "min"
+            }
+          },
+          "output": {
+            "waterNeed": {
+              "targetDepthMm": "mm",
+              "dailyCropWaterUseMmPerDay": "mm/día"
+            },
+            "soilWater": {
+              "availableWaterMm": "mm",
+              "availableCapacityL": "L",
+              "maxRecommendedDepthMm": "mm",
+              "maxRecommendedVolumeL": "L",
+              "daysUntilAvailableWaterExhaustion": "días",
+              "daysUntilDepletionThreshold": "días"
+            },
+            "application": {
+              "appliedVolumeL": "L",
+              "infiltratedDepthStartMm": "mm",
+              "infiltratedDepthMiddleMm": "mm",
+              "infiltratedDepthEndMm": "mm",
+              "estimatedUsefulVolumeL": "L",
+              "residualLossVolumeL": "L"
+            },
+            "totals": {
+              "totalAppliedVolumeL": "L",
+              "totalAppliedVolumeM3": "m3"
+            },
+            "efficiency": {
+              "applicationEfficiencyPct": "%"
+            },
+            "diagnostics": {
+              "advanceRatioPct": "%",
+              "maxNonErosiveFlowLps": "L/s"
+            }
+          },
+          "effectiveParameters": {
+            "infiltrationCoefficient": "mm/min^0.5",
+            "infiltrationExponent": "adimensional",
+            "middleArrivalFactor": "adimensional",
+            "qmaxCoefficient": "L/s (slope fraction operand)",
+            "qmaxZeroSlopeValue": "L/s"
+          }
+        },
+        "assumptions": {
+          "soilWaterContentBasis": "gravimetric_dry_weight",
+          "furrowSpacingMeaning": "distance_between_furrows",
+          "furrowSpacingUsage": "simplified_tributary_width",
+          "furrowCountMeaning": "number_of_furrows_irrigated",
+          "furrowRepresentativeness": "uniform_per_furrow_scenario",
+          "totalAppliedVolumeScope": "per_furrow_applied_volume_times_furrow_count",
+          "infiltrationCoefficientOrigin": "undocumented_legacy_spreadsheet",
+          "infiltrationCalibration": "none",
+          "advanceBands": "not_selected",
+          "etoAndKc": "constant_during_period",
+          "effectiveRain": "not_modeled",
+          "initialMoisture": "not_modeled",
+          "flow": "constant",
+          "infiltration": "spreadsheet_empirical_estimate",
+          "textureEffectOnInfiltration": "none",
+          "residualMeaning": "does_not_identify_loss_cause",
+          "efficiencyMeaning": "estimated_not_measured",
+          "daysReferenceState": "field_capacity_reference",
+          "daysMeaning": "reference_reserve_duration_not_remaining_days_from_now",
+          "zeroDailyUsePolicy": "null_days_not_applicable_zero_daily_use"
+        },
+        "evidenceState": {
+          "calculationImplemented": true,
+          "scientificValidation": "not_validated",
+          "parametersSelected": true,
+          "diagnosticsEvaluated": true,
+          "modelKind": "estimation",
+          "source": "spreadsheet-derived",
+          "fieldCalibration": "none"
+        },
+        "referenceVersions": {
+          "catalogVersion": null,
+          "calibrationVersion": null
+        },
+        "implementationReference": {
+          "modelVersion": "irrigation-estimation-v2",
+          "stage": "R4F_v2_estimation",
+          "arithmetic": "IEEE-754_Number"
+        },
+        "diagnosticRules": {
+          "ruleVersion": "irrigation-diagnostics-v1",
+          "evaluated": [
+            "P01",
+            "P02",
+            "P03",
+            "P04",
+            "P05"
+          ]
+        },
+        "parameterProvenance": {
+          "infiltration": "Hoja 1!C14:C16; F04:F06; undocumented legacy coefficient; not calibrated",
+          "qmax": "Hoja 1!B9; F01; canonical zero 6.3; not scientifically validated",
+          "soilWater": "Hoja 1!B24; F12; latest client confirmation: gravimetric dry weight",
+          "spacing": "latest client confirmation; simplified tributary width assumption",
+          "dailyUse": "Hoja 1!E18; F18",
+          "exhaustionDays": "Hoja 1!E19; F19; reference reserve assumption",
+          "thresholdDays": "latest client confirmation L; F20; absent from XLSX formulas",
+          "totalApplied": "Hoja 1!B30:B32; F21:F22; representative per-furrow scenario"
+        }
+      }
+    }
+  },
+  {
+    "id": "none",
+    "label": "Sin diagnósticos",
+    "description": "Caso de igualdad estricta de la prueba oficial de límites. No implica seguridad u optimalidad.",
+    "snapshot": {
+      "simulation": {
+        "id": 3,
+        "fincaId": 7,
+        "name": "Sin diagnósticos",
+        "createdAt": "2026-10-27T12:00:00.000Z"
+      },
+      "model": {
+        "modelVersion": "irrigation-estimation-v2",
+        "contractVersion": "irrigation-contract-v2",
+        "sourceHash": "30b031d7bd3aa4365c65b6750a91a4004db4ef3452c99bf3924698b89f9dec3b"
+      },
+      "input": {
+        "crop": {
+          "etoMmPerDay": 4.5,
+          "cropCoefficient": 1,
+          "daysWithoutIrrigation": 1
+        },
+        "soil": {
+          "texture": null,
+          "fieldCapacityPct": 10,
+          "wiltingPointPct": 0,
+          "bulkDensityGcm3": 1,
+          "rootDepthM": 1,
+          "depletionThresholdPct": 4.5
+        },
+        "furrow": {
+          "furrowSpacingM": 1,
+          "lengthM": 1,
+          "slopePct": 0,
+          "furrowCount": 18
+        },
+        "irrigation": {
+          "flowLps": 6.3,
+          "durationMin": 1,
+          "advanceTimeMin": 0
+        }
+      },
+      "output": {
+        "waterNeed": {
+          "targetDepthMm": 4.5,
+          "dailyCropWaterUseMmPerDay": 4.5
+        },
+        "soilWater": {
+          "availableWaterMm": 100,
+          "availableCapacityL": 100,
+          "maxRecommendedDepthMm": 4.5,
+          "maxRecommendedVolumeL": 4.5,
+          "daysUntilAvailableWaterExhaustion": 22.22222222222222,
+          "daysUntilDepletionThreshold": 1
+        },
+        "application": {
+          "appliedVolumeL": 378,
+          "infiltratedDepthStartMm": 4.5,
+          "infiltratedDepthMiddleMm": 4.5,
+          "infiltratedDepthEndMm": 4.5,
+          "estimatedUsefulVolumeL": 4.5,
+          "residualLossVolumeL": 373.5
+        },
+        "totals": {
+          "totalAppliedVolumeL": 6804,
+          "totalAppliedVolumeM3": 6.804
+        },
+        "efficiency": {
+          "applicationEfficiencyPct": 1.1904761904761905
+        },
+        "diagnostics": {
+          "advanceRatioPct": 0,
+          "maxNonErosiveFlowLps": 6.3,
+          "items": []
+        }
+      },
+      "metadata": {
+        "metadataSchemaVersion": "irrigation-metadata-v2",
+        "effectiveParameters": {
+          "infiltrationCoefficient": 4.5,
+          "infiltrationExponent": 0.5,
+          "middleArrivalFactor": 0.5,
+          "qmaxCoefficient": 0.0063,
+          "qmaxZeroSlopeValue": 6.3,
+          "advanceRules": null
+        },
+        "units": {
+          "input": {
+            "crop": {
+              "etoMmPerDay": "mm/día",
+              "cropCoefficient": "adimensional",
+              "daysWithoutIrrigation": "días"
+            },
+            "soil": {
+              "fieldCapacityPct": "%",
+              "wiltingPointPct": "%",
+              "bulkDensityGcm3": "g/cm3",
+              "rootDepthM": "m",
+              "depletionThresholdPct": "%"
+            },
+            "furrow": {
+              "furrowSpacingM": "m",
+              "lengthM": "m",
+              "slopePct": "%",
+              "furrowCount": "surcos"
+            },
+            "irrigation": {
+              "flowLps": "L/s",
+              "durationMin": "min",
+              "advanceTimeMin": "min"
+            }
+          },
+          "output": {
+            "waterNeed": {
+              "targetDepthMm": "mm",
+              "dailyCropWaterUseMmPerDay": "mm/día"
+            },
+            "soilWater": {
+              "availableWaterMm": "mm",
+              "availableCapacityL": "L",
+              "maxRecommendedDepthMm": "mm",
+              "maxRecommendedVolumeL": "L",
+              "daysUntilAvailableWaterExhaustion": "días",
+              "daysUntilDepletionThreshold": "días"
+            },
+            "application": {
+              "appliedVolumeL": "L",
+              "infiltratedDepthStartMm": "mm",
+              "infiltratedDepthMiddleMm": "mm",
+              "infiltratedDepthEndMm": "mm",
+              "estimatedUsefulVolumeL": "L",
+              "residualLossVolumeL": "L"
+            },
+            "totals": {
+              "totalAppliedVolumeL": "L",
+              "totalAppliedVolumeM3": "m3"
+            },
+            "efficiency": {
+              "applicationEfficiencyPct": "%"
+            },
+            "diagnostics": {
+              "advanceRatioPct": "%",
+              "maxNonErosiveFlowLps": "L/s"
+            }
+          },
+          "effectiveParameters": {
+            "infiltrationCoefficient": "mm/min^0.5",
+            "infiltrationExponent": "adimensional",
+            "middleArrivalFactor": "adimensional",
+            "qmaxCoefficient": "L/s (slope fraction operand)",
+            "qmaxZeroSlopeValue": "L/s"
+          }
+        },
+        "assumptions": {
+          "soilWaterContentBasis": "gravimetric_dry_weight",
+          "furrowSpacingMeaning": "distance_between_furrows",
+          "furrowSpacingUsage": "simplified_tributary_width",
+          "furrowCountMeaning": "number_of_furrows_irrigated",
+          "furrowRepresentativeness": "uniform_per_furrow_scenario",
+          "totalAppliedVolumeScope": "per_furrow_applied_volume_times_furrow_count",
+          "infiltrationCoefficientOrigin": "undocumented_legacy_spreadsheet",
+          "infiltrationCalibration": "none",
+          "advanceBands": "not_selected",
+          "etoAndKc": "constant_during_period",
+          "effectiveRain": "not_modeled",
+          "initialMoisture": "not_modeled",
+          "flow": "constant",
+          "infiltration": "spreadsheet_empirical_estimate",
+          "textureEffectOnInfiltration": "none",
+          "residualMeaning": "does_not_identify_loss_cause",
+          "efficiencyMeaning": "estimated_not_measured",
+          "daysReferenceState": "field_capacity_reference",
+          "daysMeaning": "reference_reserve_duration_not_remaining_days_from_now",
+          "zeroDailyUsePolicy": "null_days_not_applicable_zero_daily_use"
+        },
+        "evidenceState": {
+          "calculationImplemented": true,
+          "scientificValidation": "not_validated",
+          "parametersSelected": true,
+          "diagnosticsEvaluated": true,
+          "modelKind": "estimation",
+          "source": "spreadsheet-derived",
+          "fieldCalibration": "none"
+        },
+        "referenceVersions": {
+          "catalogVersion": null,
+          "calibrationVersion": null
+        },
+        "implementationReference": {
+          "modelVersion": "irrigation-estimation-v2",
+          "stage": "R4F_v2_estimation",
+          "arithmetic": "IEEE-754_Number"
+        },
+        "diagnosticRules": {
+          "ruleVersion": "irrigation-diagnostics-v1",
+          "evaluated": [
+            "P01",
+            "P02",
+            "P03",
+            "P04",
+            "P05"
+          ]
+        },
+        "parameterProvenance": {
+          "infiltration": "Hoja 1!C14:C16; F04:F06; undocumented legacy coefficient; not calibrated",
+          "qmax": "Hoja 1!B9; F01; canonical zero 6.3; not scientifically validated",
+          "soilWater": "Hoja 1!B24; F12; latest client confirmation: gravimetric dry weight",
+          "spacing": "latest client confirmation; simplified tributary width assumption",
+          "dailyUse": "Hoja 1!E18; F18",
+          "exhaustionDays": "Hoja 1!E19; F19; reference reserve assumption",
+          "thresholdDays": "latest client confirmation L; F20; absent from XLSX formulas",
+          "totalApplied": "Hoja 1!B30:B32; F21:F22; representative per-furrow scenario"
+        }
+      }
+    }
+  },
+  {
+    "id": "multiple",
+    "label": "P01, P03 y P05 · varios puntos",
+    "description": "Variante oficial de límites: P03 y P05 repetidos en inicio, mitad y final.",
+    "snapshot": {
+      "simulation": {
+        "id": 4,
+        "fincaId": 7,
+        "name": "P01, P03 y P05 · varios puntos",
+        "createdAt": "2026-10-27T12:00:00.000Z"
+      },
+      "model": {
+        "modelVersion": "irrigation-estimation-v2",
+        "contractVersion": "irrigation-contract-v2",
+        "sourceHash": "30b031d7bd3aa4365c65b6750a91a4004db4ef3452c99bf3924698b89f9dec3b"
+      },
+      "input": {
+        "crop": {
+          "etoMmPerDay": 0,
+          "cropCoefficient": 1,
+          "daysWithoutIrrigation": 1
+        },
+        "soil": {
+          "texture": null,
+          "fieldCapacityPct": 10,
+          "wiltingPointPct": 0,
+          "bulkDensityGcm3": 1,
+          "rootDepthM": 1,
+          "depletionThresholdPct": 1
+        },
+        "furrow": {
+          "furrowSpacingM": 1,
+          "lengthM": 1,
+          "slopePct": 0,
+          "furrowCount": 18
+        },
+        "irrigation": {
+          "flowLps": 7,
+          "durationMin": 1,
+          "advanceTimeMin": 0
+        }
+      },
+      "output": {
+        "waterNeed": {
+          "targetDepthMm": 0,
+          "dailyCropWaterUseMmPerDay": 0
+        },
+        "soilWater": {
+          "availableWaterMm": 100,
+          "availableCapacityL": 100,
+          "maxRecommendedDepthMm": 1,
+          "maxRecommendedVolumeL": 1,
+          "daysUntilAvailableWaterExhaustion": null,
+          "daysUntilDepletionThreshold": null
+        },
+        "application": {
+          "appliedVolumeL": 420,
+          "infiltratedDepthStartMm": 4.5,
+          "infiltratedDepthMiddleMm": 4.5,
+          "infiltratedDepthEndMm": 4.5,
+          "estimatedUsefulVolumeL": 4.5,
+          "residualLossVolumeL": 415.5
+        },
+        "totals": {
+          "totalAppliedVolumeL": 7560,
+          "totalAppliedVolumeM3": 7.56
+        },
+        "efficiency": {
+          "applicationEfficiencyPct": 1.0714285714285714
+        },
+        "diagnostics": {
+          "advanceRatioPct": 0,
+          "maxNonErosiveFlowLps": 6.3,
+          "items": [
+            {
+              "id": "P01",
+              "ruleVersion": "irrigation-diagnostics-v1",
+              "severity": "warning",
+              "fields": [
+                "irrigation.flowLps",
+                "furrow.slopePct",
+                "diagnostics.maxNonErosiveFlowLps"
+              ],
+              "evidence": {
+                "flowLps": 7,
+                "slopePct": 0,
+                "maxNonErosiveFlowLps": 6.3,
+                "operator": ">",
+                "units": {
+                  "flowLps": "L/s",
+                  "slopePct": "%",
+                  "maxNonErosiveFlowLps": "L/s"
+                },
+                "source": "R1_comparison",
+                "scientificValidation": "not_validated"
+              },
+              "message": "El caudal supera el máximo no erosivo estimado por la planilla; no demuestra erosión efectiva."
+            },
+            {
+              "id": "P03",
+              "ruleVersion": "irrigation-diagnostics-v1",
+              "severity": "info",
+              "fields": [
+                "application.infiltratedDepthStartMm",
+                "waterNeed.targetDepthMm"
+              ],
+              "evidence": {
+                "point": "start",
+                "infiltratedDepthMm": 4.5,
+                "targetDepthMm": 0,
+                "operator": ">",
+                "unit": "mm",
+                "source": "R1_comparison",
+                "scientificValidation": "not_validated"
+              },
+              "message": "La infiltración estimada supera la necesidad simplificada en este punto; no demuestra pérdida profunda."
+            },
+            {
+              "id": "P03",
+              "ruleVersion": "irrigation-diagnostics-v1",
+              "severity": "info",
+              "fields": [
+                "application.infiltratedDepthMiddleMm",
+                "waterNeed.targetDepthMm"
+              ],
+              "evidence": {
+                "point": "middle",
+                "infiltratedDepthMm": 4.5,
+                "targetDepthMm": 0,
+                "operator": ">",
+                "unit": "mm",
+                "source": "R1_comparison",
+                "scientificValidation": "not_validated"
+              },
+              "message": "La infiltración estimada supera la necesidad simplificada en este punto; no demuestra pérdida profunda."
+            },
+            {
+              "id": "P03",
+              "ruleVersion": "irrigation-diagnostics-v1",
+              "severity": "info",
+              "fields": [
+                "application.infiltratedDepthEndMm",
+                "waterNeed.targetDepthMm"
+              ],
+              "evidence": {
+                "point": "end",
+                "infiltratedDepthMm": 4.5,
+                "targetDepthMm": 0,
+                "operator": ">",
+                "unit": "mm",
+                "source": "R1_comparison",
+                "scientificValidation": "not_validated"
+              },
+              "message": "La infiltración estimada supera la necesidad simplificada en este punto; no demuestra pérdida profunda."
+            },
+            {
+              "id": "P05",
+              "ruleVersion": "irrigation-diagnostics-v1",
+              "severity": "warning",
+              "fields": [
+                "application.infiltratedDepthStartMm",
+                "soilWater.maxRecommendedDepthMm"
+              ],
+              "evidence": {
+                "point": "start",
+                "infiltratedDepthMm": 4.5,
+                "maxRecommendedDepthMm": 1,
+                "operator": ">",
+                "unit": "mm",
+                "source": "R1_comparison",
+                "scientificValidation": "not_validated"
+              },
+              "message": "La infiltración estimada supera la lámina del umbral en este punto; no demuestra percolación profunda."
+            },
+            {
+              "id": "P05",
+              "ruleVersion": "irrigation-diagnostics-v1",
+              "severity": "warning",
+              "fields": [
+                "application.infiltratedDepthMiddleMm",
+                "soilWater.maxRecommendedDepthMm"
+              ],
+              "evidence": {
+                "point": "middle",
+                "infiltratedDepthMm": 4.5,
+                "maxRecommendedDepthMm": 1,
+                "operator": ">",
+                "unit": "mm",
+                "source": "R1_comparison",
+                "scientificValidation": "not_validated"
+              },
+              "message": "La infiltración estimada supera la lámina del umbral en este punto; no demuestra percolación profunda."
+            },
+            {
+              "id": "P05",
+              "ruleVersion": "irrigation-diagnostics-v1",
+              "severity": "warning",
+              "fields": [
+                "application.infiltratedDepthEndMm",
+                "soilWater.maxRecommendedDepthMm"
+              ],
+              "evidence": {
+                "point": "end",
+                "infiltratedDepthMm": 4.5,
+                "maxRecommendedDepthMm": 1,
+                "operator": ">",
+                "unit": "mm",
+                "source": "R1_comparison",
+                "scientificValidation": "not_validated"
+              },
+              "message": "La infiltración estimada supera la lámina del umbral en este punto; no demuestra percolación profunda."
+            }
+          ]
+        }
+      },
+      "metadata": {
+        "metadataSchemaVersion": "irrigation-metadata-v2",
+        "effectiveParameters": {
+          "infiltrationCoefficient": 4.5,
+          "infiltrationExponent": 0.5,
+          "middleArrivalFactor": 0.5,
+          "qmaxCoefficient": 0.0063,
+          "qmaxZeroSlopeValue": 6.3,
+          "advanceRules": null
+        },
+        "units": {
+          "input": {
+            "crop": {
+              "etoMmPerDay": "mm/día",
+              "cropCoefficient": "adimensional",
+              "daysWithoutIrrigation": "días"
+            },
+            "soil": {
+              "fieldCapacityPct": "%",
+              "wiltingPointPct": "%",
+              "bulkDensityGcm3": "g/cm3",
+              "rootDepthM": "m",
+              "depletionThresholdPct": "%"
+            },
+            "furrow": {
+              "furrowSpacingM": "m",
+              "lengthM": "m",
+              "slopePct": "%",
+              "furrowCount": "surcos"
+            },
+            "irrigation": {
+              "flowLps": "L/s",
+              "durationMin": "min",
+              "advanceTimeMin": "min"
+            }
+          },
+          "output": {
+            "waterNeed": {
+              "targetDepthMm": "mm",
+              "dailyCropWaterUseMmPerDay": "mm/día"
+            },
+            "soilWater": {
+              "availableWaterMm": "mm",
+              "availableCapacityL": "L",
+              "maxRecommendedDepthMm": "mm",
+              "maxRecommendedVolumeL": "L",
+              "daysUntilAvailableWaterExhaustion": "días",
+              "daysUntilDepletionThreshold": "días"
+            },
+            "application": {
+              "appliedVolumeL": "L",
+              "infiltratedDepthStartMm": "mm",
+              "infiltratedDepthMiddleMm": "mm",
+              "infiltratedDepthEndMm": "mm",
+              "estimatedUsefulVolumeL": "L",
+              "residualLossVolumeL": "L"
+            },
+            "totals": {
+              "totalAppliedVolumeL": "L",
+              "totalAppliedVolumeM3": "m3"
+            },
+            "efficiency": {
+              "applicationEfficiencyPct": "%"
+            },
+            "diagnostics": {
+              "advanceRatioPct": "%",
+              "maxNonErosiveFlowLps": "L/s"
+            }
+          },
+          "effectiveParameters": {
+            "infiltrationCoefficient": "mm/min^0.5",
+            "infiltrationExponent": "adimensional",
+            "middleArrivalFactor": "adimensional",
+            "qmaxCoefficient": "L/s (slope fraction operand)",
+            "qmaxZeroSlopeValue": "L/s"
+          }
+        },
+        "assumptions": {
+          "soilWaterContentBasis": "gravimetric_dry_weight",
+          "furrowSpacingMeaning": "distance_between_furrows",
+          "furrowSpacingUsage": "simplified_tributary_width",
+          "furrowCountMeaning": "number_of_furrows_irrigated",
+          "furrowRepresentativeness": "uniform_per_furrow_scenario",
+          "totalAppliedVolumeScope": "per_furrow_applied_volume_times_furrow_count",
+          "infiltrationCoefficientOrigin": "undocumented_legacy_spreadsheet",
+          "infiltrationCalibration": "none",
+          "advanceBands": "not_selected",
+          "etoAndKc": "constant_during_period",
+          "effectiveRain": "not_modeled",
+          "initialMoisture": "not_modeled",
+          "flow": "constant",
+          "infiltration": "spreadsheet_empirical_estimate",
+          "textureEffectOnInfiltration": "none",
+          "residualMeaning": "does_not_identify_loss_cause",
+          "efficiencyMeaning": "estimated_not_measured",
+          "daysReferenceState": "field_capacity_reference",
+          "daysMeaning": "reference_reserve_duration_not_remaining_days_from_now",
+          "zeroDailyUsePolicy": "null_days_not_applicable_zero_daily_use"
+        },
+        "evidenceState": {
+          "calculationImplemented": true,
+          "scientificValidation": "not_validated",
+          "parametersSelected": true,
+          "diagnosticsEvaluated": true,
+          "modelKind": "estimation",
+          "source": "spreadsheet-derived",
+          "fieldCalibration": "none"
+        },
+        "referenceVersions": {
+          "catalogVersion": null,
+          "calibrationVersion": null
+        },
+        "implementationReference": {
+          "modelVersion": "irrigation-estimation-v2",
+          "stage": "R4F_v2_estimation",
+          "arithmetic": "IEEE-754_Number"
+        },
+        "diagnosticRules": {
+          "ruleVersion": "irrigation-diagnostics-v1",
+          "evaluated": [
+            "P01",
+            "P02",
+            "P03",
+            "P04",
+            "P05"
+          ]
+        },
+        "parameterProvenance": {
+          "infiltration": "Hoja 1!C14:C16; F04:F06; undocumented legacy coefficient; not calibrated",
+          "qmax": "Hoja 1!B9; F01; canonical zero 6.3; not scientifically validated",
+          "soilWater": "Hoja 1!B24; F12; latest client confirmation: gravimetric dry weight",
+          "spacing": "latest client confirmation; simplified tributary width assumption",
+          "dailyUse": "Hoja 1!E18; F18",
+          "exhaustionDays": "Hoja 1!E19; F19; reference reserve assumption",
+          "thresholdDays": "latest client confirmation L; F20; absent from XLSX formulas",
+          "totalApplied": "Hoja 1!B30:B32; F21:F22; representative per-furrow scenario"
+        }
+      }
+    }
+  },
+  {
+    "id": "small",
+    "label": "Valores decimales pequeños",
+    "description": "Variante adicional calculada offline por el backend para verificar formato. No procede del asistente.",
+    "snapshot": {
+      "simulation": {
+        "id": 5,
+        "fincaId": 7,
+        "name": "Valores decimales pequeños",
+        "createdAt": "2026-10-27T12:00:00.000Z"
+      },
+      "model": {
+        "modelVersion": "irrigation-estimation-v2",
+        "contractVersion": "irrigation-contract-v2",
+        "sourceHash": "30b031d7bd3aa4365c65b6750a91a4004db4ef3452c99bf3924698b89f9dec3b"
+      },
+      "input": {
+        "crop": {
+          "etoMmPerDay": 1e-10,
+          "cropCoefficient": 1,
+          "daysWithoutIrrigation": 1
+        },
+        "soil": {
+          "texture": "Franco",
+          "fieldCapacityPct": 20,
+          "wiltingPointPct": 10,
+          "bulkDensityGcm3": 1.3,
+          "rootDepthM": 0.7,
+          "depletionThresholdPct": 60
+        },
+        "furrow": {
+          "furrowSpacingM": 1.3,
+          "lengthM": 60,
+          "slopePct": 0,
+          "furrowCount": 18
+        },
+        "irrigation": {
+          "flowLps": 0.9,
+          "durationMin": 120,
+          "advanceTimeMin": 20
+        }
+      },
+      "output": {
+        "waterNeed": {
+          "targetDepthMm": 1e-10,
+          "dailyCropWaterUseMmPerDay": 1e-10
+        },
+        "soilWater": {
+          "availableWaterMm": 91,
+          "availableCapacityL": 7098,
+          "maxRecommendedDepthMm": 54.6,
+          "maxRecommendedVolumeL": 4258.8,
+          "daysUntilAvailableWaterExhaustion": 910000000000,
+          "daysUntilDepletionThreshold": 546000000000
+        },
+        "application": {
+          "appliedVolumeL": 6480,
+          "infiltratedDepthStartMm": 49.29503017546495,
+          "infiltratedDepthMiddleMm": 47.19639816765682,
+          "infiltratedDepthEndMm": 45,
+          "estimatedUsefulVolumeL": 3681.3190570772317,
+          "residualLossVolumeL": 2798.6809429227683
+        },
+        "totals": {
+          "totalAppliedVolumeL": 116640,
+          "totalAppliedVolumeM3": 116.64
+        },
+        "efficiency": {
+          "applicationEfficiencyPct": 56.8104792758832
+        },
+        "diagnostics": {
+          "advanceRatioPct": 16.666666666666668,
+          "maxNonErosiveFlowLps": 6.3,
+          "items": [
+            {
+              "id": "P03",
+              "ruleVersion": "irrigation-diagnostics-v1",
+              "severity": "info",
+              "fields": [
+                "application.infiltratedDepthStartMm",
+                "waterNeed.targetDepthMm"
+              ],
+              "evidence": {
+                "point": "start",
+                "infiltratedDepthMm": 49.29503017546495,
+                "targetDepthMm": 1e-10,
+                "operator": ">",
+                "unit": "mm",
+                "source": "R1_comparison",
+                "scientificValidation": "not_validated"
+              },
+              "message": "La infiltración estimada supera la necesidad simplificada en este punto; no demuestra pérdida profunda."
+            },
+            {
+              "id": "P03",
+              "ruleVersion": "irrigation-diagnostics-v1",
+              "severity": "info",
+              "fields": [
+                "application.infiltratedDepthMiddleMm",
+                "waterNeed.targetDepthMm"
+              ],
+              "evidence": {
+                "point": "middle",
+                "infiltratedDepthMm": 47.19639816765682,
+                "targetDepthMm": 1e-10,
+                "operator": ">",
+                "unit": "mm",
+                "source": "R1_comparison",
+                "scientificValidation": "not_validated"
+              },
+              "message": "La infiltración estimada supera la necesidad simplificada en este punto; no demuestra pérdida profunda."
+            },
+            {
+              "id": "P03",
+              "ruleVersion": "irrigation-diagnostics-v1",
+              "severity": "info",
+              "fields": [
+                "application.infiltratedDepthEndMm",
+                "waterNeed.targetDepthMm"
+              ],
+              "evidence": {
+                "point": "end",
+                "infiltratedDepthMm": 45,
+                "targetDepthMm": 1e-10,
+                "operator": ">",
+                "unit": "mm",
+                "source": "R1_comparison",
+                "scientificValidation": "not_validated"
+              },
+              "message": "La infiltración estimada supera la necesidad simplificada en este punto; no demuestra pérdida profunda."
+            }
+          ]
+        }
+      },
+      "metadata": {
+        "metadataSchemaVersion": "irrigation-metadata-v2",
+        "effectiveParameters": {
+          "infiltrationCoefficient": 4.5,
+          "infiltrationExponent": 0.5,
+          "middleArrivalFactor": 0.5,
+          "qmaxCoefficient": 0.0063,
+          "qmaxZeroSlopeValue": 6.3,
+          "advanceRules": null
+        },
+        "units": {
+          "input": {
+            "crop": {
+              "etoMmPerDay": "mm/día",
+              "cropCoefficient": "adimensional",
+              "daysWithoutIrrigation": "días"
+            },
+            "soil": {
+              "fieldCapacityPct": "%",
+              "wiltingPointPct": "%",
+              "bulkDensityGcm3": "g/cm3",
+              "rootDepthM": "m",
+              "depletionThresholdPct": "%"
+            },
+            "furrow": {
+              "furrowSpacingM": "m",
+              "lengthM": "m",
+              "slopePct": "%",
+              "furrowCount": "surcos"
+            },
+            "irrigation": {
+              "flowLps": "L/s",
+              "durationMin": "min",
+              "advanceTimeMin": "min"
+            }
+          },
+          "output": {
+            "waterNeed": {
+              "targetDepthMm": "mm",
+              "dailyCropWaterUseMmPerDay": "mm/día"
+            },
+            "soilWater": {
+              "availableWaterMm": "mm",
+              "availableCapacityL": "L",
+              "maxRecommendedDepthMm": "mm",
+              "maxRecommendedVolumeL": "L",
+              "daysUntilAvailableWaterExhaustion": "días",
+              "daysUntilDepletionThreshold": "días"
+            },
+            "application": {
+              "appliedVolumeL": "L",
+              "infiltratedDepthStartMm": "mm",
+              "infiltratedDepthMiddleMm": "mm",
+              "infiltratedDepthEndMm": "mm",
+              "estimatedUsefulVolumeL": "L",
+              "residualLossVolumeL": "L"
+            },
+            "totals": {
+              "totalAppliedVolumeL": "L",
+              "totalAppliedVolumeM3": "m3"
+            },
+            "efficiency": {
+              "applicationEfficiencyPct": "%"
+            },
+            "diagnostics": {
+              "advanceRatioPct": "%",
+              "maxNonErosiveFlowLps": "L/s"
+            }
+          },
+          "effectiveParameters": {
+            "infiltrationCoefficient": "mm/min^0.5",
+            "infiltrationExponent": "adimensional",
+            "middleArrivalFactor": "adimensional",
+            "qmaxCoefficient": "L/s (slope fraction operand)",
+            "qmaxZeroSlopeValue": "L/s"
+          }
+        },
+        "assumptions": {
+          "soilWaterContentBasis": "gravimetric_dry_weight",
+          "furrowSpacingMeaning": "distance_between_furrows",
+          "furrowSpacingUsage": "simplified_tributary_width",
+          "furrowCountMeaning": "number_of_furrows_irrigated",
+          "furrowRepresentativeness": "uniform_per_furrow_scenario",
+          "totalAppliedVolumeScope": "per_furrow_applied_volume_times_furrow_count",
+          "infiltrationCoefficientOrigin": "undocumented_legacy_spreadsheet",
+          "infiltrationCalibration": "none",
+          "advanceBands": "not_selected",
+          "etoAndKc": "constant_during_period",
+          "effectiveRain": "not_modeled",
+          "initialMoisture": "not_modeled",
+          "flow": "constant",
+          "infiltration": "spreadsheet_empirical_estimate",
+          "textureEffectOnInfiltration": "none",
+          "residualMeaning": "does_not_identify_loss_cause",
+          "efficiencyMeaning": "estimated_not_measured",
+          "daysReferenceState": "field_capacity_reference",
+          "daysMeaning": "reference_reserve_duration_not_remaining_days_from_now",
+          "zeroDailyUsePolicy": "null_days_not_applicable_zero_daily_use"
+        },
+        "evidenceState": {
+          "calculationImplemented": true,
+          "scientificValidation": "not_validated",
+          "parametersSelected": true,
+          "diagnosticsEvaluated": true,
+          "modelKind": "estimation",
+          "source": "spreadsheet-derived",
+          "fieldCalibration": "none"
+        },
+        "referenceVersions": {
+          "catalogVersion": null,
+          "calibrationVersion": null
+        },
+        "implementationReference": {
+          "modelVersion": "irrigation-estimation-v2",
+          "stage": "R4F_v2_estimation",
+          "arithmetic": "IEEE-754_Number"
+        },
+        "diagnosticRules": {
+          "ruleVersion": "irrigation-diagnostics-v1",
+          "evaluated": [
+            "P01",
+            "P02",
+            "P03",
+            "P04",
+            "P05"
+          ]
+        },
+        "parameterProvenance": {
+          "infiltration": "Hoja 1!C14:C16; F04:F06; undocumented legacy coefficient; not calibrated",
+          "qmax": "Hoja 1!B9; F01; canonical zero 6.3; not scientifically validated",
+          "soilWater": "Hoja 1!B24; F12; latest client confirmation: gravimetric dry weight",
+          "spacing": "latest client confirmation; simplified tributary width assumption",
+          "dailyUse": "Hoja 1!E18; F18",
+          "exhaustionDays": "Hoja 1!E19; F19; reference reserve assumption",
+          "thresholdDays": "latest client confirmation L; F20; absent from XLSX formulas",
+          "totalApplied": "Hoja 1!B30:B32; F21:F22; representative per-furrow scenario"
+        }
+      }
+    }
+  }
+]
