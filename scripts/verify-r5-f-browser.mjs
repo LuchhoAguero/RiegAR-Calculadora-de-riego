@@ -67,6 +67,7 @@ try{
  });
  await scenario("Historial vacío y Manning accesible",{width:320},async({page,state})=>{
   state.pages[7]=[pageOf()];await openHistory(page);await visible(page.getByText("Todavía no hay simulaciones de riego guardadas para esta finca.",{exact:true}));
+  const previous=page.locator("summary").filter({hasText:"Cálculos anteriores — Manning"});await visible(previous);assert.equal(await page.getByRole("link",{name:"Ver cálculos Manning",exact:true}).count(),0);await previous.click();
   await visible(page.getByRole("link",{name:"Ver cálculos Manning",exact:true}));assert.equal(detailCalls(state).length,0);await noOverflow(page);await shot(page,"historial-vacio-320");
  });
  await scenario("Mixto usa solo summary, sin DETAIL por tarjeta",{},async({page,state})=>{

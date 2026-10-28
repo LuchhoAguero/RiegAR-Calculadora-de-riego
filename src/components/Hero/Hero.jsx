@@ -17,7 +17,7 @@ export default function Hero() {
               <p className={s.eyebrow}>Gestión de riego por surcos</p>
               <h1 className={s.title}>Tu trabajo de riego, organizado por finca.</h1>
               <p className={s.subtitle}>
-                Organizá tus fincas y consultá sus cálculos guardados en un mismo lugar.
+                Organizá tus fincas y consultá sus simulaciones de riego guardadas en un mismo lugar.
               </p>
               <div className={s.cta}>
                 {isLoggedIn ? <Link className={s.btnPrimary} to="/fincas">Ir a Mis fincas</Link> : <>
@@ -34,15 +34,11 @@ export default function Hero() {
               <ol>
                 <li><FiUser aria-hidden="true" /><div><strong>Creá tu cuenta</strong><p>Accedé a tu espacio de trabajo.</p></div></li>
                 <li><FiMapPin aria-hidden="true" /><div><strong>Organizá tus fincas</strong><p>Conservá su nombre y ubicación.</p></div></li>
-                <li><FiFolder aria-hidden="true" /><div><strong>Consultá tus cálculos</strong><p>Encontrá los registros de cada finca.</p></div></li>
+                <li><FiFolder aria-hidden="true" /><div><strong>Consultá tus simulaciones</strong><p>Encontrá los resultados guardados de cada finca.</p></div></li>
               </ol>
             </div>
           </div>
         </div>
-        <section className={s.previousTools} aria-labelledby="home-previous-tools-title">
-          <div><h2 id="home-previous-tools-title">Herramientas anteriores</h2><p>Calculadora Manning y guía de uso, disponibles durante la transición.</p></div>
-          <div className={s.previousLinks}><Link to="/calculadora">Calculadora Manning</Link><Link to="/guia">Guía Manning</Link></div>
-        </section>
       </div>
     </section>
   );

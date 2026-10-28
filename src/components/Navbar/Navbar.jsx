@@ -1,6 +1,5 @@
 import React, { useState, useContext, useEffect, useRef, startTransition } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { FiChevronDown } from "react-icons/fi";
 import s from "./Navbar.module.scss";
 import logo from "../../assets/images/riegar-logo.png";
 import { AuthContext } from "../../context/AuthContext";
@@ -9,9 +8,6 @@ import Modal from "../Modal/Modal.jsx"; // 1. Importamos el Modal
 export default function Navbar() {
   const [open, setOpen] = useState(false);
   const menuButton = useRef(null);
-  const [toolsOpen, setToolsOpen] = useState(false);
-  const toolsContainer = useRef(null);
-  const toolsButton = useRef(null);
   const { pathname } = useLocation();
 
   // 2. Estado para controlar el modal de logout
@@ -22,22 +18,11 @@ export default function Navbar() {
 
   const closeNavigation = () => {
     setOpen(false);
-    setToolsOpen(false);
   };
 
   useEffect(() => {
     setOpen(false);
-    setToolsOpen(false);
   }, [pathname, isLoggedIn]);
-
-  useEffect(() => {
-    if (!toolsOpen) return;
-    const closeOutside = event => {
-      if (!toolsContainer.current?.contains(event.target)) setToolsOpen(false);
-    };
-    document.addEventListener("pointerdown", closeOutside);
-    return () => document.removeEventListener("pointerdown", closeOutside);
-  }, [toolsOpen]);
 
   // 3. Función que se ejecuta al hacer clic en el botón (SOLO abre el modal)
   const handleLogoutClick = () => {
@@ -74,7 +59,7 @@ export default function Navbar() {
             aria-label={open ? "Cerrar menú" : "Abrir menú"}
             aria-expanded={open}
             aria-controls="primary-navigation"
-            onClick={() => { setOpen(!open); setToolsOpen(false); }}
+            onClick={() => setOpen(!open)}
           >
             <span />
             <span />
@@ -83,12 +68,7 @@ export default function Navbar() {
 
           <nav id="primary-navigation" aria-label="Navegación principal"
             onKeyDown={event => {
-              if (event.key === "Escape" && toolsOpen) {
-                event.preventDefault();
-                event.stopPropagation();
-                setToolsOpen(false);
-                toolsButton.current.focus();
-              } else if (event.key === "Escape" && open) {
+              if (event.key === "Escape" && open) {
                 event.preventDefault();
                 setOpen(false);
                 menuButton.current.focus();
@@ -106,20 +86,6 @@ export default function Navbar() {
             )}
 
             <Link to="/contacto" onClick={closeNavigation}>Contacto</Link>
-            <div className={s.tools} ref={toolsContainer}
-              onBlur={event => {
-                if (!event.currentTarget.contains(event.relatedTarget)) setToolsOpen(false);
-              }}>
-              <button type="button" className={s.toolsButton} ref={toolsButton}
-                aria-expanded={toolsOpen} aria-controls="previous-tools-navigation"
-                onClick={() => setToolsOpen(!toolsOpen)}>
-                Herramientas anteriores <FiChevronDown aria-hidden="true" />
-              </button>
-              <ul id="previous-tools-navigation" className={s.toolsList} hidden={!toolsOpen}>
-                <li><Link to="/calculadora" onClick={closeNavigation}>Calculadora Manning</Link></li>
-                <li><Link to="/guia" onClick={closeNavigation}>Guía Manning</Link></li>
-              </ul>
-            </div>
 
             {/* Botones de Sesión */}
             {isLoggedIn ? (

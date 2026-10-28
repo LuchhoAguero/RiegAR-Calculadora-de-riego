@@ -248,7 +248,7 @@ try {
     assert.equal(await page.getByRole("navigation", { name: "Navegación principal" }).count(), 0);
     await menu.click();
     assert.equal(await page.getByRole("button", { name: "Cerrar menú" }).getAttribute("aria-expanded"), "true");
-    await page.getByRole("button", { name: "Herramientas anteriores", exact: true }).focus();
+    await page.getByRole("navigation", { name: "Navegación principal" }).getByRole("link", { name: "Contacto", exact: true }).focus();
     await page.keyboard.press("Escape"); assert.equal(await menu.evaluate(node => node === document.activeElement), true);
     await noOverflow(page);
     await page.getByRole("button", { name: "Editar finca Finca ensayo", exact: true }).click();
@@ -263,7 +263,9 @@ try {
     const main = page.locator("main");
     await visible(main.getByRole("heading", { level: 1, name: "Tu trabajo de riego, organizado por finca." }));
     assert.match(await main.innerText(), /simulación de riego por surcos está en preparación/);
-    assert.doesNotMatch(await main.innerText(), /Fórmula de Manning|Precisión Profesional/);
+    assert.doesNotMatch(await main.innerText(), /Manning|Herramientas anteriores|Precisión Profesional/);
+    await visible(main.getByText("Consultá tus simulaciones", { exact: true }));
+    assert.equal(await main.getByRole("link", { name: /Manning/ }).count(), 0);
     assert.equal(await main.getByRole("link", { name: /simulación/i }).count(), 0);
     assert.equal(state.calls.length, 0);
     await main.getByRole("link", { name: "Crear cuenta", exact: true }).click(); await pathIs(page, "/registro");
@@ -281,51 +283,76 @@ try {
     await visible(page.getByRole("heading", { level: 1, name: "Mis fincas", exact: true }));
     assert.equal(await nav.getByRole("link", { name: "Mis fincas", exact: true }).getAttribute("aria-current"), "page");
   });
-  await scenario("B3: Herramientas anteriores por teclado y retorno de foco", {}, async ({ page }) => {
+  await scenario("G parcial: Manning fuera de Navbar y acceso Footer con teclado", {}, async ({ page }) => {
     await page.goto(origin);
     const nav = page.getByRole("navigation", { name: "Navegación principal" });
-    const trigger = nav.getByRole("button", { name: "Herramientas anteriores", exact: true });
-    assert.equal(await trigger.getAttribute("aria-expanded"), "false");
+    assert.equal(await nav.getByRole("button", { name: "Herramientas anteriores", exact: true }).count(), 0);
     assert.equal(await nav.getByRole("link", { name: "Calculadora Manning", exact: true }).count(), 0);
-    await trigger.focus(); await page.keyboard.press("Enter");
-    assert.equal(await trigger.getAttribute("aria-expanded"), "true");
-    await page.keyboard.press("Tab");
-    assert.equal(await nav.getByRole("link", { name: "Calculadora Manning", exact: true }).evaluate(el => el === document.activeElement), true);
-    await page.keyboard.press("Tab");
-    assert.equal(await nav.getByRole("link", { name: "Guía Manning", exact: true }).evaluate(el => el === document.activeElement), true);
-    await page.keyboard.press("Escape");
-    assert.equal(await trigger.getAttribute("aria-expanded"), "false");
-    assert.equal(await trigger.evaluate(el => el === document.activeElement), true);
-    await page.keyboard.press("Space");
-    await page.locator("main h1").click(); assert.equal(await trigger.getAttribute("aria-expanded"), "false");
-    await trigger.click(); await page.keyboard.press("Shift+Tab");
-    assert.equal(await trigger.getAttribute("aria-expanded"), "false");
-    await trigger.click(); await nav.getByRole("link", { name: "Guía Manning", exact: true }).click(); await pathIs(page, "/guia");
-    assert.equal(await trigger.getAttribute("aria-expanded"), "false");
-    await page.goBack(); await pathIs(page, "/"); assert.equal(await trigger.getAttribute("aria-expanded"), "false");
+    assert.equal(await nav.getByRole("link", { name: "Guía Manning", exact: true }).count(), 0);
+    const calculator = page.locator("footer").getByRole("link", { name: "Calculadora Manning", exact: true });
+    await calculator.focus(); await page.keyboard.press("Enter"); await pathIs(page, "/calculadora");
+    await visible(page.getByText("0.522896", { exact: true }));
+    await page.goBack(); await pathIs(page, "/");
+    await page.locator("footer").getByRole("link", { name: "Guía Manning", exact: true }).focus();
+    await page.keyboard.press("Enter"); await pathIs(page, "/guia");
+    await page.goBack(); await pathIs(page, "/"); await page.goForward(); await pathIs(page, "/guia");
   });
   for (const width of [390, 320]) {
-    await scenario(`B3: Herramientas anteriores con toque a ${width}`, { width, touch: true }, async ({ page }) => {
+    await scenario(`G parcial: menú móvil y Footer Manning con toque a ${width}`, { width, touch: true }, async ({ page }) => {
       await page.goto(origin);
       await page.getByRole("button", { name: "Abrir menú" }).tap();
       const nav = page.getByRole("navigation", { name: "Navegación principal" });
-      const trigger = nav.getByRole("button", { name: "Herramientas anteriores", exact: true });
-      await trigger.tap(); await noOverflow(page);
-      await trigger.tap(); assert.equal(await trigger.getAttribute("aria-expanded"), "false");
-      await trigger.tap();
-      await nav.getByRole("link", { name: "Guía Manning", exact: true }).focus();
-      await page.keyboard.press("Escape");
-      assert.equal(await trigger.getAttribute("aria-expanded"), "false");
-      assert.equal(await trigger.evaluate(el => el === document.activeElement), true);
+      assert.equal(await nav.getByRole("button", { name: "Herramientas anteriores", exact: true }).count(), 0);
+      await noOverflow(page);
+      await nav.getByRole("link", { name: "Contacto", exact: true }).focus();
       await page.keyboard.press("Escape");
       assert.equal(await page.getByRole("button", { name: "Abrir menú" }).evaluate(el => el === document.activeElement), true);
-      await page.getByRole("button", { name: "Abrir menú" }).tap(); await trigger.tap();
-      await nav.getByRole("link", { name: "Calculadora Manning", exact: true }).tap(); await pathIs(page, "/calculadora");
+      await page.getByRole("button", { name: "Abrir menú" }).tap();
+      await nav.getByRole("link", { name: "Contacto", exact: true }).tap(); await pathIs(page, "/contacto");
+      assert.equal(await nav.count(), 0);
+      await page.locator("footer").getByRole("link", { name: "Calculadora Manning", exact: true }).tap(); await pathIs(page, "/calculadora");
       await visible(page.getByText("0.522896", { exact: true }));
       assert.equal(await page.getByRole("navigation", { name: "Navegación principal" }).count(), 0);
       await page.goto(origin); await page.locator("footer").getByRole("link", { name: "Guía Manning", exact: true }).tap(); await pathIs(page, "/guia");
     });
   }
+  for (const width of [1280, 390, 320]) {
+    await scenario(`G parcial: desplegable Manning, jerarquía, teclado y foco a ${width}`, { storedToken: token(), width, touch: width < 768 }, async ({ page, state }) => {
+      await page.goto(origin + "/fincas/7");
+      const summary = page.locator("summary").filter({ hasText: "Cálculos anteriores — Manning" });
+      const disclosure = summary.locator("..");
+      const link = page.getByRole("link", { name: "Ver cálculos Manning", exact: true });
+      await visible(summary); await visible(page.getByText("Todavía no hay simulaciones de riego guardadas para esta finca.", { exact: true }));
+      assert.equal(await disclosure.evaluate(el => el.open), false); assert.equal(await link.count(), 0);
+      const top = await page.locator('#farm-data-title, #historial-simulaciones, #farm-simulations-title, details > summary').evaluateAll(nodes => nodes.map(el => el.getBoundingClientRect().top + scrollY));
+      assert.equal(top.length, 4); assert.deepEqual(top, [...top].sort((a, b) => a - b));
+      const requests = state.calls.length;
+      await summary.focus();
+      const focus = await summary.evaluate(el => ({ style: getComputedStyle(el).outlineStyle, width: getComputedStyle(el).outlineWidth, height: el.getBoundingClientRect().height }));
+      assert.notEqual(focus.style, "none"); assert.ok(parseFloat(focus.width) >= 2); assert.ok(focus.height >= 44);
+      await page.keyboard.press("Enter"); await visible(link); assert.equal(await disclosure.evaluate(el => el.open), true);
+      await page.keyboard.press("Tab"); assert.equal(await link.evaluate(el => el === document.activeElement), true);
+      await noOverflow(page); await screenshot(page, `desplegable-manning-abierto-${width}`);
+      await page.keyboard.press("Escape"); assert.equal(await disclosure.evaluate(el => el.open), false); assert.equal(await summary.evaluate(el => el === document.activeElement), true);
+      await page.keyboard.press("Tab"); assert.equal(await page.locator("footer").getByRole("link", { name: "Facebook", exact: true }).evaluate(el => el === document.activeElement), true);
+      await summary.focus(); await page.keyboard.press("Space"); await visible(link); await page.keyboard.press("Space"); assert.equal(await disclosure.evaluate(el => el.open), false);
+      assert.equal(state.calls.length, requests, "Abrir/cerrar no consulta API");
+      if (width < 768) await summary.tap(); else await summary.click();
+      await visible(link); await link.focus(); await page.keyboard.press("Enter"); await pathIs(page, "/finca/7");
+      await visible(page.getByRole("link", { name: "+ Nuevo Cálculo", exact: true }));
+      await page.goBack(); await pathIs(page, "/fincas/7"); await visible(summary); assert.equal(await disclosure.evaluate(el => el.open), false);
+      await noOverflow(page); await screenshot(page, `desplegable-manning-cerrado-${width}`);
+    });
+  }
+  await scenario("G parcial: acceso directo y recarga de todas las rutas Manning", { storedToken: token() }, async ({ page, state }) => {
+    for (const path of ["/calculadora", "/guia", "/finca/7", "/finca/7/nuevo-calculo"]) {
+      await page.goto(origin + path); await page.reload(); await pathIs(page, path);
+      if (path === "/finca/7") await visible(page.getByRole("link", { name: "+ Nuevo Cálculo", exact: true }));
+      else if (path === "/guia") await visible(page.getByRole("heading", { name: "1. Entendiendo la Fórmula de Manning", exact: true }));
+      else await visible(page.getByText("0.522896", { exact: true }));
+    }
+    assert.ok(state.calls.every(call => call.method === "GET"));
+  });
   await scenario("B3: formulario plegable conserva datos y foco", { storedToken: token() }, async ({ page, state }) => {
     await page.goto(origin + "/dashboard"); await visible(page.getByRole("link", { name: /Finca ensayo/ }));
     const trigger = page.getByRole("button", { name: "Nueva finca", exact: true });
@@ -409,6 +436,7 @@ try {
     await visible(page.getByText("La nueva simulación de riego por surcos está en preparación.", { exact: true }));
     assert.equal(await page.getByRole("button", { name: /simulación/i }).count(), 0);
     await page.reload(); await visible(page.getByRole("heading", { name: "Finca ensayo", exact: true }));
+    await page.locator("summary").filter({ hasText: "Cálculos anteriores — Manning" }).click();
     await page.getByRole("link", { name: "Ver cálculos Manning", exact: true }).click(); await pathIs(page, "/finca/7");
     await visible(page.getByRole("link", { name: "+ Nuevo Cálculo", exact: true }));
     await page.goBack(); await pathIs(page, "/fincas/7");

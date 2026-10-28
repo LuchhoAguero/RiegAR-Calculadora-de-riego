@@ -48,27 +48,7 @@
   strong { font-size: 1rem; }
   p { font-size: .9rem; line-height: 1.5; margin: .35rem 0 0; }
 }
-.previousTools {
-  position: relative;
-  @include visual-card;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 1rem 2rem;
-  background: $color-application-soft;
-  padding: 1.5rem;
-  margin-top: 2rem;
-  h2 { color: $color-primary; font-size: 1.1rem; margin: 0 0 .5rem; }
-  p { color: $color-muted; font-size: .9rem; line-height: 1.5; margin: 0; }
-}
-.previousLinks {
-  display: flex;
-  flex-wrap: wrap;
-  gap: .5rem 1.25rem;
-  a { display: inline-flex; align-items: center; min-height: 44px; color: $color-primary; text-decoration: underline; text-underline-offset: 3px; }
-}
 @media (max-width: 420px) {
   .visual { padding: 8rem .75rem .75rem; }
-  .journey, .previousTools { padding: 1.25rem; }
+  .journey { padding: 1.25rem; }
 }

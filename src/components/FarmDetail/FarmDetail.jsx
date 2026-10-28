@@ -23,10 +23,18 @@ function OwnedFarm({ fincaId, sessionToken }) {
           <Link className={s.secondary} to="/fincas">Administrar mis fincas</Link>
         </section>
         <SimulationHistory fincaId={fincaId} sessionToken={sessionToken} />
-        <div className={s.grid}>
-          <section className={s.simulations} aria-labelledby="farm-simulations-title"><p className={s.eyebrow}>Riego por surcos</p><h2 id="farm-simulations-title">Simulaciones de la finca</h2><p>La nueva simulación de riego por surcos está en preparación.</p><p>La creación sigue deshabilitada. Podés consultar los resultados guardados en el historial de esta finca.</p>{import.meta.env.DEV && <Link className={s.secondary} to={`/fincas/${fincaId}/simulaciones/nueva`}>Preparar simulación (solo local)</Link>}</section>
-          <section className={s.previous} aria-labelledby="farm-previous-title"><p className={s.eyebrow}>Herramientas anteriores</p><h2 id="farm-previous-title">Cálculos Manning</h2><p>Consultá los cálculos históricos vinculados a esta finca.</p><Link className={s.secondary} to={`/finca/${fincaId}`}>Ver cálculos Manning</Link></section>
-        </div>
+        <section className={s.simulations} aria-labelledby="farm-simulations-title"><p className={s.eyebrow}>Riego por surcos</p><h2 id="farm-simulations-title">Simulaciones de la finca</h2><p>La nueva simulación de riego por surcos está en preparación.</p><p>La creación sigue deshabilitada. Podés consultar los resultados guardados en el historial de esta finca.</p>{import.meta.env.DEV && <Link className={s.secondary} to={`/fincas/${fincaId}/simulaciones/nueva`}>Preparar simulación (solo local)</Link>}</section>
+        <details className={s.previous} onKeyDown={event => {
+          if (event.key === "Escape" && event.currentTarget.open) {
+            event.preventDefault();
+            event.stopPropagation();
+            event.currentTarget.open = false;
+            event.currentTarget.querySelector("summary").focus();
+          }
+        }}>
+          <summary>Cálculos anteriores — Manning</summary>
+          <div className={s.previousContent}><p>Consultá los cálculos Manning vinculados a esta finca. Son registros distintos de las simulaciones de riego por surcos.</p><Link className={s.secondary} to={`/finca/${fincaId}`}>Ver cálculos Manning</Link></div>
+        </details>
       </>}
   </div>;
 }

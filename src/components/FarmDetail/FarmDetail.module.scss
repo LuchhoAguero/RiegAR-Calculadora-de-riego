@@ -10,7 +10,8 @@
 }
 .backLink { display: inline-flex; align-items: center; min-height: 44px; color: $color-primary; text-decoration: underline; text-underline-offset: 3px; margin-bottom: 1rem; }
 .pageHead { border-bottom: 1px solid $color-line; margin-bottom: 1.5rem; padding-bottom: 1rem; p { color: $color-muted; margin: 0; } }
-.data, .simulations, .previous { @include visual-card; padding: 1.5rem; }
+.data, .simulations, .previous { @include visual-card; }
+.data, .simulations { padding: 1.5rem; }
 .data {
   border-top: 4px solid $color-crop;
   dl { margin: 0 0 1.5rem; }
@@ -18,12 +19,15 @@
   dt { color: $color-muted; }
   dd { margin: 0; font-weight: 650; min-width: 0; }
 }
-.grid { @include grid(2, 1.5rem); margin-top: 1.5rem; }
-.simulations { background: $color-water-soft; }
-.previous { background: $color-application-soft; }
+.simulations { background: $color-water-soft; margin-top: 1.5rem; }
+.previous {
+  background: $color-application-soft;
+  margin-top: 1.5rem;
+  summary { min-height: 44px; padding: 1rem 1.5rem; color: $color-primary; font-weight: 650; cursor: pointer; border-radius: $radius-md; }
+}
+.previousContent { padding: 0 1.5rem 1.5rem; p { margin-top: 0; } }
 .eyebrow { font-size: .8rem; text-transform: uppercase; letter-spacing: .07em; color: $color-muted; font-weight: 650; margin-top: 0; }
 .secondary { @include button-secondary; }
 .loading { @include feedback($color-primary, $color-water-soft); }
 .error { @include feedback($color-error, $color-error-soft); }
-@media (max-width: 720px) { .grid { grid-template-columns: 1fr; } }
-@media (max-width: 420px) { .data, .simulations, .previous { padding: 1.25rem; } .data dl > div { flex-direction: column; } }
+@media (max-width: 420px) { .data, .simulations { padding: 1.25rem; } .previous summary { padding-inline: 1.25rem; } .previousContent { padding: 0 1.25rem 1.25rem; } .data dl > div { flex-direction: column; } }
