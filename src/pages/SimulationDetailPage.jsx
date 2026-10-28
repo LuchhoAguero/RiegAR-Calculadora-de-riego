@@ -1,10 +1,12 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { lazy, Suspense, useContext, useEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import { ApiError, getIrrigationSimulationDetail, isValidResourceId } from "../services/apiService.js";
 import { readErrorMessage } from "../utils/irrigationHistory.js";
 import SimulationResults from "../components/IrrigationResults/SimulationResults.jsx";
 import s from "../components/FarmDetail/FarmDetail.module.scss";
+import { isSimulationSandbox, SIMULATION_SANDBOX_NOTICE } from "../utils/irrigationAvailability.js";
+const SubmissionComparison = import.meta.env.DEV ? lazy(() => import("../components/SimulationSubmission/SubmissionComparison.jsx")) : null;
 
 function OwnedSimulation({ fincaId, simulationId, sessionToken }) {
   const [view, setView] = useState({ loading: true, snapshot: null, error: null });
@@ -27,10 +29,11 @@ function OwnedSimulation({ fincaId, simulationId, sessionToken }) {
   }, [view.loading, validIds]);
   return <div className={`${s.detail} container`} ref={root}>
     <Link className={s.backLink} to={isValidResourceId(fincaId) ? `/fincas/${fincaId}#historial-simulaciones` : "/fincas"}>Volver al historial de la finca</Link>
+    {import.meta.env.DEV && isSimulationSandbox() && <p className={s.loading} role="note">{SIMULATION_SANDBOX_NOTICE}</p>}
     {!validIds ? <><h1>Simulación no disponible</h1><p className={s.error} role="alert">Los identificadores de finca y simulación deben ser válidos.</p></>
       : view.loading ? <><h1>Detalle de simulación</h1><p className={s.loading} role="status">Consultando la simulación guardada...</p></>
       : view.error ? <><h1>No pudimos consultar la simulación</h1><p className={s.error} role="alert">{readErrorMessage(view.error)}</p><button className={s.secondary} type="button" onClick={() => setAttempt(value => value + 1)}>Volver a consultar</button></>
-      : <SimulationResults snapshot={view.snapshot} />}
+      : <>{import.meta.env.DEV && <Suspense fallback={null}><SubmissionComparison snapshot={view.snapshot} fincaId={fincaId} /></Suspense>}<SimulationResults snapshot={view.snapshot} /></>}
   </div>;
 }
 export default function SimulationDetailPage() {

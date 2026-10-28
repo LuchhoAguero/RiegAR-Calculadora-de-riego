@@ -25,10 +25,11 @@ async function fixture({ storedToken = null, width = 1280, touch = false, servic
   page.on("dialog", dialog => dialog.accept());
   await context.route("**/*", async route => {
     const request = route.request(), url = new URL(request.url());
-    if (serviceHarness && url.origin === origin && url.pathname === "/__r5c/services/apiService.js") return route.fulfill({ contentType: "application/javascript", body: await readFile(new URL("../src/services/apiService.js", import.meta.url), "utf8") });
+    if (serviceHarness && url.origin === origin && url.pathname === "/__r5c/services/apiService.js") return route.fulfill({ contentType: "application/javascript", body: (await readFile(new URL("../src/services/apiService.js", import.meta.url), "utf8")).replaceAll("import.meta.env", JSON.stringify({ DEV: true, PROD: false, VITE_RIEGAR_V2_MOCK: "true", VITE_API_URL: "https://riegar-v2.invalid" })) });
     if (serviceHarness && url.origin === origin && url.pathname === "/__r5c/context/session.js") return route.fulfill({ contentType: "application/javascript", body: await readFile(new URL("../src/context/session.js", import.meta.url), "utf8") });
+    if (serviceHarness && url.origin === origin && url.pathname === "/__r5c/utils/irrigationAvailability.js") return route.fulfill({ contentType: "application/javascript", body: await readFile(new URL("../src/utils/irrigationAvailability.js", import.meta.url), "utf8") });
     if (url.origin === origin) return route.continue();
-    if (url.origin !== "http://localhost:4000") return route.abort();
+    if (url.origin !== "http://localhost:4000" && !(serviceHarness && url.origin === "https://riegar-v2.invalid")) return route.abort();
     const path = url.pathname, method = request.method();
     const data = request.postData() ? JSON.parse(request.postData()) : null;
     state.calls.push({ path, method, data, query: url.search, authorization: request.headers().authorization });

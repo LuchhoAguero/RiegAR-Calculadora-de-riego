@@ -8,6 +8,7 @@
 .notice { @include feedback($color-primary, $color-water-soft); p { margin-bottom: 0; } }
 .progress { list-style: none; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: .5rem; margin: 1.5rem 0; padding: 0; button { @include button-secondary; width: 100%; flex-wrap: wrap; padding-inline: .5rem; &[aria-current="step"] { background: $color-primary; color: $color-surface; } } }
 .panel { @include visual-card; padding: 1.5rem; border-top: 4px solid $color-crop; h2 { display: flex; align-items: center; gap: .6rem; color: $color-primary; margin-top: 0; font-size: 1.5rem; } }
+.editable { border: 0; padding: 0; margin: 0; min-width: 0; }
 .category0 { border-top-color: $color-crop; }
 .category1 { border-top-color: $color-soil; }
 .category2 { border-top-color: $color-primary; }

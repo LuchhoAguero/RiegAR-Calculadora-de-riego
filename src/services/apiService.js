@@ -1,4 +1,5 @@
 import { invalidateSession } from "../context/session.js";
+import { isSimulationSandbox } from "../utils/irrigationAvailability.js";
 
 const BASE_URL = import.meta.env?.VITE_API_URL || "http://localhost:4000";
 const SERVER_ERROR = "Ocurrió un error en el servidor.";
@@ -29,7 +30,7 @@ export class ApiError extends Error {
   }
 }
 
-async function request(url, options) {
+async function request(url, options, expectedStatus) {
   const authorization = options.headers.Authorization;
   const token = authorization?.slice(7);
   let response;
@@ -49,7 +50,10 @@ async function request(url, options) {
       status: response.status, code: "INVALID_RESPONSE",
     });
   }
-  if (response.ok) return body;
+  if (response.ok) {
+    if (expectedStatus !== undefined && response.status !== expectedStatus) throw new ApiError("No se pudo verificar la confirmación del servidor. Revisá el historial antes de volver a enviar.", { status: response.status, code: "INVALID_RESPONSE" });
+    return body;
+  }
   if (response.status === 401 || (response.status === 403 && body?.error === "Token inválido o expirado.")) invalidateSession(token);
   const errors = Array.isArray(body?.errors) ? body.errors.map(item =>
     Object.fromEntries(["code", "category", "field", "rule", "expected", "message"]
@@ -202,10 +206,11 @@ function simulationCollection(fincaId) {
   return `${BASE_URL}/api/fincas/${fincaId}/irrigation-simulations`;
 }
 
-// Transporte solamente: el backend elige versión y calcula. Sin retry ni UI POST en R5-C.
-export const createIrrigationSimulation = async (fincaId, payload) => request(simulationCollection(fincaId), {
-  method: "POST", headers: getAuthHeaders(true), body: JSON.stringify(payload),
-});
+// Fail closed: sin configuración también queda bloqueado, incluso al importar sin Vite.
+export const createIrrigationSimulation = async (fincaId, payload) => {
+  if (!isSimulationSandbox(import.meta.env)) throw new ApiError("La creación de simulaciones permanece deshabilitada fuera de la API simulada de desarrollo.", { code: "SIMULATION_CREATION_DISABLED" });
+  return request(simulationCollection(fincaId), { method: "POST", headers: getAuthHeaders(true), body: JSON.stringify(payload) }, 201);
+};
 
 export const getIrrigationSimulationHistory = async (fincaId, { limit, cursor } = {}) => {
   const url = simulationCollection(fincaId);

@@ -1,7 +1,15 @@
 import test, { beforeEach, after } from "node:test";
 import assert from "node:assert/strict";
-import { createIrrigationSimulation, getIrrigationSimulationHistory, getIrrigationSimulationDetail, isValidResourceId, ApiError } from "../src/services/apiService.js";
+import { build } from "vite";
+import { fileURLToPath } from "node:url";
+import { SIMULATION_MOCK_ORIGIN } from "../src/utils/irrigationAvailability.js";
 import { SESSION_INVALIDATED } from "../src/context/session.js";
+
+// Contrato de transporte bajo configuración DEV simulada explícita; nunca habilita API real.
+const simulatedEnv = { DEV: true, PROD: false, VITE_RIEGAR_V2_MOCK: "true", VITE_API_URL: SIMULATION_MOCK_ORIGIN };
+const compiled = await build({ configFile: false, root: fileURLToPath(new URL("../", import.meta.url)), logLevel: "silent", define: Object.fromEntries(Object.entries(simulatedEnv).map(([key, value]) => [`import.meta.env.${key}`, JSON.stringify(value)])), build: { write: false, minify: false, lib: { entry: fileURLToPath(new URL("../src/services/apiService.js", import.meta.url)), formats: ["es"] } } });
+const code = (Array.isArray(compiled) ? compiled[0] : compiled).output.find(file => file.type === "chunk").code;
+const { createIrrigationSimulation, getIrrigationSimulationHistory, getIrrigationSimulationDetail, isValidResourceId, ApiError } = await import(`data:text/javascript;base64,${Buffer.from(code).toString("base64")}`);
 
 const originalFetch = globalThis.fetch;
 let storage, calls, invalidations;
@@ -9,10 +17,10 @@ beforeEach(() => {
   storage = new Map([["token", "synthetic-current"]]); calls = []; invalidations = 0;
   globalThis.localStorage = { getItem: k => storage.get(k) ?? null, setItem: (k,v) => storage.set(k,v), removeItem: k => storage.delete(k) };
   globalThis.window = new EventTarget(); window.addEventListener(SESSION_INVALIDATED, () => invalidations++);
-  globalThis.fetch = async (url, options) => { calls.push({ url, options }); return Response.json({ ok: true }); };
+  globalThis.fetch = async (url, options) => { calls.push({ url, options }); return Response.json({ ok: true }, { status: options.method === "POST" ? 201 : 200 }); };
 });
 after(() => { globalThis.fetch = originalFetch; delete globalThis.localStorage; delete globalThis.window; });
-const collection = "http://localhost:4000/api/fincas/7/irrigation-simulations";
+const collection = SIMULATION_MOCK_ORIGIN + "/api/fincas/7/irrigation-simulations";
 const payload = {
   name: "Referencia V1",
   crop: { etoMmPerDay: 5, cropCoefficient: .7, daysWithoutIrrigation: 20 },
@@ -28,6 +36,10 @@ test("POST V1: ruta, payload plano sin mutaciones ni versión del cliente", asyn
   assert.equal(options.headers.Authorization, "Bearer synthetic-current"); assert.equal(options.headers["Content-Type"], "application/json");
   assert.deepEqual(JSON.parse(options.body), before); assert.deepEqual(payload, before);
   assert.equal(options.signal, undefined);
+});
+test("POST 200 no sustituye la confirmación contractual 201 ni se repite", async () => {
+  globalThis.fetch = async () => { calls.push(1); return Response.json({ ok: true }, { status: 200 }); };
+  await assert.rejects(createIrrigationSimulation(7, payload), { code: "INVALID_RESPONSE", status: 200 }); assert.equal(calls.length, 1);
 });
 test("HISTORY sin opciones deja el default de limit al servidor", async () => {
   await getIrrigationSimulationHistory("7"); assert.equal(calls[0].url, collection); assert.equal(calls[0].options.method, "GET"); assert.equal(calls[0].options.body, undefined);

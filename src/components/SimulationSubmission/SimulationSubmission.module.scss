@@ -1,0 +1,10 @@
+@use "../../styles/_variables.scss" as *;
+@use "../../styles/_mixins.scss" as *;
+.status, .comparison { @include visual-card; padding: 1.5rem; margin-block: 1.5rem; background: $color-water-soft; overflow-wrap: anywhere; line-height: 1.6; h2 { color: $color-primary; font-size: 1.3rem; margin-top: 0; } }
+.actions { display: flex; flex-wrap: wrap; gap: .75rem; }
+.secondary { @include button-secondary; }
+.fieldLink { background: transparent; color: $color-primary; border: 0; text-decoration: underline; text-align: left; font: inherit; min-height: 44px; padding: .5rem 0; cursor: pointer; }
+.note { color: $color-muted; font-size: .875rem; margin-bottom: 0; }
+.comparisonData summary { min-height: 44px; padding-block: .75rem; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.comparisonList { @include grid(2, 1rem); list-style: none; padding: 0; li { @include visual-card; padding: 1rem; } h3 { font-size: 1rem; margin-top: 0; } dl { margin: 0; } dl > div { padding-block: .5rem; border-bottom: 1px solid $color-line; } dt { color: $color-muted; } dd { margin: .25rem 0 0; font-weight: 650; } }
+@media (max-width: 720px) { .comparisonList { grid-template-columns: 1fr; } .status, .comparison { padding: 1.25rem; } }
