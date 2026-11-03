@@ -7,6 +7,7 @@
 .name { font-size: 1.15rem; margin-bottom: .5rem; font-weight: 650; }
 .hint { color: $color-muted; font-size: .875rem; }
 .total { @include visual-card; background: linear-gradient(120deg, $color-primary, $color-water); color: white; border: 0; padding: 2rem; display: grid; grid-template-columns: 1.4fr 1fr; gap: 1.5rem; h2 { color: white; margin-block: .75rem; } .eyebrow { margin-top: 0; } .number { color: white; } details { color: white; } }
+.results .total h2 { color: white; }
 .totalContext { border-left: 1px solid rgba(white,.4); padding-left: 1.5rem; p:last-child { font-size: .9rem; } }
 .amount { min-width: 0; }
 .number { color: $color-primary; font-variant-numeric: tabular-nums; font-size: clamp(1.35rem, 1.1rem + 1vw, 1.9rem); font-weight: 750; line-height: 1.35; margin: .4rem 0; }

@@ -20,6 +20,14 @@ export default function Navbar() {
     setOpen(false);
   };
 
+  const handleNavigationKeyDown = event => {
+    if (event.key === "Escape" && open) {
+      event.preventDefault();
+      setOpen(false);
+      menuButton.current.focus();
+    }
+  };
+
   useEffect(() => {
     setOpen(false);
   }, [pathname, isLoggedIn]);
@@ -60,6 +68,7 @@ export default function Navbar() {
             aria-expanded={open}
             aria-controls="primary-navigation"
             onClick={() => setOpen(!open)}
+            onKeyDown={handleNavigationKeyDown}
           >
             <span />
             <span />
@@ -67,13 +76,7 @@ export default function Navbar() {
           </button>
 
           <nav id="primary-navigation" aria-label="Navegación principal"
-            onKeyDown={event => {
-              if (event.key === "Escape" && open) {
-                event.preventDefault();
-                setOpen(false);
-                menuButton.current.focus();
-              }
-            }} className={`${s.menu} ${open ? s.isOpen : ""}`}>
+            onKeyDown={handleNavigationKeyDown} className={`${s.menu} ${open ? s.isOpen : ""}`}>
             {isLoggedIn && (
               <Link
                 to="/fincas"
