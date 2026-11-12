@@ -1,51 +1,17 @@
-# RiegAR (React + SCSS)
+# RiegAR
 
-Conversión del prototipo Next/Tailwind a **React + Vite + SCSS Modules (BEM-like)**.
+Aplicación web para organizar fincas y consultar escenarios de riego por surcos. El historial conserva resultados V1 y V2. La calculadora histórica de Manning sigue disponible en **Herramientas anteriores**.
 
-## Estructura
+## Desarrollo
 
-```
-src/
-  assets/
-    images/...
-  components/
-    Navbar/
-    Hero/
-    Calculator/
-    Footer/
-  styles/
-    _variables.scss
-    _mixins.scss
-    _globals.scss
-  utils/
-    manning.js
-  App.jsx
-  main.jsx
-```
+Con Node.js y npm, ejecutá `npm ci`, `npm test` y `npm run dev`. El cliente usa `VITE_API_URL` y en desarrollo puede apuntar a `http://localhost:4000`. La [guía académica](docs/MVP-ACADEMICO-GUIA.md) incluye instalación del backend y uso de la aplicación.
 
-## Scripts
+| Función | Disponibilidad |
+|---|---|
+| Registro, sesión, fincas e historial | Conectan a la API configurada |
+| Creación V2 | Demostración con API simulada en desarrollo |
+| Manning | Cálculo local y guardado histórico mediante la API |
 
-- `pnpm i` / `npm i`
-- `pnpm dev` / `npm run dev`
-
-## Notas
-
-- Sin dependencias de UI externas: todo es SCSS Modules.
-- Tokens en `src/styles/_variables.scss`.
-- Lógica de la fórmula de Manning en `src/utils/manning.js`.
-- Exportar CSV desde la calculadora.
-- Diseño responsivo y accesible.
-
-## API y sesión
-
-El frontend consulta `VITE_API_URL` y, si no está definida, usa
-`http://localhost:4000` para desarrollo local. Copiar `.env.example` a `.env`
-permite configurar otro backend sin cambiar los endpoints existentes. No
-versionar `.env` ni colocar secretos en variables `VITE_`, porque se incluyen
-en el bundle del navegador.
-
-La sesión actual guarda el JWT en `localStorage`. `ProtectedRoute` comprueba
-únicamente si hay un token; no valida su expiración. Si caduca, la ruta puede
-seguir visible y las llamadas protegidas mostrarán el error devuelto por la
-API. El manejo de expiración y cierre de sesión queda pendiente para la fase
-de sesión de producción.
+- [Guía académica y guion de demostración](docs/MVP-ACADEMICO-GUIA.md)
+- [Preparación de staging y despliegue](docs/MVP-ACADEMICO-STAGING.md)
+- [Checkpoint MVP Académico 01](docs/MVP-ACADEMICO-01-CHECKPOINT.md)

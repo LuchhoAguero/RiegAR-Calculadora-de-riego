@@ -76,31 +76,33 @@ try{
   assert.equal(new URLSearchParams(paths(state)[0].query).get("limit"),"20");
  });
  await scenario("Paginación opaca, doble activación, orden y deduplicación",{},async({page,state})=>{
-  pagination(state);await openHistory(page);await visible(page.getByRole("button",{name:"Cargar más simulaciones",exact:true}));
+  pagination(state);await openHistory(page);await visible(page.getByRole("button",{name:"Página siguiente",exact:true}));
   let release;state.historyGate=new Promise(r=>release=r);
-  await page.getByRole("button",{name:"Cargar más simulaciones",exact:true}).evaluate(button=>{button.click();button.click();});await waitCalls(page,state,"history",2);
+  await page.getByRole("button",{name:"Página siguiente",exact:true}).evaluate(button=>{button.click();button.click();});await waitCalls(page,state,"history",2);
   assert.equal(paths(state).length,2);assert.equal(new URLSearchParams(paths(state)[1].query).get("cursor"),cursor);release();await historyReady(page);
-  assert.deepEqual(await page.locator("[data-simulation]").evaluateAll(nodes=>nodes.map(n=>Number(n.dataset.simulation))),[...Array.from({length:20},(_,i)=>200-i),180,179]);assert.equal(detailCalls(state).length,0);
+  assert.deepEqual(await page.locator("[data-simulation]").evaluateAll(nodes=>nodes.map(n=>Number(n.dataset.simulation))),[180,179]);assert.equal(detailCalls(state).length,0);
+  await page.getByRole("button",{name:"Página anterior",exact:true}).click();await visible(page.getByText("Página 1",{exact:true}));
+  assert.equal(await page.locator("[data-simulation]").count(),20);assert.equal(new URLSearchParams(paths(state)[2].query).has("cursor"),false);
  });
  await scenario("Error de más resultados conserva filas y reintenta cursor correcto",{},async({page,state})=>{
-  pagination(state);await openHistory(page);await visible(page.getByRole("button",{name:"Cargar más simulaciones",exact:true}));state.historyStatus=500;
-  await page.getByRole("button",{name:"Cargar más simulaciones",exact:true}).click();await visible(page.getByRole("alert"));assert.equal(await page.locator("[data-simulation]").count(),20);assert.equal(paths(state).length,2);
+  pagination(state);await openHistory(page);await visible(page.getByRole("button",{name:"Página siguiente",exact:true}));state.historyStatus=500;
+  await page.getByRole("button",{name:"Página siguiente",exact:true}).click();await visible(page.getByRole("alert"));assert.equal(await page.locator("[data-simulation]").count(),20);assert.equal(paths(state).length,2);
   state.historyStatus=200;await page.getByRole("button",{name:"Volver a consultar historial",exact:true}).click();await historyReady(page);assert.equal(new URLSearchParams(paths(state)[2].query).get("cursor"),cursor);
-  await page.getByRole("button",{name:"Actualizar historial",exact:true}).click();await visible(page.getByRole("button",{name:"Cargar más simulaciones",exact:true}));assert.equal(await page.locator("[data-simulation]").count(),20);assert.equal(new URLSearchParams(paths(state)[3].query).has("cursor"),false);
+  await page.getByRole("button",{name:"Actualizar historial",exact:true}).click();await visible(page.getByRole("button",{name:"Página siguiente",exact:true}));assert.equal(await page.locator("[data-simulation]").count(),20);assert.equal(new URLSearchParams(paths(state)[3].query).has("cursor"),false);
  });
- await scenario("Cargar más con teclado enfoca el primer resultado nuevo",{},async({page,state})=>{
-  pagination(state);await openHistory(page);const button=page.getByRole("button",{name:"Cargar más simulaciones",exact:true});await visible(button);await button.focus();await page.keyboard.press("Enter");await historyReady(page);
-  await page.waitForFunction(()=>document.activeElement?.getAttribute("href")==="/fincas/7/simulaciones/180");
-  assert.equal(await page.getByRole("link",{name:"Ver resultado de Escenario V2 180",exact:true}).evaluate(el=>getComputedStyle(el).outlineStyle!=="none"),true);assert.equal(paths(state).length,2);
+ await scenario("Página siguiente con teclado devuelve el foco al historial",{},async({page,state})=>{
+  pagination(state);await openHistory(page);const button=page.getByRole("button",{name:"Página siguiente",exact:true});await visible(button);await button.focus();await page.keyboard.press("Enter");await historyReady(page);
+  await page.waitForFunction(()=>document.activeElement?.id==="historial-simulaciones");
+  assert.equal(await page.locator("#historial-simulaciones").evaluate(el=>getComputedStyle(el).outlineStyle!=="none"),true);assert.equal(paths(state).length,2);
  });
  await scenario("Cursor repetido detiene avance, sin ciclo automático",{},async({page,state})=>{
-  pagination(state);state.pages[7][1].pagination={limit:20,hasMore:true,nextCursor:cursor};await openHistory(page);await page.getByRole("button",{name:"Cargar más simulaciones",exact:true}).click();
+  pagination(state);state.pages[7][1].pagination={limit:20,hasMore:true,nextCursor:cursor};await openHistory(page);await page.getByRole("button",{name:"Página siguiente",exact:true}).click();
   await visible(page.getByRole("alert"));assert.match(await page.getByRole("alert").innerText(),/no avanzó/);assert.equal(paths(state).length,2);assert.equal(await page.locator("[data-simulation]").count(),20);
  });
  await scenario("Actualización fallida se reintenta desde primera página",{},async({page,state})=>{
-  pagination(state);await openHistory(page);await visible(page.getByRole("button",{name:"Cargar más simulaciones",exact:true}));state.historyNetwork=true;
+  pagination(state);await openHistory(page);await visible(page.getByRole("button",{name:"Página siguiente",exact:true}));state.historyNetwork=true;
   await page.getByRole("button",{name:"Actualizar historial",exact:true}).click();await visible(page.getByRole("alert"));state.historyNetwork=false;
-  await page.getByRole("button",{name:"Volver a consultar historial",exact:true}).click();await visible(page.getByRole("button",{name:"Cargar más simulaciones",exact:true}));assert.equal(new URLSearchParams(paths(state).at(-1).query).has("cursor"),false);
+  await page.getByRole("button",{name:"Volver a consultar historial",exact:true}).click();await visible(page.getByRole("button",{name:"Página siguiente",exact:true}));assert.equal(new URLSearchParams(paths(state).at(-1).query).has("cursor"),false);
  });
  await scenario("404 tras carga elimina datos anteriores sin revelar ownership",{},async({page,state})=>{
   await openHistory(page);await historyReady(page);state.historyStatus=404;await page.getByRole("button",{name:"Actualizar historial",exact:true}).click();await visible(page.getByRole("alert"));assert.equal(await page.locator("[data-simulation]").count(),0);assert.match(await page.getByRole("alert").innerText(),/no está disponible/);

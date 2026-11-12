@@ -43,8 +43,21 @@
   }
 
   // 5. Al hacer hover sobre el contenedor, mostramos el texto
-  &:hover .tooltipText {
+  &:hover .tooltipText,
+  &:focus-visible .tooltipText {
     visibility: visible;
     opacity: 1;
+  }
+}
+
+@media (max-width: 420px) {
+  .tooltipContainer {
+    position: static;
+    .tooltipText {
+      inset: 1.5rem 0 auto;
+      width: auto;
+      transform: none;
+      &::after { display: none; }
+    }
   }
 }

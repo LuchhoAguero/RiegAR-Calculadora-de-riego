@@ -13,7 +13,8 @@ import FincaDetailPage from "../pages/FincaDetailPage.jsx";
 import NuevoCalculoPage from "../pages/NuevoCalculoPage.jsx";
 import FarmDetailPage from "../pages/FarmDetailPage.jsx";
 import NewSimulationPage from "../pages/NewSimulationPage.jsx";
-const ResultsDemoPage = import.meta.env.DEV ? lazy(() => import("../pages/ResultsDemoPage.jsx")) : null;
+import { localSimulationPreparation } from "../utils/irrigationAvailability.js";
+const ResultsDemoPage = localSimulationPreparation ? lazy(() => import("../pages/ResultsDemoPage.jsx")) : null;
 const SimulationDetailPage = lazy(() => import("../pages/SimulationDetailPage.jsx"));
 
 export default function AppRoutes() {
@@ -38,7 +39,7 @@ export default function AppRoutes() {
       <Route path="/fincas/:fincaId" element={<ProtectedRoute><FarmDetailPage /></ProtectedRoute>} />
       <Route path="/fincas/:fincaId/simulaciones/nueva" element={<ProtectedRoute><NewSimulationPage /></ProtectedRoute>} />
       <Route path="/fincas/:fincaId/simulaciones/:simulationId" element={<ProtectedRoute><Suspense fallback={<p className="container" role="status">Cargando el detalle de simulación...</p>}><SimulationDetailPage /></Suspense></ProtectedRoute>} />
-      {import.meta.env.DEV && <Route path="/desarrollo/resultados-v2" element={<ProtectedRoute><Suspense fallback={<p className="container" role="status">Cargando la demostración...</p>}><ResultsDemoPage /></Suspense></ProtectedRoute>} />}
+      {ResultsDemoPage && <Route path="/desarrollo/resultados-v2" element={<ProtectedRoute><Suspense fallback={<p className="container" role="status">Cargando la demostración...</p>}><ResultsDemoPage /></Suspense></ProtectedRoute>} />}
       <Route
         path="/finca/:id"
         element={

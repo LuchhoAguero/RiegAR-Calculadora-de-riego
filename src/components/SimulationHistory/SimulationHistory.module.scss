@@ -11,6 +11,7 @@
 .diagnosticSummary { padding: .7rem; border-radius: $radius-sm; background: $color-application-soft; color: $color-primary; }
 .primary { @include button-primary; }
 .secondary { @include button-secondary; }
+.pagination { display: flex; flex-wrap: wrap; gap: .75rem; align-items: center; }
 .error { @include feedback($color-error, $color-error-soft); }
 .loading { @include feedback($color-primary, $color-water-soft); }
 .neutral { @include feedback($color-primary, $color-application-soft); }

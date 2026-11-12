@@ -21,7 +21,10 @@ for (const [name, configured, expected] of [
   ["PROD con flag simulado", { ...env, DEV: false, PROD: true }, false], ["PROD prevalece", { ...env, PROD: true }, false],
   ["API real local", { ...env, VITE_API_URL: "http://localhost:4000" }, false], ["otro destino", { ...env, VITE_API_URL: "https://api.example.invalid" }, false],
   ["flag falso", { ...env, VITE_RIEGAR_V2_MOCK: "false" }, false],
-]) test(`H disponibilidad: ${name}`, () => assert.equal(isSimulationSandbox(configured), expected));
+]) test(`H disponibilidad: ${name}`, () => assert.equal(isSimulationSandbox(configured, true), expected));
+test("D sin marca de servidor Vite, las flags DEV exactas no habilitan el sandbox", () => {
+  assert.equal(isSimulationSandbox(env), false);
+});
 
 test("H captura el payload V2 contractual, un intento y snapshot inmutable", async () => {
   const f = fixture(), raw = values(); await f.controller.submit("7", raw, {});

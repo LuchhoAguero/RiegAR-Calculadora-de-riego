@@ -7,7 +7,7 @@ import { SESSION_INVALIDATED } from "../src/context/session.js";
 
 // Contrato de transporte bajo configuración DEV simulada explícita; nunca habilita API real.
 const simulatedEnv = { DEV: true, PROD: false, VITE_RIEGAR_V2_MOCK: "true", VITE_API_URL: SIMULATION_MOCK_ORIGIN };
-const compiled = await build({ configFile: false, root: fileURLToPath(new URL("../", import.meta.url)), logLevel: "silent", define: Object.fromEntries(Object.entries(simulatedEnv).map(([key, value]) => [`import.meta.env.${key}`, JSON.stringify(value)])), build: { write: false, minify: false, lib: { entry: fileURLToPath(new URL("../src/services/apiService.js", import.meta.url)), formats: ["es"] } } });
+const compiled = await build({ configFile: false, root: fileURLToPath(new URL("../", import.meta.url)), logLevel: "silent", define: { __RIEGAR_DEV_SERVER__: "true", ...Object.fromEntries(Object.entries(simulatedEnv).map(([key, value]) => [`import.meta.env.${key}`, JSON.stringify(value)])) }, build: { write: false, minify: false, lib: { entry: fileURLToPath(new URL("../src/services/apiService.js", import.meta.url)), formats: ["es"] } } });
 const code = (Array.isArray(compiled) ? compiled[0] : compiled).output.find(file => file.type === "chunk").code;
 const { createIrrigationSimulation, getIrrigationSimulationHistory, getIrrigationSimulationDetail, isValidResourceId, ApiError } = await import(`data:text/javascript;base64,${Buffer.from(code).toString("base64")}`);
 
