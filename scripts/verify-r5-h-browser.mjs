@@ -20,12 +20,13 @@ const details = state => state.calls.filter(call => /irrigation-simulations\/\d+
 const visible = locator => locator.waitFor({ state: "visible" });
 const noOverflow = async page => assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
 function summary(s) { return { simulation: clone(s.simulation), model: clone(s.model), summary: { targetDepthMm: s.output.waterNeed.targetDepthMm, appliedVolumeL: s.output.application.appliedVolumeL, applicationEfficiencyPct: s.output.efficiency.applicationEfficiencyPct, diagnostics: { count: s.output.diagnostics.items.length, severities: [...new Set(s.output.diagnostics.items.map(item => item.severity))] }, furrowCount: s.input.furrow.furrowCount, totalAppliedVolumeL: s.output.totals.totalAppliedVolumeL } }; }
-async function fixture({ width = 1280, origin = sandbox, mode = "success", readFailure = false } = {}) {
+async function fixture({ width = 1280, origin = sandbox, mode = "success", readFailure = false, demo = false } = {}) {
   const context = await browser.newContext({ viewport: { width, height: 900 }, hasTouch: width < 768 });
-  await context.addInitScript(value => localStorage.setItem("token", value), token());
+  if (!demo) await context.addInitScript(value => localStorage.setItem("token", value), token());
   if (readFailure) await context.addInitScript(() => { const original = window.fetch; window.fetch = async (...args) => { const response = await original(...args); if (String(args[0]).includes("riegar-v2.invalid") && args[1]?.method === "POST") return { ok: response.ok, status: response.status, text: async () => { throw new Error("Interrupción sintética de lectura"); } }; return response; }; });
   const page = await context.newPage(); page.setDefaultTimeout(10000);
   const state = { calls: [], errors: [], outside: [], stored: [], nextId: 301, mode, gate: null, persist: true, fincas: [{ id: 7, nombre_finca: "Finca de ensayo", ubicacion: "Mendoza" }, { id: 8, nombre_finca: "Otra finca", ubicacion: "San Juan" }] };
+  if (demo) state.fincas = [];
   page.on("pageerror", error => state.errors.push(error.message)); page.on("dialog", dialog => dialog.accept());
   await context.route("**/*", async route => {
     const request = route.request(), url = new URL(request.url());
@@ -34,6 +35,21 @@ async function fixture({ width = 1280, origin = sandbox, mode = "success", readF
     const method = request.method(), data = request.postData() ? JSON.parse(request.postData()) : null;
     state.calls.push({ method, path: url.pathname, query: url.search, data });
     const reply = (value, status = 200) => route.fulfill({ status, contentType: "application/json", body: JSON.stringify(value) });
+    if (demo && method === "POST" && url.pathname === "/api/register") {
+      assert.equal(data.email, "academico@example.invalid");
+      state.registered = data.email;
+      return reply({ message: "Usuario de prueba registrado.", userId: 1 }, 201);
+    }
+    if (demo && method === "POST" && url.pathname === "/api/login") {
+      assert.equal(data.email, state.registered);
+      state.demoToken = token();
+      return reply({ token: state.demoToken });
+    }
+    if (demo) assert.equal(request.headers().authorization, "Bearer " + state.demoToken);
+    if (demo && method === "POST" && url.pathname === "/api/fincas") {
+      state.fincas.push({ id: 7, ...data });
+      return reply({ message: "Finca de prueba creada.", fincaId: 7 }, 201);
+    }
     if (method === "GET" && url.pathname === "/api/fincas") return reply(clone(state.fincas));
     const match = url.pathname.match(/^\/api\/fincas\/(\d+)\/irrigation-simulations(?:\/(\d+))?$/);
     assert.ok(match, "Solo endpoints contractuales"); const farm = Number(match[1]), id = match[2];
@@ -93,6 +109,47 @@ async function candidate(page) { await page.locator('[data-simulation="301"] a')
 async function newSession(page) { await page.evaluate(value => { localStorage.setItem("token", value); dispatchEvent(new StorageEvent("storage", { key: "token" })); }, token(7200, 2)); }
 
 try {
+  for (const width of [1280, 390, 320]) await scenario(`MVP02: recorrido académico completo ${width}`, { width, demo: true }, async ({ page, state }) => {
+    const shotStep = async name => { await noOverflow(page); await shot(page, `mvp02-${name}-${width}`); };
+    const credentials = async () => {
+      await page.getByLabel("Email", { exact: true }).fill("academico@example.invalid");
+      await page.getByLabel("Contraseña", { exact: true }).fill("solo-demostracion-local");
+    };
+    await page.goto(sandbox);
+    await visible(page.getByText("Demostración académica · datos de prueba", { exact: true }));
+    await shotStep("inicio");
+    await page.getByRole("link", { name: "Crear cuenta", exact: true }).click();
+    await page.getByLabel("Nombre", { exact: true }).fill("Ensayo académico");
+    await credentials();
+    await page.getByRole("button", { name: "Registrarse", exact: true }).click();
+    await visible(page.getByText("Usuario de prueba registrado.", { exact: true }));
+    await shotStep("registro");
+    await page.goto(sandbox + "/login");
+    await credentials();
+    await page.getByRole("button", { name: "Ingresar", exact: true }).click();
+    await page.waitForURL(sandbox + "/fincas");
+    await page.getByRole("button", { name: "Nueva finca", exact: true }).click();
+    await page.getByLabel("Nombre de la Finca (*)", { exact: true }).fill("Finca académica");
+    await page.getByRole("button", { name: "Guardar Finca", exact: true }).click();
+    const farm = page.getByRole("link", { name: /Finca académica/ });
+    await visible(farm);
+    await shotStep("mis-fincas");
+    await farm.click();
+    await page.getByRole("link", { name: "Preparar simulación (solo local)", exact: true }).click();
+    await review(page);
+    await shotStep("revision");
+    await save(page);
+    await page.waitForURL(sandbox + "/fincas/7/simulaciones/301");
+    await visible(page.getByRole("article", { name: "Resultados de riego por surcos V2", exact: true }));
+    assert.equal(new Set(await page.locator("[data-metric]").evaluateAll(nodes => nodes.map(node => node.dataset.metric))).size, 19);
+    await shotStep("resultados");
+    await page.getByRole("link", { name: "Volver al historial de la finca", exact: true }).click();
+    await visible(page.locator('[data-simulation="301"]'));
+    await shotStep("historial");
+    assert.deepEqual(posts(state).map(call => call.path), [
+      "/api/register", "/api/login", "/api/fincas", "/api/fincas/7/irrigation-simulations"
+    ]);
+  });
   for (const origin of ["http://127.0.0.1:4173", "http://127.0.0.1:4174"]) await scenario(`Bloqueo de creación fuera de sandbox ${origin.slice(-4)}`, { origin }, async ({ page, state }) => {
     await page.goto(origin + "/fincas/7/simulaciones/nueva");
     if (origin.endsWith("4173")) { await visible(page.getByRole("heading", { name: "Simulación en preparación", exact: true })); await shot(page, "produccion-bloqueada-1280"); }

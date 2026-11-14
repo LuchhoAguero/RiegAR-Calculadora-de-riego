@@ -8,10 +8,58 @@ La aplicación incluye registro, sesión, alta y edición de fincas, historial p
 
 ## Arquitectura y datos
 
+```mermaid
+flowchart LR
+    browser["React y Vite"] -->|"HTTPS · JSON y JWT"| api["API Express"]
+    api --> access["Validación y propiedad de finca"]
+    access --> models["Motores V1/V2"]
+    access --> store["Knex y mysql2"]
+    models --> store
+    store -->|"TLS en staging"| mysql[("MySQL")]
+    mysql --> history["Historial y detalle versionado"]
+    history --> browser
+```
+
 - **Frontend.** React 18, Vite, React Router y SCSS Modules. Gestiona navegación, captura de entradas, validación de interfaz, sesión, consultas y presentación de resultados. El cliente HTTP es compartido.
 - **Backend.** Node.js, Express, bcrypt, JWT, Knex y mysql2. Valida el payload y la sesión, verifica propiedad de la finca, selecciona el descriptor activo para altas y el contrato persistido para lecturas.
 - **Persistencia.** MySQL almacena `users`, `fincas`, `calculos` (Manning), `irrigation_simulations` y las dos tablas de seguimiento de Knex. Un usuario posee fincas. Cada finca agrupa cálculos Manning y simulaciones. El snapshot contiene entradas, resultados, fecha, versión, hash de procedencia, metadata y diagnósticos. El índice de historial ordena por finca, fecha e ID. La FK de simulaciones restringe el borrado de la finca y la API devuelve 409 si conserva simulaciones.
 - **Sesión y seguridad.** El backend compara hashes bcrypt y valida el JWT de cada acceso protegido. El frontend conserva el token en `localStorage`, comprueba vencimiento para la navegación y sincroniza el cierre de sesión. La autorización por finca se aplica en el servidor. CORS utiliza orígenes definidos y el despliegue requiere HTTPS, secretos fuera del repositorio y una cuenta MySQL de privilegios limitados. El almacenamiento del token hace importante controlar la inyección de scripts.
+
+```mermaid
+erDiagram
+    USERS ||--o{ FINCAS : posee
+    FINCAS ||--o{ CALCULOS : conserva
+    FINCAS ||--o{ IRRIGATION_SIMULATIONS : agrupa
+    USERS {
+        int id PK
+        string email UK
+        string password_hash
+    }
+    FINCAS {
+        int id PK
+        int user_id FK
+        string nombre_finca
+        string ubicacion
+    }
+    CALCULOS {
+        int id PK
+        int finca_id FK
+        string tipo_canal
+        decimal Q_m3s
+    }
+    IRRIGATION_SIMULATIONS {
+        int id PK
+        int finca_id FK
+        string contract_version
+        string model_version
+        string source_hash
+        datetime created_at
+        json model_metadata
+        json diagnostics
+    }
+```
+
+El diagrama muestra las entidades de negocio y campos representativos. Knex conserva por separado su registro de migrations y el lock.
 
 ## Modelo de riego por surcos
 
@@ -62,15 +110,29 @@ Con consumo diario cero, los dos plazos son `null`. La cifra de pérdidas repres
 
 ## Guion de demostración para la facultad
 
-| Tiempo aproximado | Acción y punto a explicar |
+| Tiempo | Acción y punto a explicar |
 |---|---|
-| 1 min | Abrir Inicio y explicar el problema agrícola y la organización por finca. |
-| 2 min | Mostrar sesión y gestión de una finca en un entorno autorizado. Si se usan las capturas o fixtures de esta fase, anunciarlos como simulados. |
-| 2 min | Recorrer los cinco pasos y la revisión. Mostrar una validación decimal. Presentar el escenario V2 de referencia con 18 surcos y 116,64 m³ mediante la suite local con API interceptada o sus capturas. |
-| 2 min | Mostrar historial multipágina y un detalle V1 y otro V2. Explicar versión persistida, cursor opaco y estimaciones. |
-| 1 min | Abrir Manning desde el pie y contrastar qué magnitud hidráulica calcula. Cerrar con el plan de staging y el alcance académico. |
+| 0:00–1:00 | Abrir Inicio y explicar el problema agrícola y la organización por finca. Identificar el entorno que se muestra. |
+| 1:00–3:00 | Registrar un usuario de ensayo, iniciar sesión y crear una finca desde **Mis fincas**. Una vez verificado staging, estas acciones pueden usar su API real. En el recorrido reproducible son simuladas. |
+| 3:00–5:00 | Abrir el asistente de la finca, recorrer los cinco pasos, mostrar el aviso de decimal ambiguo y revisar. Confirmar el escenario V2 simulado con 18 surcos y 116,64 m³. |
+| 5:00–7:00 | Abrir el resultado, volver al historial, explicar una magnitud y un diagnóstico, y mostrar el detalle V1 y la paginación con las capturas verificadas. |
+| 7:00–8:00 | Abrir Manning desde el pie, calcular un caudal local y explicar el alcance estimativo del modelo de surcos. Resumir el estado de staging. |
 
-Para repetir el ensayo V2, usá la suite `scripts/verify-r5-h-browser.mjs` con Playwright y Edge. El encabezado del script detalla los tres servidores Vite de prueba. La suite simula la API y guarda capturas cuando se define `R5H_SCREENSHOTS`. Los resultados reproducidos se distinguen de las lecturas reales históricas B/C y de cualquier futura escritura real.
+Para repetir solo el recorrido académico en PowerShell, usá dos terminales en el frontend. Playwright debe estar disponible localmente y el argumento del script apunta a su `index.mjs`.
+
+```powershell
+$env:VITE_API_URL='https://riegar-v2.invalid'
+$env:VITE_RIEGAR_V2_MOCK='true'
+npm run dev -- --host 127.0.0.1 --port 4175 --strictPort
+```
+
+```powershell
+$env:R5H_FILTER='MVP02'
+$env:R5H_SCREENSHOTS='C:/ruta/evidencias-academicas'
+node scripts/verify-r5-h-browser.mjs 'C:/ruta/playwright/index.mjs'
+```
+
+La suite usa Edge, intercepta la API y guarda seis capturas por resolución. El aviso **Demostración académica · datos de prueba** permanece visible en el recorrido. El POST de simulación, el 201, HISTORY y DETAIL provienen del mock en memoria.
 
 ## Pruebas, límites y evolución
 

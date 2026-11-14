@@ -53,6 +53,15 @@ main {
   @include container;
 }
 
+.demo-notice {
+  margin: 0;
+  padding: .55rem 1rem;
+  color: $color-primary;
+  background: $color-water-soft;
+  text-align: center;
+  font-weight: 650;
+}
+
 .u-card {
   @include card;
 }

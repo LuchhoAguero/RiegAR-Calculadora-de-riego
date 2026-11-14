@@ -1,0 +1,15 @@
+[build]
+  command = "npm run build -- --mode staging"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "24"
+  VITE_RIEGAR_V2_MOCK = "false"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
+    Referrer-Policy = "no-referrer"
+    Content-Security-Policy = "script-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'"
