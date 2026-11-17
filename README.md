@@ -11,8 +11,8 @@ La rama publicada de ambos repositorios es demo-academica. El frontend usa Netli
 | Función | Estado de la presentación |
 |---|---|
 | Inicio, registro/login, guía y contacto | Pantallas verificadas contra la publicación real. El correo de contacto está deshabilitado. |
-| Registro, login y fincas mediante API | Ensayo sintético pendiente de autorización. |
-| Historial y resultados V1/V2 | Lectores implementados; consulta pública autenticada pendiente. |
+| Registro, login y alta de finca mediante API | Verificados con datos sintéticos reales, HTTP 201/200/201. Edición y borrado pendientes. |
+| Historial y resultados V1/V2 | Historial vacío y detalle inexistente verificados. Snapshots poblados pendientes. |
 | Creación V2 | Deshabilitada en producción. El asistente completo se demuestra solo en desarrollo con API simulada. |
 | Manning | Cálculo y validación locales verificados en la publicación. Guardado real fuera del ensayo mínimo. |
 
@@ -22,4 +22,4 @@ Con Node 24, ejecutar npm ci y npm test. Para compilar como Netlify, definir VIT
 
 La [guía académica](docs/MVP-ACADEMICO-GUIA.md) contiene configuración, arquitectura, modelo de datos, manual, guion de ocho minutos y contingencia por arranque lento de Render.
 
-Los correctivos DEMO-02 permanecen locales hasta su aprobación. El registro y las fincas del ensayo se crearán después de autorizar su presupuesto. [Publicación y migración de base](docs/PUBLICACION-ACADEMICA.md)
+DEMO-02 publicó los correctivos y completó 27 comprobaciones autenticadas reales. Consumió tres POST, con una cuenta y una finca sintéticas nuevas, y verificó creationEnabled=false. Las credenciales de la demo se conservan privadamente. [Publicación y migración de base](docs/PUBLICACION-ACADEMICA.md)

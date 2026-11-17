@@ -6,7 +6,7 @@ Demo aislada: Netlify sirve React, Render ejecuta Express y Knex accede a MySQL 
 
 El frontend público es https://riegar-academico.netlify.app y la API es https://riegar-api-demo.onrender.com. DEMO-02 verificó HTTP 200 en ambos y en /api/ready. CORS_ORIGIN usa el origen Netlify sin acento. VITE_API_URL usa el origen Render. La CA completa conserva sus delimitadores PEM. El backend publicado usa node src/staging-server.js.
 
-El esquema académico y sus dos cuentas ya están preparados. La cuenta migradora quedó bloqueada y el runtime tiene SELECT sobre simulaciones. Para la presentación, el siguiente paso es autorizar el ensayo mínimo de tres POST indicado en la guía académica. La restauración o creación de otro destino conserva su autorización independiente.
+El esquema académico y sus dos cuentas ya están preparados. La cuenta migradora quedó bloqueada y el runtime tiene SELECT sobre simulaciones. El ensayo mínimo de tres POST fue aprobado y completado con una cuenta y una finca sintéticas, respuestas 201/200/201 y capacidad autenticada de creación V2 deshabilitada. La restauración o creación de otro destino conserva su autorización independiente.
 
 ## Referencia de configuración inicial
 

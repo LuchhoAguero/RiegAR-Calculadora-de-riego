@@ -4,7 +4,7 @@
 
 El riego por surcos distribuye agua a lo largo de canales en el suelo. El productor o estudiante necesita relacionar la demanda del cultivo, la reserva de agua, la geometría y los tiempos de aplicación. RiegAR permite organizar escenarios por finca, estimar magnitudes con un modelo derivado de una planilla y conservar resultados versionados para su consulta.
 
-La publicación académica está disponible en https://riegar-academico.netlify.app y usa https://riegar-api-demo.onrender.com. Las pantallas públicas y Manning se verificaron contra esas URLs. Registro, sesión, fincas y lectura histórica requieren completar la prueba autenticada con datos sintéticos autorizados. El asistente V2 completo pertenece al entorno local con API simulada. La build pública conserva la creación V2 deshabilitada.
+La publicación académica está disponible en https://riegar-academico.netlify.app y usa https://riegar-api-demo.onrender.com. Las pantallas públicas y Manning se verificaron contra esas URLs. Registro, login, alta y lectura de finca e historial vacío se verificaron con datos sintéticos autorizados. La lectura de snapshots históricos poblados permanece pendiente. El asistente V2 completo pertenece al entorno local con API simulada. La build pública conserva la creación V2 deshabilitada.
 
 ## Arquitectura y datos
 
@@ -129,7 +129,7 @@ En el backend, npm ci y npm test reproducen las pruebas offline. El servicio Ren
 
 La cuenta runtime posee permisos de negocio limitados y SELECT sobre simulaciones. La cuenta migradora está bloqueada. Las cinco migrations ya están aplicadas. La presentación utiliza el schema académico preparado. La recuperación de un destino nuevo requiere su autorización y verificación de identidad independientes.
 
-En el recorrido autenticado, después de aprobar las tres solicitudes de prueba, crear una cuenta sintética e iniciar sesión. Desde Mis fincas se crea y selecciona una finca. Se puede mostrar el historial vacío, recargar y cerrar sesión. El resultado de esas operaciones se registra como pendiente hasta completar el ensayo. No se presupone que existan snapshots históricos en la base académica.
+DEMO-02 completó el recorrido autenticado con tres POST autorizados y respuestas 201, 200 y 201. La cuenta y finca sintéticas quedaron disponibles para la presentación. Mis fincas muestra solo los registros de esa cuenta. El historial real está vacío, la recarga conserva la finca y logout protege nuevamente las rutas. Las credenciales se conservan en un archivo privado fuera del repositorio.
 
 Manning está en el pie de página. En /calculadora, ingresar geometría, rugosidad, pendiente y dimensiones actualiza el caudal local. La exportación CSV es local. El guardado histórico asociado a finca es una operación de escritura distinta y queda fuera del presupuesto mínimo.
 
@@ -141,7 +141,7 @@ En desarrollo, el asistente local puede mostrarse con datos de fixture y el avis
 |---|---|
 
 | 0:00–1:00 | Abrir Inicio y explicar la gestión por finca. Mostrar las URLs y comprobar que la API está despierta. |
-| 1:00–3:00 | Con el ensayo sintético aprobado, mostrar registro, login y Mis fincas. Usar la cuenta y finca creadas para la presentación. Mientras el ensayo esté pendiente, mostrar las pantallas y anunciar ese estado. |
+| 1:00–3:00 | Mostrar registro y login. Usar la cuenta sintética ya creada para acceder a Mis fincas y abrir la finca de demostración. Las respuestas reales 201/200/201 constan en las evidencias DEMO-02. |
 | 3:00–4:00 | Abrir la finca y su historial. Si está vacío, explicar el estado vacío y la arquitectura de snapshots V1/V2. |
 | 4:00–5:00 | Explicar el asistente Cultivo → Suelo → Surcos → Riego → Revisión y el bloqueo de creación V2 pública. Una captura de fixture, si se utiliza, lleva la etiqueta de demostración local. |
 | 5:00–6:30 | Abrir Manning desde el footer. Cambiar dimensiones y mostrar el caudal local y la validación de un valor negativo. |
@@ -180,4 +180,4 @@ La suite usa Edge, intercepta la API y guarda seis capturas por resolución. El 
 
 ## Pruebas, límites y evolución
 
-Las pruebas públicas DEMO-02 recorren la versión HTTPS real a 1280, 390 y 320 px con respuestas reales. Se bloquearon los métodos de escritura como barrera de prueba y se registraron cero intentos. La verificación autenticada de registro, fincas, capacidad backend y snapshots V1/V2 está pendiente. Los tests locales acreditan el contrato y el bloqueo V2 de la build de producción. La comprobación pública encontró una ruta desconocida sin contenido, enlaces sociales sin destino y avisos CSP en consola. Los correctivos preparados requieren aprobación para publicarse. Los avisos CSP se conservan como pendiente y no se relajó esa política. [Plan de staging](MVP-ACADEMICO-STAGING.md)
+Las pruebas públicas DEMO-02 recorren la versión HTTPS real a 1280, 390 y 320 px con respuestas reales. Se bloquearon los métodos de escritura como barrera de prueba y se registraron cero intentos. Las 27 comprobaciones autenticadas reales verificaron registro, login, finca, historial vacío, mensaje de detalle inexistente, recarga, logout y capacidad backend con creationEnabled=false. Los snapshots poblados V1/V2 permanecen pendientes. Los tests locales acreditan el contrato y el bloqueo V2 de la build de producción. La comprobación pública encontró una ruta desconocida sin contenido, enlaces sociales sin destino y avisos CSP en consola. Los correctivos fueron aprobados y publicados en demo-academica. Los avisos CSP se conservan como pendiente y no se relajó esa política. [Plan de staging](MVP-ACADEMICO-STAGING.md)
