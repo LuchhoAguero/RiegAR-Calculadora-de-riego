@@ -2,7 +2,13 @@
 
 Demo aislada: Netlify sirve React, Render ejecuta Express y Knex accede a MySQL mediante TLS verificado. Cada despliegue se vincula a la rama demo-academica de su repositorio. La aplicación original conserva el descriptor V1. La demo académica local, el modelo, las instrucciones de usuario y el guion de ocho minutos están en la [guía académica](MVP-ACADEMICO-GUIA.md).
 
-## Primera publicación
+## Publicación existente
+
+El frontend público es https://riegar-academico.netlify.app y la API es https://riegar-api-demo.onrender.com. DEMO-02 verificó HTTP 200 en ambos y en /api/ready. CORS_ORIGIN usa el origen Netlify sin acento. VITE_API_URL usa el origen Render. La CA completa conserva sus delimitadores PEM. El backend publicado usa node src/staging-server.js.
+
+El esquema académico y sus dos cuentas ya están preparados. La cuenta migradora quedó bloqueada y el runtime tiene SELECT sobre simulaciones. Para la presentación, el siguiente paso es autorizar el ensayo mínimo de tres POST indicado en la guía académica. La restauración o creación de otro destino conserva su autorización independiente.
+
+## Referencia de configuración inicial
 
 1. En Netlify, elegí el equipo Free, vinculá únicamente el repositorio frontend y usá demo-academica como rama de publicación. Reservá el origen HTTPS del sitio para CORS antes de lanzar el build. El build usa netlify.toml y requiere VITE_API_URL con el origen HTTPS exacto de Render, sin barra final. public/_redirects aporta el fallback de React Router al recargar rutas.
 2. Confirmá el destino de escritura: esquema nuevo riegar_academic_staging, cuenta de runtime riegar_staging_runtime, cinco migrations y lock libre. Usá una cuenta de migrations distinta y revocá su acceso operativo cuando terminen las tareas aprobadas. Sembrá solo datos sintéticos para la facultad. El esquema Aiven defaultdb preexistente tiene datos ajenos a ese ensayo y la cuenta comprobada tiene permisos globales y GRANT OPTION.

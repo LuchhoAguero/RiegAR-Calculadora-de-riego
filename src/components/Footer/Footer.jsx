@@ -1,7 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import s from "./Footer.module.scss";
-import { FaFacebook, FaInstagram, FaXTwitter } from "react-icons/fa6";
 export default function Footer() {
   return (
     <footer className={s.footer} id="contact">
@@ -14,17 +13,6 @@ export default function Footer() {
             <p>
               Gestión de fincas y herramientas de riego, en un mismo lugar.
             </p>
-            <div className={s.socials}>
-              <a href="#" aria-label="Facebook">
-                <FaFacebook aria-hidden />
-              </a>
-              <a href="#" aria-label="Instagram">
-                <FaInstagram aria-hidden />
-              </a>
-              <a href="#" aria-label="X (Twitter)">
-                <FaXTwitter aria-hidden />
-              </a>
-            </div>
           </div>
           <div>
             <div className={s.groupTitle}>Tu espacio de trabajo</div>

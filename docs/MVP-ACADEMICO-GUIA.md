@@ -4,18 +4,18 @@
 
 El riego por surcos distribuye agua a lo largo de canales en el suelo. El productor o estudiante necesita relacionar la demanda del cultivo, la reserva de agua, la geometría y los tiempos de aplicación. RiegAR permite organizar escenarios por finca, estimar magnitudes con un modelo derivado de una planilla y conservar resultados versionados para su consulta.
 
-La aplicación incluye registro, sesión, alta y edición de fincas, historial por finca y lectores V1 y V2. El asistente V2 y su recorrido completo pueden demostrarse con la API simulada de desarrollo. Manning conserva su cálculo hidráulico, exportación CSV y guardado histórico asociado a finca cuando hay API.
+La publicación académica está disponible en https://riegar-academico.netlify.app y usa https://riegar-api-demo.onrender.com. Las pantallas públicas y Manning se verificaron contra esas URLs. Registro, sesión, fincas y lectura histórica requieren completar la prueba autenticada con datos sintéticos autorizados. El asistente V2 completo pertenece al entorno local con API simulada. La build pública conserva la creación V2 deshabilitada.
 
 ## Arquitectura y datos
 
 ```mermaid
 flowchart LR
-    browser["React y Vite"] -->|"HTTPS · JSON y JWT"| api["API Express"]
+    browser["Netlify · React y Vite"] -->|"HTTPS · JSON y JWT"| api["Render Free · API Express"]
     api --> access["Validación y propiedad de finca"]
     access --> models["Motores V1/V2"]
     access --> store["Knex y mysql2"]
     models --> store
-    store -->|"TLS en staging"| mysql[("MySQL")]
+    store -->|"TLS · CA y hostname verificados"| mysql[("Aiven MySQL · riegar_academic_staging")]
     mysql --> history["Historial y detalle versionado"]
     history --> browser
 ```
@@ -97,26 +97,70 @@ El servidor valida y normaliza los datos de cultivo, suelo, surcos y riego. La d
 
 Con consumo diario cero, los dos plazos son `null`. La cifra de pérdidas representa un residuo del modelo. La interfaz puede abreviar valores con indicación de aproximación y consultar la precisión del snapshot. El modelo requiere contrastación de campo para usos agronómicos fuera del alcance académico.
 
-## Instalación y uso
+## Instalación, configuración publicada y uso
 
-1. Instalá Node.js y npm. Esta fase se verificó con la versión consignada en el checkpoint. Para un recorrido con API, usá una instancia MySQL 8.4 de desarrollo con el esquema oficial de las cinco migrations y credenciales propias.
-2. En el repositorio backend ejecutá `npm ci`. Copiá `.env.example` a `.env` y completá host, base, puerto, usuario, contraseña, JWT, orígenes CORS y configuración SMTP de desarrollo. Con TLS, indicá `DB_SSL=true` y la ruta del CA confiable. La aplicación exige `EMAIL_USER` y `EMAIL_PASS` al arrancar. En una instancia nueva y separada, prepará el esquema con las migrations oficiales desde el backend con `npx knex migrate:latest`. Confirmá el destino antes de ejecutar el comando.
-3. Arrancá el backend con `npm start` y verificá `/api/health`. La salud HTTP acredita el listener. Una consulta autenticada de fincas verifica además la conexión de aplicación a MySQL.
-4. En el frontend ejecutá `npm ci`, copiá `.env.example` a `.env`, indicá el origen de esa API mediante `VITE_API_URL` y ejecutá `npm run dev`. Para el artefacto estático, usá `npm run build` y `npm run preview`.
-5. Desde Inicio, registrá una cuenta e iniciá sesión. En **Mis fincas**, elegí **Nueva finca**, completá nombre y ubicación, y guardá. Desde la lista se puede editar y seleccionar una finca.
-6. En el detalle, consultá el **Historial de simulaciones de riego**. Elegí página anterior o siguiente y abrí **Ver resultado**. La vista conserva el contrato de cada registro. Actualizar o recargar inicia en la página 1.
-7. En desarrollo, **Preparar simulación (solo local)** abre los cinco pasos de cultivo, suelo, surcos, riego y revisión. Ante un decimal ambiguo, confirmá su interpretación. El borrador vive en memoria durante la sesión y la recarga puede perderlo.
-8. Para Manning, entrá por el pie de página o por **Cálculos anteriores — Manning** dentro de una finca. Elegí geometría, rugosidad, pendiente y dimensiones. Podés exportar CSV o guardar un cálculo histórico desde la ruta de esa finca con una API configurada.
+
+Para la presentación se usa la publicación existente. Las ramas de despliegue se llaman demo-academica. El dominio público es riegar-academico.netlify.app, sin acento. Verificar el destino del enlace cuando el navegador traduce los nombres de proyecto.
+
+Para reproducir el frontend localmente, instalá Node 24 y ejecutá npm ci y npm test. En PowerShell, prepará la build equivalente a Netlify:
+
+```powershell
+$env:VITE_API_URL='https://riegar-api-demo.onrender.com'
+$env:VITE_RIEGAR_V2_MOCK='false'
+npm run build -- --mode staging
+```
+
+npm run preview permite revisar ese artefacto local. El CORS público acepta el origen Netlify. Para desarrollar con una API local se necesita su propio origen y configuración CORS correspondiente. La creación V2 también queda bloqueada en el preview de producción.
+
+En el backend, npm ci y npm test reproducen las pruebas offline. El servicio Render existente usa Node 24.16.0, npm ci y el comando node src/staging-server.js. Ese entrypoint valida el entorno académico, el nombre de base y cuenta, TLS, JWT y CORS antes de abrir el puerto asignado por Render. La ruta /api/health verifica HTTP y /api/ready verifica además identidad SQL y cifrado. El script npm start corresponde al servidor general, que exige variables SMTP.
+
+| Variable pública o condición | Configuración académica |
+|---|---|
+| RIEGAR_RUNTIME | academic-staging |
+| RIEGAR_DEMO_ENABLE_V2 | false |
+| DB_NAME / DB_USER | riegar_academic_staging / riegar_staging_runtime |
+| DB_HOST / RIEGAR_STAGING_DB_HOST | Host Aiven aprobado, idéntico en ambas variables |
+| DB_SSL / DB_SSL_VERIFY_IDENTITY | true / true |
+| CORS_ORIGIN | https://riegar-academico.netlify.app |
+| DB_SSL_CA_PEM | CA oficial completa con delimitadores BEGIN/END y saltos de línea reales |
+| DB_PASSWORD / JWT_SECRET | Valores privados del servicio, fuera de Git |
+| EMAIL_USER / EMAIL_PASS | Ausentes, contacto informa correo deshabilitado |
+| PORT / RENDER | Inyectadas por Render |
+
+La cuenta runtime posee permisos de negocio limitados y SELECT sobre simulaciones. La cuenta migradora está bloqueada. Las cinco migrations ya están aplicadas. La presentación utiliza el schema académico preparado. La recuperación de un destino nuevo requiere su autorización y verificación de identidad independientes.
+
+En el recorrido autenticado, después de aprobar las tres solicitudes de prueba, crear una cuenta sintética e iniciar sesión. Desde Mis fincas se crea y selecciona una finca. Se puede mostrar el historial vacío, recargar y cerrar sesión. El resultado de esas operaciones se registra como pendiente hasta completar el ensayo. No se presupone que existan snapshots históricos en la base académica.
+
+Manning está en el pie de página. En /calculadora, ingresar geometría, rugosidad, pendiente y dimensiones actualiza el caudal local. La exportación CSV es local. El guardado histórico asociado a finca es una operación de escritura distinta y queda fuera del presupuesto mínimo.
+
+En desarrollo, el asistente local puede mostrarse con datos de fixture y el aviso de API simulada. Si se usa como apoyo, anunciarlo antes de abrirlo. Ese recorrido no acredita creación ni persistencia V2 en la publicación pública.
 
 ## Guion de demostración para la facultad
 
 | Tiempo | Acción y punto a explicar |
 |---|---|
-| 0:00–1:00 | Abrir Inicio y explicar el problema agrícola y la organización por finca. Identificar el entorno que se muestra. |
-| 1:00–3:00 | Registrar un usuario de ensayo, iniciar sesión y crear una finca desde **Mis fincas**. Una vez verificado staging, estas acciones pueden usar su API real. En el recorrido reproducible son simuladas. |
-| 3:00–5:00 | Abrir el asistente de la finca, recorrer los cinco pasos, mostrar el aviso de decimal ambiguo y revisar. Confirmar el escenario V2 simulado con 18 surcos y 116,64 m³. |
-| 5:00–7:00 | Abrir el resultado, volver al historial, explicar una magnitud y un diagnóstico, y mostrar el detalle V1 y la paginación con las capturas verificadas. |
-| 7:00–8:00 | Abrir Manning desde el pie, calcular un caudal local y explicar el alcance estimativo del modelo de surcos. Resumir el estado de staging. |
+
+| 0:00–1:00 | Abrir Inicio y explicar la gestión por finca. Mostrar las URLs y comprobar que la API está despierta. |
+| 1:00–3:00 | Con el ensayo sintético aprobado, mostrar registro, login y Mis fincas. Usar la cuenta y finca creadas para la presentación. Mientras el ensayo esté pendiente, mostrar las pantallas y anunciar ese estado. |
+| 3:00–4:00 | Abrir la finca y su historial. Si está vacío, explicar el estado vacío y la arquitectura de snapshots V1/V2. |
+| 4:00–5:00 | Explicar el asistente Cultivo → Suelo → Surcos → Riego → Revisión y el bloqueo de creación V2 pública. Una captura de fixture, si se utiliza, lleva la etiqueta de demostración local. |
+| 5:00–6:30 | Abrir Manning desde el footer. Cambiar dimensiones y mostrar el caudal local y la validación de un valor negativo. |
+| 6:30–8:00 | Mostrar arquitectura, relación usuario/finca/snapshot y lectura según versión almacenada. Explicar alcance estimativo y pendientes de integración autenticada e históricos poblados. |
+
+### Checklist antes de entrar a clase
+
+- Abrir Inicio y GET /api/ready entre cinco y diez minutos antes. Esperar HTTP 200.
+- Cargar Inicio, login, registro, guía y calculadora en pestañas.
+- Llevar las capturas reales de DEMO-02 y esta guía disponibles localmente.
+- Verificar la conexión y mantener el equipo conectado a energía.
+- Comprobar que las credenciales sintéticas están disponibles privadamente, si el ensayo ya fue autorizado y ejecutado.
+- Confirmar que la demo local, si se usa como apoyo, tiene su aviso visible y se anuncia como simulada.
+
+### Contingencia para Render Free
+
+Render puede dormir tras quince minutos de inactividad. Un GET puede necesitar cerca de un minuto para despertar el servicio. Antes del recorrido, abrir /api/ready y esperar; si el primer GET falla, comprobar una vez más tras la espera. Esta contingencia solo repite lecturas. [Límites de Render Free](https://render.com/docs/free)
+
+Si no hay red o la API sigue indisponible, usar las capturas reales para explicar las pantallas. Manning puede calcular localmente una vez que la página está cargada. La web no está certificada como PWA offline y recargar sin red puede perderla. Para una demostración local preparada, usar el modo de desarrollo rotulado como API simulada. Ante un guardado incierto, conservar el mensaje y reconciliar por lectura antes de decidir otro envío.
 
 Para repetir solo el recorrido académico en PowerShell, usá dos terminales en el frontend. Playwright debe estar disponible localmente y el argumento del script apunta a su `index.mjs`.
 
@@ -136,4 +180,4 @@ La suite usa Edge, intercepta la API y guarda seis capturas por resolución. El 
 
 ## Pruebas, límites y evolución
 
-Los tests cubren contrato, validación, modelos, navegación, estados de sesión, errores y renderers. El checkpoint consigna pruebas en vivo y simuladas por etapa. E1-TCP sigue como deuda técnica de laboratorio. Próximos pasos del producto son acreditar staging con la API real, ensayar la escritura V2 coordinada, reforzar la operación y contrastar estimaciones con mediciones de campo. [Plan de staging](MVP-ACADEMICO-STAGING.md)
+Las pruebas públicas DEMO-02 recorren la versión HTTPS real a 1280, 390 y 320 px con respuestas reales. Se bloquearon los métodos de escritura como barrera de prueba y se registraron cero intentos. La verificación autenticada de registro, fincas, capacidad backend y snapshots V1/V2 está pendiente. Los tests locales acreditan el contrato y el bloqueo V2 de la build de producción. La comprobación pública encontró una ruta desconocida sin contenido, enlaces sociales sin destino y avisos CSP en consola. Los correctivos preparados requieren aprobación para publicarse. Los avisos CSP se conservan como pendiente y no se relajó esa política. [Plan de staging](MVP-ACADEMICO-STAGING.md)

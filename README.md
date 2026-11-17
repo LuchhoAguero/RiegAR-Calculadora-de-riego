@@ -1,22 +1,25 @@
 # RiegAR · MVP Académico
 
-Aplicación web para organizar fincas y consultar escenarios de riego por surcos. El historial conserva resultados V1 y V2. La calculadora histórica de Manning sigue disponible en **Herramientas anteriores**.
+RiegAR organiza fincas y presenta escenarios versionados de riego por surcos. La calculadora histórica de Manning sigue disponible desde el pie de página.
 
-## Desarrollo
+- [Aplicación pública](https://riegar-academico.netlify.app)
+- [Salud de la API](https://riegar-api-demo.onrender.com/api/health)
+- [Conexión segura a MySQL](https://riegar-api-demo.onrender.com/api/ready)
 
-Con Node.js y npm, ejecutá `npm ci`, `npm test` y `npm run dev`. El cliente usa `VITE_API_URL` y en desarrollo puede apuntar a `http://localhost:4000`. La [guía académica](docs/MVP-ACADEMICO-GUIA.md) incluye instalación del backend y uso de la aplicación.
+La rama publicada de ambos repositorios es demo-academica. El frontend usa Netlify y la API Render Free, conectada por TLS a riegar_academic_staging en Aiven.
 
-| Función | Disponibilidad |
+| Función | Estado de la presentación |
 |---|---|
-| Registro, sesión, fincas e historial | Conectan a la API configurada |
-| Creación V2 | Demostración con API simulada en desarrollo. El build de staging conserva el bloqueo. |
-| Manning | Cálculo local y guardado histórico mediante la API |
+| Inicio, registro/login, guía y contacto | Pantallas verificadas contra la publicación real. El correo de contacto está deshabilitado. |
+| Registro, login y fincas mediante API | Ensayo sintético pendiente de autorización. |
+| Historial y resultados V1/V2 | Lectores implementados; consulta pública autenticada pendiente. |
+| Creación V2 | Deshabilitada en producción. El asistente completo se demuestra solo en desarrollo con API simulada. |
+| Manning | Cálculo y validación locales verificados en la publicación. Guardado real fuera del ensayo mínimo. |
 
-## Demostración y publicación
+## Instalación y presentación
 
-El guion de ocho minutos y el recorrido reproducible incluyen alta, sesión, finca, asistente, resultado e historial. Usan datos de prueba cuando se ejecutan con el servidor Vite del sandbox. El perfil de staging propuesto conecta a su propia API y a su propia base. El correo y la creación de simulaciones quedan cerrados en ese perfil.
+Con Node 24, ejecutar npm ci y npm test. Para compilar como Netlify, definir VITE_API_URL=https://riegar-api-demo.onrender.com y ejecutar npm run build -- --mode staging.
 
-- [Guía académica y guion de demostración](docs/MVP-ACADEMICO-GUIA.md)
-- [Publicación en Netlify y Render, y migración a TiDB](docs/PUBLICACION-ACADEMICA.md)
-- [Checkpoint MVP Académico 02](docs/MVP-ACADEMICO-02-CHECKPOINT.md)
-- [Checkpoint MVP Académico 01](docs/MVP-ACADEMICO-01-CHECKPOINT.md)
+La [guía académica](docs/MVP-ACADEMICO-GUIA.md) contiene configuración, arquitectura, modelo de datos, manual, guion de ocho minutos y contingencia por arranque lento de Render.
+
+Los correctivos DEMO-02 permanecen locales hasta su aprobación. El registro y las fincas del ensayo se crearán después de autorizar su presupuesto. [Publicación y migración de base](docs/PUBLICACION-ACADEMICA.md)

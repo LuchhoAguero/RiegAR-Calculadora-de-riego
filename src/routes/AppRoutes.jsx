@@ -1,5 +1,5 @@
 import React, { lazy, Suspense } from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, Link } from "react-router-dom";
 import HomePage from "../pages/HomePage.jsx";
 import CalculatorPage from "../pages/CalculatorPage.jsx";
 import GuidePage from "../pages/GuidePage.jsx";
@@ -56,6 +56,7 @@ export default function AppRoutes() {
           </ProtectedRoute>
         }
       />
+      <Route path="*" element={<div className="container"><h1>Página no encontrada</h1><p>Revisá la dirección o volvé al inicio para continuar.</p><p><Link to="/">Volver al inicio</Link></p></div>} />
     </Routes>
   );
 }

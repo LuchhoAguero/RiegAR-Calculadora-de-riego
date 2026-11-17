@@ -49,19 +49,6 @@
       }
     }
   }
-  .socials {
-    display: flex;
-    gap: 0.5rem;
-    font-family: "Inter", system-ui, sans-serif;
-    a {
-      width: 44px;
-      height: 44px;
-      display: grid;
-      place-items: center;
-      border-radius: 10px;
-      background: rgba(255, 255, 255, 0.08);
-    }
-  }
   .copy {
     margin-top: 1.5rem;
     border-top: 1px solid rgba(255, 255, 255, 0.12);
