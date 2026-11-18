@@ -338,7 +338,7 @@ try {
       await page.keyboard.press("Tab"); assert.equal(await link.evaluate(el => el === document.activeElement), true);
       await noOverflow(page); await screenshot(page, `desplegable-manning-abierto-${width}`);
       await page.keyboard.press("Escape"); assert.equal(await disclosure.evaluate(el => el.open), false); assert.equal(await summary.evaluate(el => el === document.activeElement), true);
-      await page.keyboard.press("Tab"); assert.equal(await page.locator("footer").getByRole("link", { name: "Facebook", exact: true }).evaluate(el => el === document.activeElement), true);
+      await page.keyboard.press("Tab"); assert.equal(await page.locator("footer").getByRole("link", { name: "Mis fincas", exact: true }).evaluate(el => el === document.activeElement), true);
       await summary.focus(); await page.keyboard.press("Space"); await visible(link); await page.keyboard.press("Space"); assert.equal(await disclosure.evaluate(el => el.open), false);
       assert.equal(state.calls.length, requests, "Abrir/cerrar no consulta API");
       if (width < 768) await summary.tap(); else await summary.click();

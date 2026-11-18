@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import s from "./Footer.module.scss";
+import { academicDemoAvailable, ACADEMIC_DEMO_FORM_PATH, ACADEMIC_DEMO_RESULTS_PATH } from "../../utils/irrigationAvailability.js";
 export default function Footer() {
   return (
     <footer className={s.footer} id="contact">
@@ -23,6 +24,7 @@ export default function Footer() {
               <li>
                 <Link to="/contacto">Contacto</Link>
               </li>
+              {academicDemoAvailable && <><li><Link to={ACADEMIC_DEMO_FORM_PATH}>Asistente V2 · demo</Link></li><li><Link to={ACADEMIC_DEMO_RESULTS_PATH}>Resultados V2 · ejemplo oficial</Link></li></>}
             </ul>
           </div>
           <div>

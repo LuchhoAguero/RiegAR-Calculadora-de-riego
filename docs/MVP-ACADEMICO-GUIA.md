@@ -4,7 +4,7 @@
 
 El riego por surcos distribuye agua a lo largo de canales en el suelo. El productor o estudiante necesita relacionar la demanda del cultivo, la reserva de agua, la geometría y los tiempos de aplicación. RiegAR permite organizar escenarios por finca, estimar magnitudes con un modelo derivado de una planilla y conservar resultados versionados para su consulta.
 
-La publicación académica está disponible en https://riegar-academico.netlify.app y usa https://riegar-api-demo.onrender.com. Las pantallas públicas y Manning se verificaron contra esas URLs. Registro, login, alta y lectura de finca e historial vacío se verificaron con datos sintéticos autorizados. La lectura de snapshots históricos poblados permanece pendiente. El asistente V2 completo pertenece al entorno local con API simulada. La build pública conserva la creación V2 deshabilitada.
+La publicación académica está disponible en https://riegar-academico.netlify.app y usa https://riegar-api-demo.onrender.com. Las pantallas públicas y Manning se verificaron contra esas URLs. Registro, login, alta y lectura de finca e historial vacío se verificaron con datos sintéticos autorizados. La lectura de snapshots históricos poblados permanece pendiente. La build pública `staging` permite explorar el asistente V2 y los resultados fijos del fixture oficial GV2-01. Conserva la creación V2 real deshabilitada.
 
 ## Arquitectura y datos
 
@@ -133,7 +133,9 @@ DEMO-02 completó el recorrido autenticado con tres POST autorizados y respuesta
 
 Manning está en el pie de página. En /calculadora, ingresar geometría, rugosidad, pendiente y dimensiones actualiza el caudal local. La exportación CSV es local. El guardado histórico asociado a finca es una operación de escritura distinta y queda fuera del presupuesto mínimo.
 
-En desarrollo, el asistente local puede mostrarse con datos de fixture y el aviso de API simulada. Si se usa como apoyo, anunciarlo antes de abrirlo. Ese recorrido no acredita creación ni persistencia V2 en la publicación pública.
+La demo pública se abre desde **Ver demo V2** en Inicio o desde el footer: `/demo/simulacion-v2` → Cultivo → Suelo → Surcos → Riego → Revisión → **Ver resultados del ejemplo oficial**. También se puede abrir `/demo/resultados-v2` directamente. No requiere cuenta y no realiza solicitudes a la API. El asistente comienza con las entradas oficiales GV2-01 y reutiliza las validaciones, unidades y aclaración decimal existentes. Editar valores sirve para explorar el formulario; no recalcula los resultados. El volumen mostrado es el fijo del fixture: 116,64 m³ para 18 surcos. Los identificadores y fecha son sintéticos. Los cambios duran solo al navegar dentro de la demo y se pierden al salir, recargar o cerrar. **Restablecer ejemplo oficial** vuelve a las entradas iniciales.
+
+La arquitectura de esta vista usa un proveedor independiente de memoria y el renderer V2 existente. El formulario de una finca real, su sesión, su historial y las guardas del cliente HTTP permanecen separados. El modo `staging` habilita exclusivamente estas vistas educativas; ninguna bandera de esta demo habilita POST. El backend continúa con el escritor desactivado y la cuenta runtime conserva SELECT sobre simulaciones. El sandbox DEV con API simulada sigue disponible para regresiones locales.
 
 ## Guion de demostración para la facultad
 
@@ -143,7 +145,7 @@ En desarrollo, el asistente local puede mostrarse con datos de fixture y el avis
 | 0:00–1:00 | Abrir Inicio y explicar la gestión por finca. Mostrar las URLs y comprobar que la API está despierta. |
 | 1:00–3:00 | Mostrar registro y login. Usar la cuenta sintética ya creada para acceder a Mis fincas y abrir la finca de demostración. Las respuestas reales 201/200/201 constan en las evidencias DEMO-02. |
 | 3:00–4:00 | Abrir la finca y su historial. Si está vacío, explicar el estado vacío y la arquitectura de snapshots V1/V2. |
-| 4:00–5:00 | Explicar el asistente Cultivo → Suelo → Surcos → Riego → Revisión y el bloqueo de creación V2 pública. Una captura de fixture, si se utiliza, lleva la etiqueta de demostración local. |
+| 4:00–5:00 | Abrir **Ver demo V2**, recorrer los cinco pasos con los datos oficiales precargados y abrir **Ver resultados del ejemplo oficial**. Explicar el volumen total, las 19 magnitudes y los diagnósticos como valores de fixture; cambiar entradas no recalcula ni guarda. |
 | 5:00–6:30 | Abrir Manning desde el footer. Cambiar dimensiones y mostrar el caudal local y la validación de un valor negativo. |
 | 6:30–8:00 | Mostrar arquitectura, relación usuario/finca/snapshot y lectura según versión almacenada. Explicar alcance estimativo y pendientes de integración autenticada e históricos poblados. |
 
@@ -154,13 +156,13 @@ En desarrollo, el asistente local puede mostrarse con datos de fixture y el avis
 - Llevar las capturas reales de DEMO-02 y esta guía disponibles localmente.
 - Verificar la conexión y mantener el equipo conectado a energía.
 - Comprobar que las credenciales sintéticas están disponibles privadamente, si el ensayo ya fue autorizado y ejecutado.
-- Confirmar que la demo local, si se usa como apoyo, tiene su aviso visible y se anuncia como simulada.
+- Dejar abiertas las dos rutas públicas de demo y anunciar que muestran el fixture oficial, sin cálculo nuevo ni persistencia.
 
 ### Contingencia para Render Free
 
 Render puede dormir tras quince minutos de inactividad. Un GET puede necesitar cerca de un minuto para despertar el servicio. Antes del recorrido, abrir /api/ready y esperar; si el primer GET falla, comprobar una vez más tras la espera. Esta contingencia solo repite lecturas. [Límites de Render Free](https://render.com/docs/free)
 
-Si no hay red o la API sigue indisponible, usar las capturas reales para explicar las pantallas. Manning puede calcular localmente una vez que la página está cargada. La web no está certificada como PWA offline y recargar sin red puede perderla. Para una demostración local preparada, usar el modo de desarrollo rotulado como API simulada. Ante un guardado incierto, conservar el mensaje y reconciliar por lectura antes de decidir otro envío.
+Si la API sigue indisponible, las rutas de demo V2 funcionan de forma independiente de Render. Si no hay red, usar las capturas reales para explicar las pantallas. Manning puede calcular localmente una vez que la página está cargada. La web no está certificada como PWA offline y recargar sin red puede perderla. Para una demostración local preparada, compilar con `--mode staging` y servir el preview, conservando el aviso de fixture. Ante un guardado incierto de otra operación real, conservar el mensaje y reconciliar por lectura antes de decidir otro envío.
 
 Para repetir solo el recorrido académico en PowerShell, usá dos terminales en el frontend. Playwright debe estar disponible localmente y el argumento del script apunta a su `index.mjs`.
 

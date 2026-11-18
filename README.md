@@ -13,7 +13,8 @@ La rama publicada de ambos repositorios es demo-academica. El frontend usa Netli
 | Inicio, registro/login, guía y contacto | Pantallas verificadas contra la publicación real. El correo de contacto está deshabilitado. |
 | Registro, login y alta de finca mediante API | Verificados con datos sintéticos reales, HTTP 201/200/201. Edición y borrado pendientes. |
 | Historial y resultados V1/V2 | Historial vacío y detalle inexistente verificados. Snapshots poblados pendientes. |
-| Creación V2 | Deshabilitada en producción. El asistente completo se demuestra solo en desarrollo con API simulada. |
+| Asistente y resultados V2 de demostración | Disponibles públicamente con el fixture oficial GV2-01, sin sesión, cálculo nuevo ni guardado. Las entradas se pueden explorar y validar; los resultados son fijos. |
+| Creación V2 real | POST deshabilitado en las builds públicas; Render conserva RIEGAR_DEMO_ENABLE_V2=false. |
 | Manning | Cálculo y validación locales verificados en la publicación. Guardado real fuera del ensayo mínimo. |
 
 ## Instalación y presentación
@@ -21,5 +22,7 @@ La rama publicada de ambos repositorios es demo-academica. El frontend usa Netli
 Con Node 24, ejecutar npm ci y npm test. Para compilar como Netlify, definir VITE_API_URL=https://riegar-api-demo.onrender.com y ejecutar npm run build -- --mode staging.
 
 La [guía académica](docs/MVP-ACADEMICO-GUIA.md) contiene configuración, arquitectura, modelo de datos, manual, guion de ocho minutos y contingencia por arranque lento de Render.
+
+Abrí el [asistente de cinco pasos](https://riegar-academico.netlify.app/demo/simulacion-v2) y los [resultados del ejemplo oficial](https://riegar-academico.netlify.app/demo/resultados-v2). Las rutas de demo están incluidas en la build `staging` de Netlify y reutilizan el formulario y renderer existentes. No consultan la API. Los cambios se mantienen solo en memoria mientras navegás dentro de la demo; salir, recargar o cerrar los descarta. Los identificadores y la fecha de resultados pertenecen al fixture y no representan una finca de tu cuenta.
 
 DEMO-02 publicó los correctivos y completó 27 comprobaciones autenticadas reales. Consumió tres POST, con una cuenta y una finca sintéticas nuevas, y verificó creationEnabled=false. Las credenciales de la demo se conservan privadamente. [Publicación y migración de base](docs/PUBLICACION-ACADEMICA.md)

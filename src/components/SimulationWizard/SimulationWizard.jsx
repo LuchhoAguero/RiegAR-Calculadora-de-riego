@@ -8,7 +8,7 @@ import Modal from "../Modal/Modal.jsx";
 import { STEPS, buildV2Payload, fieldId, parseNumber, reviewValue, validateValues } from "../../utils/irrigationV2Form.js";
 import s from "./SimulationWizard.module.scss";
 import farmStyles from "../FarmDetail/FarmDetail.module.scss";
-import { isSimulationSandbox } from "../../utils/irrigationAvailability.js";
+import { isSimulationSandbox, ACADEMIC_DEMO_RESULTS_PATH } from "../../utils/irrigationAvailability.js";
 import SubmissionStatus from "../SimulationSubmission/SubmissionStatus.jsx";
 
 const ICONS = [FaSeedling, FaLayerGroup, FaStream, FaTint, FaClipboardCheck];
@@ -41,29 +41,30 @@ function Field({ field, raw, resolution, error, onChange, onBlur, onResolve }) {
   </div>;
 }
 
-function ActiveWizard({ farm, sessionToken }) {
+export function ActiveWizard({ farm, sessionToken, academicDemo = false }) {
   const { draft, setDraft, discard, submission, submit, clearField } = useContext(IrrigationDraftContext);
   const { isLoggedIn } = useContext(AuthContext);
   const [touched, setTouched] = useState({});
   const [submitted, setSubmitted] = useState(false);
   const [preparedSignature, setPreparedSignature] = useState(null);
   const title = useRef(null);
+  const navigate = useNavigate();
   const step = draft.step, current = STEPS[step], Icon = ICONS[step];
   const validation = validateValues(draft.values, draft.resolutions, step);
   const complete = buildV2Payload(draft.values, draft.resolutions);
   const signature = JSON.stringify([draft.values, draft.resolutions]);
-  const dirty = Object.values(draft.values).some(value => value !== "");
-  const sandbox = isSimulationSandbox();
+  const dirty = Object.entries(draft.values).some(([path, value]) => value !== (draft.initialValues?.[path] ?? ""));
+  const sandbox = !academicDemo && isSimulationSandbox();
   const locked = ["pending", "uncertain"].includes(submission.status);
   const sessionCurrent = () => isLoggedIn && localStorage.getItem("token") === sessionToken;
-  const blocker = useBlocker(({ currentLocation, nextLocation }) => sessionCurrent() && dirty &&
+  const blocker = useBlocker(({ currentLocation, nextLocation }) => !academicDemo && sessionCurrent() && dirty &&
     (currentLocation.pathname !== nextLocation.pathname || currentLocation.search !== nextLocation.search));
   useBeforeUnload(event => {
-    if (dirty && sessionCurrent()) { event.preventDefault(); event.returnValue = ""; }
+    if (dirty && (academicDemo || sessionCurrent())) { event.preventDefault(); event.returnValue = ""; }
   });
 
   useEffect(() => { focusVisible(title.current); setSubmitted(false); }, [step]);
-  const update = (path, value) => { clearField(path); setDraft(previous => {
+  const update = (path, value) => { clearField?.(path); setDraft(previous => {
     const resolutions = { ...previous.resolutions }; delete resolutions[path];
     return { ...previous, values: { ...previous.values, [path]: value }, resolutions };
   }); };
@@ -91,13 +92,13 @@ function ActiveWizard({ farm, sessionToken }) {
   };
 
   return <div className={`${s.wizard} container`}>
-    <nav className={s.breadcrumb} aria-label="Ubicación del asistente"><Link to="/fincas">Mis fincas</Link><span aria-hidden="true">/</span><Link to={`/fincas/${farm.id}`}>Detalle de finca</Link></nav>
-    <header className={s.header}><p className={s.eyebrow}>{sandbox ? "Preparación local · API simulada" : "Preparación local · sin envíos"}</p><h1>Nueva simulación de riego por surcos</h1><p>Finca: <strong>{farm.nombre_finca}</strong></p></header>
-    <aside className={s.notice} aria-label="Disponibilidad y borrador"><strong>{sandbox ? "Ensayo con API simulada. No se guardan datos reales." : "Solo preparación local. No se puede calcular ni guardar."}</strong><p>Los datos se conservan en memoria durante esta sesión y pestaña. Si recargás o cerrás la pestaña, podés perder el borrador.</p></aside>
+    <nav className={s.breadcrumb} aria-label="Ubicación del asistente">{academicDemo ? <Link to="/">Volver al inicio</Link> : <><Link to="/fincas">Mis fincas</Link><span aria-hidden="true">/</span><Link to={`/fincas/${farm.id}`}>Detalle de finca</Link></>}</nav>
+    <header className={s.header}><p className={s.eyebrow}>{academicDemo ? "Demostración académica" : sandbox ? "Preparación local · API simulada" : "Preparación local · sin envíos"}</p><h1>{academicDemo ? "Asistente V2 de demostración" : "Nueva simulación de riego por surcos"}</h1><p>{academicDemo ? "Escenario" : "Finca"}: <strong>{farm.nombre_finca}</strong></p></header>
+    <aside className={s.notice} aria-label="Disponibilidad y borrador"><strong>{academicDemo ? "Recorrido visual sin cálculo ni guardado. Los resultados serán los valores fijos del fixture oficial GV2-01." : sandbox ? "Ensayo con API simulada. No se guardan datos reales." : "Solo preparación local. No se puede calcular ni guardar."}</strong><p>{academicDemo ? "Tus cambios duran al navegar entre el asistente y los resultados de demo. Se pierden al salir de la demo, recargar o cerrar la pestaña." : "Los datos se conservan en memoria durante esta sesión y pestaña. Si recargás o cerrás la pestaña, podés perder el borrador."}</p></aside>
     {sandbox && <SubmissionStatus fincaId={farm.id} autoFocus onField={path => { const index = STEPS.findIndex(item => item.fields.some(field => field.path === path)); go(index); requestAnimationFrame(() => focusVisible(document.getElementById(fieldId(path)))); }} />}
     <nav aria-label="Pasos de la simulación"><ol className={s.progress}>{STEPS.map((item, index) => <li key={item.title}><button type="button" disabled={locked || index > draft.reached} aria-current={index === step ? "step" : undefined} aria-label={`Paso ${index + 1} de 5: ${item.title}`} onClick={() => go(index)}><span>{index + 1}</span><span className={s.stepLabel}>{item.title}</span></button></li>)}</ol></nav>
     <section className={`${s.panel} ${s[`category${step}`]}`} aria-labelledby="v2-step-title">
-      <p className={s.eyebrow}>Paso {step + 1} de 5</p><h2 id="v2-step-title" tabIndex={-1} ref={title}><Icon aria-hidden="true" /> {current.title}</h2><p>{sandbox && step === 4 ? "Revisá los datos antes de enviar a la API simulada." : current.description}</p>
+      <p className={s.eyebrow}>Paso {step + 1} de 5</p><h2 id="v2-step-title" tabIndex={-1} ref={title}><Icon aria-hidden="true" /> {current.title}</h2><p>{academicDemo && step === 4 ? "Revisá los campos del recorrido. Tus cambios no recalculan el fixture oficial." : sandbox && step === 4 ? "Revisá los datos antes de enviar a la API simulada." : current.description}</p>
       <fieldset className={s.editable} disabled={locked} aria-label="Datos de la simulación">
       {step < 4 ? <form onSubmit={continueStep} noValidate>
         <p className={s.hint}>* Datos obligatorios. Coma o punto decimal, sin separadores de miles.</p>
@@ -117,7 +118,7 @@ function ActiveWizard({ farm, sessionToken }) {
         <div className={s.review}>{STEPS.slice(0, 4).map((item, index) => <section key={item.title} className={s[`category${index}`]} aria-labelledby={`v2-review-${index}`}><div className={s.reviewHead}><h3 id={`v2-review-${index}`}>{item.title}</h3><button type="button" className={s.secondary} onClick={() => go(index)} aria-label={`Corregir ${item.title}`}>Corregir</button></div><dl>{item.fields.map(field => <div key={field.path}><dt>{field.label}{field.unit && ` (${field.unit})`}</dt><dd>{reviewValue(field, draft.values[field.path], draft.resolutions[field.path])}</dd></div>)}</dl></section>)}</div>
         <div className={s.actions}><button className={s.secondary} type="button" onClick={() => go(3)}>Atrás</button><button className={s.primary} type="button" onClick={prepare}>Validar preparación</button></div>
         {preparedSignature === signature && complete.ok && <p role="status" className={s.success}>Datos revisados y preparados. No se envió ninguna solicitud ni se guardó una simulación.</p>}
-        <div className={s.availability}><button className={s.primary} type="button" disabled={!sandbox || locked} aria-describedby="v2-save-explanation" onClick={() => { setSubmitted(true); if (complete.ok) submit(); else focusVisible(document.getElementById("v2-review-errors")); }}>{submission.status === "pending" ? "Procesando..." : "Calcular y guardar"}</button><p id="v2-save-explanation">{sandbox ? "Solo API simulada. El backend real y la creación pública V2 permanecen bloqueados." : "El guardado está en preparación y permanece deshabilitado. Esta vista no se conecta a la creación de simulaciones."}</p></div>
+        <div className={s.availability}>{academicDemo ? <><button className={s.primary} type="button" disabled={!complete.ok} aria-describedby="v2-demo-explanation" onClick={() => navigate(ACADEMIC_DEMO_RESULTS_PATH)}>Ver resultados del ejemplo oficial</button><p id="v2-demo-explanation">Se abrirá el fixture GV2-01, independiente de tus entradas. No se realiza un cálculo nuevo ni se guarda una simulación.</p></> : <><button className={s.primary} type="button" disabled={!sandbox || locked} aria-describedby="v2-save-explanation" onClick={() => { setSubmitted(true); if (complete.ok) submit(); else focusVisible(document.getElementById("v2-review-errors")); }}>{submission.status === "pending" ? "Procesando..." : "Calcular y guardar"}</button><p id="v2-save-explanation">{sandbox ? "Solo API simulada. El backend real y la creación pública V2 permanecen bloqueados." : "El guardado está en preparación y permanece deshabilitado. Esta vista no se conecta a la creación de simulaciones."}</p></>}</div>
       </>}
       </fieldset>
     </section>

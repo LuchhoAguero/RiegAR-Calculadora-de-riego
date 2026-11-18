@@ -13,7 +13,8 @@ import FincaDetailPage from "../pages/FincaDetailPage.jsx";
 import NuevoCalculoPage from "../pages/NuevoCalculoPage.jsx";
 import FarmDetailPage from "../pages/FarmDetailPage.jsx";
 import NewSimulationPage from "../pages/NewSimulationPage.jsx";
-import { localSimulationPreparation } from "../utils/irrigationAvailability.js";
+import { academicDemoAvailable, localSimulationPreparation } from "../utils/irrigationAvailability.js";
+const AcademicDemoPage = academicDemoAvailable ? lazy(() => import("../pages/AcademicDemoPage.jsx")) : null;
 const ResultsDemoPage = localSimulationPreparation ? lazy(() => import("../pages/ResultsDemoPage.jsx")) : null;
 const SimulationDetailPage = lazy(() => import("../pages/SimulationDetailPage.jsx"));
 
@@ -27,6 +28,7 @@ export default function AppRoutes() {
       <Route path="/contacto" element={<ContactPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/registro" element={<RegisterPage />} />
+      {AcademicDemoPage && <Route path="/demo/*" element={<Suspense fallback={<p className="container" role="status">Cargando la demostración...</p>}><AcademicDemoPage /></Suspense>} />}
       <Route
         path="/dashboard"
         element={
