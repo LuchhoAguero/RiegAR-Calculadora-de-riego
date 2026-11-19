@@ -1,14 +1,16 @@
 import React, { lazy, Suspense, useContext } from "react";
 import { Link, useParams } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
+import { IrrigationDraftContext } from "../../context/IrrigationDraftContext.jsx";
 import useOwnedFarm from "../../hooks/useOwnedFarm.js";
 import SimulationHistory from "../SimulationHistory/SimulationHistory.jsx";
 import s from "./FarmDetail.module.scss";
-import { academicDemoAvailable, ACADEMIC_DEMO_FORM_PATH, isSimulationSandbox, localSimulationPreparation, SIMULATION_SANDBOX_NOTICE } from "../../utils/irrigationAvailability.js";
-const SubmissionStatus = localSimulationPreparation ? lazy(() => import("../SimulationSubmission/SubmissionStatus.jsx")) : null;
+import { academicDemoAvailable, ACADEMIC_DEMO_FORM_PATH, isSimulationSandbox, localSimulationPreparation, realSimulationPreparation, simulationPreparationAvailable, SIMULATION_SANDBOX_NOTICE } from "../../utils/irrigationAvailability.js";
+const SubmissionStatus = simulationPreparationAvailable ? lazy(() => import("../SimulationSubmission/SubmissionStatus.jsx")) : null;
 
 function OwnedFarm({ fincaId, sessionToken }) {
   const view = useOwnedFarm(fincaId, sessionToken);
+  const draftContext = useContext(IrrigationDraftContext);
   const { validId } = view;
 
   return <div className={`${s.detail} container`}>
@@ -27,7 +29,7 @@ function OwnedFarm({ fincaId, sessionToken }) {
         {isSimulationSandbox() && <p className={s.loading} role="note">{SIMULATION_SANDBOX_NOTICE}</p>}
         {SubmissionStatus && <Suspense fallback={null}><SubmissionStatus fincaId={fincaId} /></Suspense>}
         <SimulationHistory fincaId={fincaId} sessionToken={sessionToken} />
-        <section className={s.simulations} aria-labelledby="farm-simulations-title"><p className={s.eyebrow}>Riego por surcos</p><h2 id="farm-simulations-title">Simulaciones de la finca</h2><p>La nueva simulación de riego por surcos está en preparación.</p><p>La creación sigue deshabilitada. Podés consultar los resultados guardados en el historial de esta finca.</p>{localSimulationPreparation && <Link className={s.secondary} to={`/fincas/${fincaId}/simulaciones/nueva`}>Preparar simulación (solo local)</Link>}{academicDemoAvailable && <p><Link className={s.secondary} to={ACADEMIC_DEMO_FORM_PATH}>Explorar demo V2</Link> · Ejemplo independiente de esta finca, sin cálculo ni guardado.</p>}</section>
+        <section className={s.simulations} aria-labelledby="farm-simulations-title"><p className={s.eyebrow}>Riego por surcos</p><h2 id="farm-simulations-title">Simulaciones de la finca</h2>{realSimulationPreparation ? <><p role="status">{draftContext?.availability.message}</p>{draftContext?.availability.status === "enabled" ? <Link className={s.secondary} to={`/fincas/${fincaId}/simulaciones/nueva`}>Nueva simulación</Link> : draftContext?.availability.status !== "loading" && <button className={s.secondary} type="button" onClick={draftContext?.refreshCapability}>Consultar disponibilidad</button>}</> : <><p>La nueva simulación de riego por surcos está en preparación.</p><p>La creación sigue deshabilitada. Podés consultar los resultados guardados en el historial de esta finca.</p>{localSimulationPreparation && <Link className={s.secondary} to={`/fincas/${fincaId}/simulaciones/nueva`}>Preparar simulación (solo local)</Link>}</>}{academicDemoAvailable && <p><Link className={s.secondary} to={ACADEMIC_DEMO_FORM_PATH}>Explorar demo V2</Link> · Ejemplo independiente de esta finca, sin cálculo ni guardado.</p>}</section>
         <details className={s.previous} onKeyDown={event => {
           if (event.key === "Escape" && event.currentTarget.open) {
             event.preventDefault();

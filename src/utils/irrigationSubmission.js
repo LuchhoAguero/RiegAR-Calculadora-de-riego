@@ -25,6 +25,7 @@ export function verifiedCreation(snapshot, attempt) {
   return Boolean(comparison && comparison.every(row => row.matches));
 }
 export function submissionError(error) {
+  if (error?.phase === "capability" || error?.code === "SIMULATION_CAPABILITY_MISMATCH") return { status: "denied", message: "No se envió la simulación: no pudimos verificar la disponibilidad del servicio. Consultá su disponibilidad antes de intentar guardar.", fields: {} };
   if (error?.code === "SIMULATION_CREATION_DISABLED") return { status: "denied", message: error.message, fields: {} };
   if (["NETWORK_ERROR", "INVALID_RESPONSE"].includes(error?.code)) return { status: "uncertain", message: UNCERTAIN_MESSAGE, fields: {} };
   const rejected = (error?.status === 400 && ["INVALID_REQUEST", "INVALID_ROUTE_PARAMETER", "INVALID_APPLICATION_INPUT", "INVALID_IRRIGATION_INPUT", "invalid_input"].includes(error.code)) ||
@@ -44,7 +45,7 @@ export function submissionError(error) {
 }
 
 // Un único intento por proveedor de sesión. Ningún timer, retry o persistencia.
-export function createSubmissionController({ enabled, send, isCurrent, onChange, now = () => Date.now() }) {
+export function createSubmissionController({ enabled, send, isCurrent, onChange, now = () => Date.now(), real = false }) {
   let state = { status: "idle", attempt: null, snapshot: null, message: "", fields: {} }, sequence = 0, disposed = false;
   const current = () => !disposed && isCurrent();
   const publish = next => { state = next; if (current()) onChange(state); };
@@ -69,12 +70,12 @@ export function createSubmissionController({ enabled, send, isCurrent, onChange,
       const built = buildV2Payload(values, resolutions);
       if (!built.ok) { publish({ ...state, status: "rejected", message: "Revisá los datos indicados antes de enviar.", fields: built.errors }); return false; }
       const request = ++sequence, attempt = freeze({ fincaId: String(fincaId), payload: copy(built.payload), startedAt: now() });
-      publish({ status: "pending", attempt, snapshot: null, message: "Procesando el envío a la API simulada...", fields: {}, issues: [] });
+      publish({ status: "pending", attempt, snapshot: null, message: real ? "Verificando disponibilidad y enviando al servidor para calcular y guardar..." : "Procesando el envío a la API simulada...", fields: {}, issues: [] });
       try {
         const response = await send(fincaId, attempt.payload);
         if (!current() || request !== sequence) return false;
         if (!verifiedCreation(response, attempt)) { publish({ ...state, status: "uncertain", message: UNCERTAIN_MESSAGE }); return false; }
-        publish({ ...state, status: "confirmed", snapshot: freeze(copy(response)), message: "Guardado confirmado por la API simulada." });
+        publish({ ...state, status: "confirmed", snapshot: freeze(copy(response)), message: real ? "Guardado confirmado por el servidor con HTTP 201 y snapshot V2 verificado." : "Guardado confirmado por la API simulada." });
         return true;
       } catch (error) {
         if (current() && request === sequence) publish({ ...state, ...submissionError(error) });

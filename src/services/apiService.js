@@ -1,5 +1,7 @@
 import { invalidateSession } from "../context/session.js";
-import { isSimulationSandbox } from "../utils/irrigationAvailability.js";
+import { isRealSimulationEnvironment, isSimulationSandbox } from "../utils/irrigationAvailability.js";
+import { isTokenCurrent } from "../context/session.js";
+import { V2_CONTRACT, V2_MODEL, V2_SOURCE } from "../utils/irrigationV2Results.js";
 
 const BASE_URL = import.meta.env?.VITE_API_URL || "http://localhost:4000";
 const SERVER_ERROR = "Ocurrió un error en el servidor.";
@@ -206,10 +208,41 @@ function simulationCollection(fincaId) {
   return `${BASE_URL}/api/fincas/${fincaId}/irrigation-simulations`;
 }
 
-// Fail closed: sin configuración también queda bloqueado, incluso al importar sin Vite.
-export const createIrrigationSimulation = async (fincaId, payload) => {
-  if (!isSimulationSandbox(import.meta.env)) throw new ApiError("La creación de simulaciones permanece deshabilitada fuera de la API simulada de desarrollo.", { code: "SIMULATION_CREATION_DISABLED" });
-  return request(simulationCollection(fincaId), { method: "POST", headers: getAuthHeaders(true), body: JSON.stringify(payload) }, 201);
+const creationPermits = new WeakMap();
+const currentSession = token => typeof token === "string" && isTokenCurrent(token) && localStorage.getItem("token") === token;
+const creationDisabled = () => new ApiError("La creación de simulaciones no está habilitada para esta sesión y este servicio.", { code: "SIMULATION_CREATION_DISABLED" });
+
+// La comprobación autenticada se repite antes de cada intento de escritura; nunca reintenta el POST.
+export const getIrrigationCreationCapability = async sessionToken => {
+  try {
+    if (!isRealSimulationEnvironment() || !currentSession(sessionToken)) throw creationDisabled();
+    const capability = await request(`${BASE_URL}/api/capabilities/irrigation`, {
+      method: "GET", headers: getAuthHeaders(true), redirect: "error",
+    }, 200);
+    if (!currentSession(sessionToken)) throw creationDisabled();
+    if (capability?.creationEnabled !== true || capability.contractVersion !== V2_CONTRACT ||
+        capability.modelVersion !== V2_MODEL || capability.sourceHash !== V2_SOURCE ||
+        capability.frontendOrigin !== globalThis.location.origin) {
+      throw new ApiError("El servicio no confirmó la creación con el contrato V2 esperado. Podés seguir consultando el historial.", { code: "SIMULATION_CAPABILITY_MISMATCH" });
+    }
+    const permit = Object.freeze({ ...capability });
+    creationPermits.set(permit, { token: sessionToken, origin: globalThis.location.origin, expires: Date.now() + 60000 });
+    return permit;
+  } catch (error) {
+    error.phase = "capability";
+    throw error;
+  }
+};
+
+export const createIrrigationSimulation = async (fincaId, payload, capability) => {
+  const url = simulationCollection(fincaId);
+  if (!isSimulationSandbox(import.meta.env)) {
+    const permit = capability && creationPermits.get(capability);
+    if (!isRealSimulationEnvironment() || !permit || !currentSession(permit.token) ||
+        permit.origin !== globalThis.location.origin || Date.now() >= permit.expires) throw creationDisabled();
+    creationPermits.delete(capability);
+  }
+  return request(url, { method: "POST", headers: getAuthHeaders(true), body: JSON.stringify(payload), redirect: "error" }, 201);
 };
 
 export const getIrrigationSimulationHistory = async (fincaId, { limit, cursor } = {}) => {

@@ -5,8 +5,8 @@ import { ApiError, getIrrigationSimulationDetail, isValidResourceId } from "../s
 import { readErrorMessage } from "../utils/irrigationHistory.js";
 import SimulationResults from "../components/IrrigationResults/SimulationResults.jsx";
 import s from "../components/FarmDetail/FarmDetail.module.scss";
-import { isSimulationSandbox, localSimulationPreparation, SIMULATION_SANDBOX_NOTICE } from "../utils/irrigationAvailability.js";
-const SubmissionComparison = localSimulationPreparation ? lazy(() => import("../components/SimulationSubmission/SubmissionComparison.jsx")) : null;
+import { isSimulationSandbox, simulationPreparationAvailable, SIMULATION_SANDBOX_NOTICE } from "../utils/irrigationAvailability.js";
+const SubmissionComparison = simulationPreparationAvailable ? lazy(() => import("../components/SimulationSubmission/SubmissionComparison.jsx")) : null;
 
 function OwnedSimulation({ fincaId, simulationId, sessionToken }) {
   const [view, setView] = useState({ loading: true, snapshot: null, error: null });

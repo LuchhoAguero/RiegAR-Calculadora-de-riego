@@ -31,6 +31,10 @@ async function fixture({ storedToken = null, width = 1280, touch = false, servic
       const availability = await readFile(new URL("../src/utils/irrigationAvailability.js", import.meta.url), "utf8");
       return route.fulfill({ contentType: "application/javascript", body: "const __RIEGAR_DEV_SERVER__ = true;\n" + availability });
     }
+    if (serviceHarness && url.origin === origin && ["irrigationV2Results.js", "irrigationV2Form.js", "irrigationV2MetadataShape.json"].some(file => url.pathname === `/__r5c/utils/${file}`)) {
+      const file = url.pathname.split("/").at(-1);
+      return route.fulfill({ contentType: file.endsWith(".json") ? "application/json" : "application/javascript", body: await readFile(new URL(`../src/utils/${file}`, import.meta.url), "utf8") });
+    }
     if (url.origin === origin) return route.continue();
     if (url.origin !== "http://localhost:4000" && !(serviceHarness && url.origin === "https://riegar-v2.invalid")) return route.abort();
     const path = url.pathname, method = request.method();

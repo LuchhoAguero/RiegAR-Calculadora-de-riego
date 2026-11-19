@@ -3,7 +3,7 @@ import s from "./Hero.module.scss";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import { FiUser, FiMapPin, FiFolder } from "react-icons/fi";
-import { academicDemoAvailable, ACADEMIC_DEMO_FORM_PATH } from "../../utils/irrigationAvailability.js";
+import { academicDemoAvailable, ACADEMIC_DEMO_FORM_PATH, realSimulationPreparation } from "../../utils/irrigationAvailability.js";
 
 export default function Hero() {
   const { isLoggedIn } = useContext(AuthContext);
@@ -27,7 +27,7 @@ export default function Hero() {
                 </>}
                 {academicDemoAvailable && <Link className={s.btnGhost} to={ACADEMIC_DEMO_FORM_PATH}>Ver demo V2</Link>}
               </div>
-              <p className={s.availability}>{academicDemoAvailable ? "Explorá el asistente y los resultados del ejemplo oficial. La demo no calcula ni guarda; la creación real sigue en preparación." : "La nueva simulación de riego por surcos está en preparación."}</p>
+              <p className={s.availability}>{realSimulationPreparation ? "Prepará escenarios desde una finca. El cálculo y el guardado dependen de la disponibilidad autenticada del servicio. La demo visual sigue disponible con su ejemplo oficial." : academicDemoAvailable ? "Explorá el asistente y los resultados del ejemplo oficial. La demo no calcula ni guarda; la creación real sigue en preparación." : "La nueva simulación de riego por surcos está en preparación."}</p>
             </div>
           </div>
           <div className={s.visual}>

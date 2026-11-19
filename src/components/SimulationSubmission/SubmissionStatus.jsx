@@ -29,7 +29,7 @@ export default function SubmissionStatus({ fincaId, onField, autoFocus = false }
         : !onField && <Link className={s.secondary} to={`/fincas/${fincaId}/simulaciones/nueva`}>Volver al intento</Link>}
       {status === "uncertain" && <button type="button" className={s.secondary} onClick={() => setConfirmRepeat(true)}>Permitir otro envío del intento</button>}
     </div>
-    <p className={s.note}>API simulada. El seguimiento está solo en memoria: recargar, cerrar o terminar la sesión puede perderlo.</p>
+    <p className={s.note}>{context.real ? "Los resultados confirmados se conservan en el historial de la finca. " : "API simulada. "}El seguimiento del intento está solo en memoria: recargar, cerrar o terminar la sesión puede perderlo.</p>
     <Modal isOpen={confirmRepeat} onClose={() => setConfirmRepeat(false)} title="¿Permitir otro envío?">
       <p>La simulación anterior puede haberse guardado. Un nuevo envío puede duplicarla, incluso si no la encontraste en el historial. No hay garantía de ejecución exactamente una vez.</p>
       <p>Esta autorización no envía nada. Después tendrás que volver a pulsar Calcular y guardar.</p>
